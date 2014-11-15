@@ -1,5 +1,5 @@
-#ifndef NETWORKING
-#define NETWORKING
+#ifndef NETWORKING_H
+#define NETWORKING_H
 
 // Functions here are meant to be accessed from the main interlink code only
 
