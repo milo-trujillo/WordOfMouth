@@ -3,7 +3,8 @@
 
 // Functions here are meant to be accessed from the main interlink code only
 
-// bool startRelaying();
+// This is meant to be called from pthread_create, hence the return and args
+void* startRelaying(void*);
 
 // bool sendMessage(string msg);
 
