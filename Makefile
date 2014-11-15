@@ -3,7 +3,7 @@ CXX = clang++
 CFLAGS += -g -Wall
 LIBS = #-lm
 
-OBJS = main.o
+OBJS = main.o networking.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
