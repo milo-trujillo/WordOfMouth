@@ -11,6 +11,8 @@
 
 //This function should encrypt the receiving user's alias and return an encrypted version of the message
 std::string cipher_encrypt(std::string alias, std::string message){
+	if( message.size() == 0 )
+		return "";
 	// TODO: Figure out the 4-characters off bug
 	// If the message is four characters longer than a multiple of 8 then the
 	// function flips out and prints a random char at the end. There must be a
@@ -57,6 +59,8 @@ std::string cipher_encrypt(std::string alias, std::string message){
 
 std::string cipher_decrypt(std::string alias, std::string encrypted_message){	
 	int message_size = encrypted_message.size();
+	if( message_size == 0 )
+		return "";
 	
 	BF_KEY *key = (BF_KEY*) calloc(1, sizeof(BF_KEY));
 	BF_set_key(key, alias.size(), (unsigned char*) alias.c_str());
