@@ -3,7 +3,7 @@ CXX = clang++
 CFLAGS += -g -Wall
 LIBS = -lpthread -lcrypto -lgcrypt -lgpg-error
 
-OBJS = main.o networking.o
+OBJS = main.o networking.o CipherAlias.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
