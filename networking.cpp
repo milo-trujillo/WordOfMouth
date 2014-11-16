@@ -22,13 +22,48 @@ using namespace std;
 
 const int BUFFER_SIZE = 100;
 const int LISTEN_PORT = 7777;
-const string RELAY_HOST = "10.0.0.2"; // Example, change later
+const string RELAY_HOST = "127.0.0.1"; // Example, change later
 const int RELAY_PORT = 1234; // Example, change later
 
 // Sends a message to the next node
 bool sendMessage(string msg)
 {
+	if( msg.size() == 0 ) return true; // No sense in sending an empty message
+
 	//string cyphertext = encryptForRelay(msg);
+
+	// If anything goes wrong sending a message then the parent
+	// _probably_ wants to kill the process, but we'll leave it up to them
+	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock_desc == -1 )
+	{
+		printf("Error: Couldn't create socket to send or relay message!\n");
+		return false;
+	}
+
+	struct sockaddr_in conn;
+	memset(&conn, 0, sizeof(conn));
+	conn.sin_family = AF_INET;
+	conn.sin_addr.s_addr = inet_addr(RELAY_HOST.c_str());
+	conn.sin_port = htons(RELAY_PORT); // Host to network byte order
+
+	if( connect(sock_desc, (struct sockaddr*)&conn, sizeof(conn)) != 0 )
+	{
+		printf("Error: Cannot connect to next relay!\n");
+		close(sock_desc);
+		return false;
+	}
+
+	// TODO: Change this line to send cyphertext once encryption is implemented
+	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
+	if( k == -1 )
+	{
+		printf("Error: Could not send message to relay!\n");
+		close(sock_desc);
+		return false;
+	}
+
+	close(sock_desc);
 	return true;
 }
 
@@ -38,12 +73,12 @@ void* handleMessage(void* arg)
     char buf[BUFFER_SIZE];  
     int k;  
 
-	// Flush the buffer in case something is left over from a prior read
-	for(int i = 0; i < BUFFER_SIZE; i++)
-		buf[i] = 0;
-
     while(true) 
     {      
+		// Flush the buffer in case something is left over from a prior read
+		for(int i = 0; i < BUFFER_SIZE; i++)
+			buf[i] = 0;
+
         k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
         if (k == -1)
         {
@@ -52,8 +87,12 @@ void* handleMessage(void* arg)
         }
         if (k == 0) // Client disconnected, time to exit the thread
             break;
-        if (k > 0)          
+        if (k > 0)
+		{
+			string msg = buf; // Make a C++ string from the C String
             printf("%*.*s", k, k, buf); // 'cout' had buffering problems here
+			sendMessage(msg);
+		}
     }
 
     close(sock_desc);  
