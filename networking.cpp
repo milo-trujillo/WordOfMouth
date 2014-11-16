@@ -52,7 +52,7 @@ bool sendMessage(string msg)
 	conn.sin_addr.s_addr = inet_addr(rc->relayHost.c_str());
 	conn.sin_port = htons(rc->relayPort); // Host to network byte order
 
-	if( connect(sock_desc, (struct sockaddr*)&conn, sizeof(conn)) != 0 )
+	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
 		printf("Error: Cannot connect to next relay!\n");
 		close(sock_desc);
@@ -129,7 +129,7 @@ bool relayMessages()
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;  
     server.sin_port = htons(rc->listenPort);  
-    if (bind(sock_desc, (struct sockaddr*)&server, sizeof(server)) != 0)
+    if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
     {
         printf("Error: Cannot bind socket!\n");;
         close(sock_desc);  
@@ -148,7 +148,7 @@ bool relayMessages()
 		struct sockaddr_in client;  
 		memset(&client, 0, sizeof(client));  
 		socklen_t len = sizeof(client); 
-		long client_sock_desc = accept(sock_desc, (struct sockaddr*)&client, &len); 
+		long client_sock_desc = accept(sock_desc, (sockaddr*)&client, &len); 
 		if (client_sock_desc == -1)
 		{
 			printf("Error: Cannot accept client!\n");
