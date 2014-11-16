@@ -10,10 +10,11 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
+	RelayConfig rc(7777, "127.0.0.1", 1234);
 	pthread_t relayThread;
-	pthread_create(&relayThread, NULL, startRelaying, NULL);
+	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
 	// Anyone elses initialization code goes here
 
