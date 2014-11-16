@@ -7,13 +7,19 @@ class CipherAlias{
 
 public:
 
-	CipherAlias(){}
-	
-	//Encrypts
-	std::string cipher_encrypt(std::string alias, std::string message);
-	
-	//Decrypts
-	std::string cipher_decrypt(std::string alias, std::string encrypted_message);
+	public:
+		CipherAlias(std::string a){alias = a;}
+		
+		//Encrypts
+		std::string cipher_encrypt(std::string message);
+		
+		//Decrypts
+		std::string cipher_decrypt(std::string encrypted_message);
+
+		bool data_decoded(std::string msg);
+
+	private:
+		std::string alias;
 	
 
 private:

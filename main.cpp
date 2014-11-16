@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "127.0.0.1", 1234);
+	RelayConfig rc(7777, "10.0.0.1", 7777);
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
@@ -23,8 +23,8 @@ int main(int argc, char** argv)
 	//
 
 	//Test Cipher
-	CipherAlias cipher;
 	string alias = "Jazmyn";
+	CipherAlias cipher(alias);
 
 	// This code tests the Cypher Alias code and verifies that we can encrypt
 	// and decrypt a message
