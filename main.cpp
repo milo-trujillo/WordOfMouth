@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "10.0.0.1", 7777, "Jazmyn");
+	RelayConfig rc(7777, "10.0.0.1", 7777, "Milo");
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
@@ -37,13 +37,12 @@ int main(int argc, char** argv)
 	{
 		string alias, cleartext;
 		cout << "Enter destination alias: ";
-		cin >> alias;
+		getline(cin, alias);
 		cout << "Enter message: ";
-		cin >> cleartext;
+		getline(cin, cleartext);
 		bool successful = sendMessage(cipher_encrypt(alias, cleartext));
 		if( successful )
 			cout << "Message sent." << endl;
-		// Other people's code goes here
 	}
 	return 0;
 }
