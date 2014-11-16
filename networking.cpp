@@ -112,11 +112,14 @@ void* handleMessage(void* arg)
 	// Once the program is finished we'll be using public/private keypairs
 	// for communication between nodes, and will need to decode with our keys.
 
+	printf("Without processing, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg);
+
 	// This code checks using only cyphers if the received message is destined
 	// for us or needs to be forwarded to the next node
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
+		printf("Post processing, I see: %*.*s\n\n\n", cleartext.size(), cleartext.size(), cleartext);
 		cout << "Message Received" << endl;
 		cout << "================" << endl;
 		// 'cout' had buffering problems here
