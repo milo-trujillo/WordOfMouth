@@ -15,6 +15,9 @@ int main()
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, NULL);
 	cout << "Relaying started." << endl;
+	// Anyone elses initialization code goes here
+
+	// Main event loop gets input from user, encodes it, sends it off
 	while(true)
 	{
 		// Other people's code goes here
