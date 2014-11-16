@@ -121,6 +121,7 @@ void* handleMessage(void* arg)
 		cout << "================" << endl;
 		// 'cout' had buffering problems here
 		printf("%*.*s", cleartext.size(), cleartext.size(), cleartext.c_str()); 
+		printf("\n"); // Force the screen to flush
 	}
 	else
 	{
