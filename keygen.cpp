@@ -113,7 +113,14 @@ unsigned char* decrypt(char* key,char* cipher)
       cerr << "error in gcry_mpi_aprint" << endl;
       exit(1);
   }
+  delete cipher;
   return buffer;
+}
+
+void keyDelete(char* privKey, char* pubKey)
+{
+  delete privKey;
+  delete pubKey;
 }
 
 int main()
@@ -130,5 +137,8 @@ int main()
   unsigned char* decryptedAlias;
   decryptedAlias = decrypt(privRelayKey,encryptedAlias);
   cout << "Decrypted Alias: " << decryptedAlias << endl;
+
+  keyDelete(privRelayKey,pubRelayKey);
+  
   return 0;
 }
