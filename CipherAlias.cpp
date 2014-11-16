@@ -10,7 +10,7 @@
 //typedef SymmetricCipher Encryption
 
 //This function should encrypt the receiving user's alias and return an encrypted version of the message
-std::string CipherAlias::cipher_encrypt(std::string message){
+std::string cipher_encrypt(std::string alias, std::string message){
 	// TODO: Figure out the 4-characters off bug
 	// If the message is four characters longer than a multiple of 8 then the
 	// function flips out and prints a random char at the end. There must be a
@@ -55,7 +55,7 @@ std::string CipherAlias::cipher_encrypt(std::string message){
 
 
 
-std::string CipherAlias::cipher_decrypt(std::string encrypted_message){	
+std::string cipher_decrypt(std::string alias, std::string encrypted_message){	
 	int message_size = encrypted_message.size();
 	
 	BF_KEY *key = (BF_KEY*) calloc(1, sizeof(BF_KEY));
@@ -91,7 +91,7 @@ std::string CipherAlias::cipher_decrypt(std::string encrypted_message){
 
 // A crude approach - if the entire message falls within the ASCII character
 // set then we assume it's decoded, otherwise it must be encoded
-bool CipherAlias::data_decoded(std::string msg)
+bool data_decoded(std::string msg)
 {
 	for( int i = 0; i < msg.size(); i++ )
 		if( msg[i] < 0 || msg[i] > 127 ) // Outside ASCII character range

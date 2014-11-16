@@ -24,14 +24,13 @@ int main(int argc, char** argv)
 
 	//Test Cipher
 	string alias = "Jazmyn";
-	CipherAlias cipher(alias);
 
 	// This code tests the Cypher Alias code and verifies that we can encrypt
 	// and decrypt a message
-	/*	
+	/*
 	string message = "Hello Worlds, boop beep,bop bepbooop";
-	string encrypted = cipher.cipher_encrypt(alias, message);
-	string decrypted = cipher.cipher_decrypt(alias, encrypted);
+	string encrypted = cipher_encrypt(alias, message);
+	string decrypted = cipher_decrypt(alias, encrypted);
 	cout << "Orig: " << message << endl;
 	cout << "Done: " << decrypted << endl;
 	*/
