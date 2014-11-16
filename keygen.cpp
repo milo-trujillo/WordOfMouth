@@ -54,7 +54,7 @@ void keyGen(char **privKey, char **pubKey)
   *pubKey = makeStringFromSexp(pubSexp);
 }
 
-char* encrypt(gcry_sexp_t key,char* plain)
+char* encrypt(char* key,char* plain)
 {
   gcry_error_t err;
   gcry_mpi_t r_mpi;
@@ -72,7 +72,7 @@ char* encrypt(gcry_sexp_t key,char* plain)
       exit(1);
   }
 
-  gcry_sexp_t pkey = sexp_new(plain);
+  gcry_sexp_t pkey = sexp_new(key);
   gcry_sexp_t r_ciph;
   if (err = gcry_pk_encrypt(&r_ciph,r_sexp,pkey))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html
@@ -83,11 +83,29 @@ char* encrypt(gcry_sexp_t key,char* plain)
   return makeStringFromSexp(r_ciph);
 }
 
-char* decrypt(gcry_sexp_t key,char* cipher)
+char* decrypt(char* key,char* cipher)
 {
   gcry_error_t err;
+  gcry_sexp_t data = sexp_new(cipher);
+  gcry_sexp_t skey = sexp_new(key);
+  gcry_sexp_t r_plain;
+  if (err = gcry_pk_decrypt(r_plain,data,skey))
+  {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html#Cryptographic-Functions
+      cerr << "error in decrypt" << endl;
+      exit(1);
+  }
 
-  return cipher;
+  gcry_mpi_t r_mpi = gcry_sexp_nth_mpi(r_plain,0,GCRYMPI_FMT_USG);
+  //found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
+
+  char *buffer;
+  unsigned int bufferLength;
+  if (err = gcry_mpi_aprint(GCRYMPI_FMT_HEX,&buffer,&bufferLength,r_mpi))
+  {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
+      cerr << "error in aprint" << endl;
+      exit(1);
+  }
+  return buffer;
 }
 
 int main()
