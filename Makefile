@@ -1,7 +1,7 @@
 PROGNAME = wordofmouth
 CXX = clang++
 CFLAGS += -g -Wall
-LIBS = #-lm
+LIBS = -lpthread -lcrypto
 
 OBJS = main.o networking.o
 
