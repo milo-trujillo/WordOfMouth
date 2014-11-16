@@ -10,7 +10,7 @@ public:
 	CipherAlias(){}
 	
 	//Encrypts
-	std::string cipher_encrypt(std::string alias, unsigned char* message);
+	std::string cipher_encrypt(std::string alias, std::string message);
 	
 	//Decrypts
 	std::string cipher_decrypt(std::string alias, std::string encrypted_message);
