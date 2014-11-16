@@ -21,6 +21,7 @@
 using namespace std;
 
 const int BUFFER_SIZE = 100;
+// Ideally these three should come from configuration we're given
 const int LISTEN_PORT = 7777;
 const string RELAY_HOST = "127.0.0.1"; // Example, change later
 const int RELAY_PORT = 1234; // Example, change later
@@ -67,10 +68,13 @@ bool sendMessage(string msg)
 	return true;
 }
 
+// Handles an individual incoming message, once the socket has already been
+// opened
 void* handleMessage(void* arg)
 {
 	long sock_desc = (long)arg;
-    char buf[BUFFER_SIZE];  
+	string msg; // This is a buffer before relaying the message
+    char buf[BUFFER_SIZE]; 
     int k;  
 
     while(true) 
@@ -80,6 +84,12 @@ void* handleMessage(void* arg)
 			buf[i] = 0;
 
         k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
+
+		// TODO: Determine if the message is destined for us or should be
+		// forwarded. This requires the PGP crypto code to decode the message
+		// and the cypher crypto code to see if the message is an attempted
+		// key exchange with us.
+
         if (k == -1)
         {
             printf("\n\tError reading from client.\n");
@@ -89,16 +99,18 @@ void* handleMessage(void* arg)
             break;
         if (k > 0)
 		{
-			string msg = buf; // Make a C++ string from the C String
+			msg += buf; // Make a C++ string from the C String
             printf("%*.*s", k, k, buf); // 'cout' had buffering problems here
-			sendMessage(msg);
 		}
     }
+	sendMessage(msg);
 
     close(sock_desc);  
 	return NULL;
 }
 
+// Does some initial setup, and for each incoming connection kicks off a thread
+// running handleMessage
 bool relayMessages() 
 {  
     int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
