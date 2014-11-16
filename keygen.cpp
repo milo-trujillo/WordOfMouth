@@ -7,7 +7,7 @@
 
 using namespace std;
 
-gcry_sexp_t sexp_new(const char* lisp)
+gcry_sexp_t sexp_new(const char* lisp)//basically turns a char* into a s-expression
 {
   /*the documented example of RSA keygen was in lisp,
   this should help get an s-expression with c++*/
@@ -15,20 +15,20 @@ gcry_sexp_t sexp_new(const char* lisp)
   gcry_sexp_t sexp;
   unsigned int length = strlen(lisp);
   if (err = gcry_sexp_new(&sexp,lisp,length,1))
-  {
+  {//found here: https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
     cerr << "error here write better msg later" << endl;
   }
   return sexp;
 }
 
-char* makeStringFromSexp(gcry_sexp_t sexp)
+char* makeStringFromSexp(gcry_sexp_t sexp)//reverse of above, makes s-expression into char*
 {
   unsigned int bufferLength = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);//remember to put a mode here not sure which is best yet
   char* buffer = new char[bufferLength];
   if (buffer != NULL)
   {
     if (0!=gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buffer, bufferLength))
-    {
+    {//found here: https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
       return buffer;
     }
     else cerr << "something's funky here. put a better error msg" << endl;
@@ -52,6 +52,42 @@ void keyGen(char **privKey, char **pubKey)
 
   *privKey = makeStringFromSexp(privSexp);
   *pubKey = makeStringFromSexp(pubSexp);
+}
+
+char* encrypt(gcry_sexp_t key,char* plain)
+{
+  gcry_error_t err;
+  gcry_mpi_t r_mpi;
+  if (err = gcry_mpi_scan(r_mpi,GCRYMPI_FMT_HEX,plain,0,NULL))
+  {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
+      cerr << "woo errors dunno what to put here" << endl;
+      exit(1);
+  }
+
+  gcry_sexp_t r_sexp;
+  unsigned int erroff;
+  if (err = gcry_sexp_build(r_sexp,erroff,"r_sexp(flags raw) (value %m)",r_mpi))//another one of those weird things in lisp?
+  {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
+      cerr << "oh lord another error case" << endl;
+      exit(1);
+  }
+
+  gcry_sexp_t pkey = sexp_new(plain);
+  gcry_sexp_t r_ciph;
+  if (err = gcry_pk_encrypt(&r_ciph,r_sexp,pkey))
+  {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html
+      cerr << "christ son how many errors ya got" << endl;
+      exit(1);
+  }
+
+  return makeStringFromSexp(r_ciph);
+}
+
+char* decrypt(gcry_sexp_t key,char* cipher)
+{
+  gcry_error_t err;
+
+  return cipher;
 }
 
 int main()
