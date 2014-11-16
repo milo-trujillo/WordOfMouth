@@ -17,6 +17,8 @@
 
 // Internal header files go here
 #include "networking.h"
+#include "CipherAlias.h"
+#include "keygen.h"
 
 using namespace std;
 
@@ -35,6 +37,7 @@ bool sendMessage(string msg)
 		return false;
 	}
 
+	// TODO: Use keys to encrypt message to the next relay in the chain
 	//string cyphertext = encryptForRelay(msg);
 
 	// If anything goes wrong sending a message then the parent
@@ -78,38 +81,54 @@ void* handleMessage(void* arg)
 {
 	long sock_desc = (long)arg;
 	string msg; // This is a buffer before relaying the message
-    char buf[BUFFER_SIZE]; 
-    int k;  
+	char buf[BUFFER_SIZE]; 
+	int k;  
 
-    while(true) 
-    {      
+	while(true) 
+	{      
 		// Flush the buffer in case something is left over from a prior read
 		for(int i = 0; i < BUFFER_SIZE; i++)
 			buf[i] = 0;
 
-        k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
+		k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
 
 		// TODO: Determine if the message is destined for us or should be
 		// forwarded. This requires the PGP crypto code to decode the message
 		// and the cypher crypto code to see if the message is an attempted
 		// key exchange with us.
 
-        if (k == -1)
-        {
-            printf("\n\tError reading from client.\n");
-            break;
-        }
-        if (k == 0) // Client disconnected, time to exit the thread
-            break;
-        if (k > 0)
+		if (k == -1)
 		{
-			msg += buf; // Make a C++ string from the C String
-            printf("%*.*s", k, k, buf); // 'cout' had buffering problems here
+			printf("\n\tError reading from client.\n");
+			break;
 		}
-    }
-	sendMessage(msg);
+		if (k == 0) // Client disconnected, time to exit the thread
+			break;
+		if (k > 0)
+			msg += buf; // Make a C++ string from the C String
+	}
 
-    close(sock_desc);  
+	// TODO: Decode the data using our private key
+	// Once the program is finished we'll be using public/private keypairs
+	// for communication between nodes, and will need to decode with our keys.
+
+	// This code checks using only cyphers if the received message is destined
+	// for us or needs to be forwarded to the next node
+	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
+	{
+		string cleartext = cipher_decrypt(rc->localAlias, msg);
+		cout << "Message Received" << endl;
+		cout << "================" << endl;
+		// 'cout' had buffering problems here
+		printf("%*.*s", cleartext.size(), cleartext.size(), cleartext.c_str()); 
+	}
+	else
+	{
+		cout << "Relaying message" << endl;
+		sendMessage(msg);
+	}
+
+	close(sock_desc);  
 	return NULL;
 }
 
@@ -117,31 +136,31 @@ void* handleMessage(void* arg)
 // running handleMessage
 bool relayMessages() 
 {  
-    int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock_desc == -1)
-    {
-        printf("Cannot create socket!\n");
-        return false;
-    }
-
-    struct sockaddr_in server;  
-    memset(&server, 0, sizeof(server));  
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;  
-    server.sin_port = htons(rc->listenPort);  
-    if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
-    {
-        printf("Error: Cannot bind socket!\n");;
-        close(sock_desc);  
+	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock_desc == -1)
+	{
+		printf("Cannot create socket!\n");
 		return false;
-    }
+	}
 
-    if (listen(sock_desc, 20) != 0)
-    {
-        printf("Error: Cannot listen on socket!\n");
-        close(sock_desc);  
-        return false;
-    }
+	struct sockaddr_in server;  
+	memset(&server, 0, sizeof(server));  
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;  
+	server.sin_port = htons(rc->listenPort);  
+	if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
+	{
+		printf("Error: Cannot bind socket!\n");;
+		close(sock_desc);  
+		return false;
+	}
+
+	if (listen(sock_desc, 20) != 0)
+	{
+		printf("Error: Cannot listen on socket!\n");
+		close(sock_desc);  
+		return false;
+	}
 
 	while(true)
 	{
@@ -160,8 +179,8 @@ bool relayMessages()
 		pthread_create(&clientThread, NULL, handleMessage, (void*)client_sock_desc);
 	}
 
-    close(sock_desc); // Close the listen sock once we're done
-    return true;  
+	close(sock_desc); // Close the listen sock once we're done
+	return true;  
 } 
 
 void* startRelaying(void* arg)

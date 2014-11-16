@@ -5,15 +5,17 @@
 
 struct RelayConfig
 {
-	RelayConfig(int l, std::string h, int p) 
+	RelayConfig(int l, std::string h, int p, std::string a) 
 	{
 		listenPort = l;
 		relayHost = h;
 		relayPort = p;
+		localAlias = a;
 	}
 	int listenPort;
 	std::string relayHost;
 	int relayPort;
+	std::string localAlias;
 };
 
 // Functions here are meant to be accessed from the main interlink code only
