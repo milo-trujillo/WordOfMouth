@@ -25,11 +25,6 @@ const int BUFFER_SIZE = 100;
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
 
-// Ideally these three should come from configuration we're given
-const int LISTEN_PORT = 7777;
-const string RELAY_HOST = "127.0.0.1"; // Example, change later
-const int RELAY_PORT = 1234; // Example, change later
-
 // Sends a message to the next node
 bool sendMessage(string msg)
 {
@@ -54,8 +49,8 @@ bool sendMessage(string msg)
 	struct sockaddr_in conn;
 	memset(&conn, 0, sizeof(conn));
 	conn.sin_family = AF_INET;
-	conn.sin_addr.s_addr = inet_addr(rc->relay_host.c_str());
-	conn.sin_port = htons(rc->relay_port); // Host to network byte order
+	conn.sin_addr.s_addr = inet_addr(rc->relayHost.c_str());
+	conn.sin_port = htons(rc->relayPort); // Host to network byte order
 
 	if( connect(sock_desc, (struct sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
@@ -133,7 +128,7 @@ bool relayMessages()
     memset(&server, 0, sizeof(server));  
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;  
-    server.sin_port = htons(rc->listen_port);  
+    server.sin_port = htons(rc->listenPort);  
     if (bind(sock_desc, (struct sockaddr*)&server, sizeof(server)) != 0)
     {
         printf("Error: Cannot bind socket!\n");;

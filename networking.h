@@ -7,13 +7,13 @@ struct RelayConfig
 {
 	RelayConfig(int l, std::string h, int p) 
 	{
-		listen_port = l;
-		relay_host = h;
-		relay_port = p;
+		listenPort = l;
+		relayHost = h;
+		relayPort = p;
 	}
-	int listen_port;
-	std::string relay_host;
-	int relay_port;
+	int listenPort;
+	std::string relayHost;
+	int relayPort;
 };
 
 // Functions here are meant to be accessed from the main interlink code only
