@@ -66,7 +66,7 @@ char* encrypt(char* key,unsigned char* plain)
   gcry_mpi_t r_mpi;
   if (err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_STD,plain,0,NULL))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
-      cerr << "error in gcry_mpi_scan " << endl << gcry_strerror(err) << endl << gcry_strsource(err) << endl;
+      cerr << "error in gcry_mpi_scan " << endl;
       exit(1);
   }
 
