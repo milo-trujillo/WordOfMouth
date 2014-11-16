@@ -123,6 +123,7 @@ void keyDelete(char* privKey, char* pubKey)
   delete pubKey;
 }
 
+/*
 int main()
 {
   char *pubMsgKey, *privMsgKey, *pubRelayKey, *privRelayKey;
@@ -142,3 +143,4 @@ int main()
   
   return 0;
 }
+*/
