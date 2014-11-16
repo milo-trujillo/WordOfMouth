@@ -14,7 +14,7 @@ gcry_sexp_t sexp_new(const char* lisp)//basically turns a char* into a s-express
   this should help get an s-expression with c++*/
   gcry_error_t err;
   gcry_sexp_t sexp;
-  unsigned int length = strlen(lisp);
+  long unsigned int length = strlen(lisp);
   if (err = gcry_sexp_new(&sexp,lisp,length,1))
   {//found here: https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
     cerr << "error in gcry_sexp_new" << endl;
@@ -59,19 +59,19 @@ void keyGen(char **privKey, char **pubKey)
   *pubKey = makeStringFromSexp(pubSexp);
 }
 
-char* encrypt(char* key,char* plain)
+char* encrypt(char* key,unsigned char* plain)
 {
   gcry_error_t err;
   gcry_mpi_t r_mpi;
-  if (err = gcry_mpi_scan(r_mpi,GCRYMPI_FMT_HEX,plain,0,NULL))
+  if (err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_HEX,plain,0,NULL))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
-      cerr << "error in gcry_mpi_scan" << endl;
+      cerr << "error in gcry_mpi_scan " << endl << gcry_strerror(err) << endl << gcry_strsource(err) << endl;
       exit(1);
   }
 
   gcry_sexp_t r_sexp;
-  unsigned int erroff;
-  if (err = gcry_sexp_build(r_sexp,erroff,"r_sexp(flags raw) (value %m)",r_mpi))//another one of those weird things in lisp?
+  long unsigned int erroff;
+  if (err = gcry_sexp_build(&r_sexp,&erroff,"r_sexp(flags raw) (value %m)",r_mpi))//another one of those weird things in lisp?
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
       cerr << "error in gcry_sexp_build" << endl;
       exit(1);
@@ -88,13 +88,13 @@ char* encrypt(char* key,char* plain)
   return makeStringFromSexp(r_ciph);
 }
 
-char* decrypt(char* key,char* cipher)
+unsigned char* decrypt(char* key,char* cipher)
 {
   gcry_error_t err;
   gcry_sexp_t data = sexp_new(cipher);
   gcry_sexp_t skey = sexp_new(key);
   gcry_sexp_t r_plain;
-  if (err = gcry_pk_decrypt(r_plain,data,skey))
+  if (err = gcry_pk_decrypt(&r_plain,data,skey))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html#Cryptographic-Functions
       cerr << "error in gcry_pk_decrypt" << endl;
       exit(1);
@@ -103,8 +103,8 @@ char* decrypt(char* key,char* cipher)
   gcry_mpi_t r_mpi = gcry_sexp_nth_mpi(r_plain,0,GCRYMPI_FMT_USG);
   //found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
 
-  char *buffer;
-  unsigned int bufferLength;
+  unsigned char *buffer;
+  long unsigned int bufferLength;
   if (err = gcry_mpi_aprint(GCRYMPI_FMT_HEX,&buffer,&bufferLength,r_mpi))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       cerr << "error in gcry_mpi_aprint" << endl;
@@ -118,6 +118,14 @@ int main()
   char *pubMsgKey, *privMsgKey, *pubRelayKey, *privRelayKey;
   keyGen(&privMsgKey,&pubMsgKey);
   keyGen(&privRelayKey,&pubRelayKey);
-  cout << privMsgKey << endl;
+
+  unsigned char* plainAlias = (unsigned char*) "GrandLordOfDeath";
+  cout << "Plaintext Alias: " << plainAlias << endl;
+  char* encryptedAlias;
+  encryptedAlias = encrypt(pubMsgKey,plainAlias);
+  cout << "Cipher Alias: " << encryptedAlias << endl;
+  unsigned char* decryptedAlias;
+  decryptedAlias = decrypt(privMsgKey,encryptedAlias);
+  cout << "Decrypted Alias: " << decryptedAlias << endl;
   return 0;
 }
