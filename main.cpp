@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "networking.h"
-#include "cipher.h"
+#include "CipherAlias.h"
 
 using namespace std;
 
@@ -17,27 +17,24 @@ int main(int argc, char** argv)
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
+
+	//
 	// Anyone elses initialization code goes here
+	//
 
 	//Test Cipher
-	Cipher new_cipher;
-	
-	std::string alias = "Jazmyn";
-	
-	unsigned char *message  = (unsigned char *) "Hello Worlds, boop beep,bop bepbooop";
-	
-	std::cout<<"This should be alias and message: "<<
-	alias<<", "<<message<<std::endl; 
-	
-	std::string encrypted;
-	encrypted = new_cipher.cipher_encrypt(alias, message);
-	
-	std::cout<<"End of encrypted"<<std::endl;
-		
-	std::string decrypted;
-	decrypted = new_cipher.cipher_decrypt(alias, encrypted);
-	
-	std::cout<<"This is the decrypted version of the message: "<< decrypted<<std::endl; 
+	CipherAlias cipher;
+	string alias = "Jazmyn";
+
+	// This code tests the Cypher Alias code and verifies that we can encrypt
+	// and decrypt a message
+	/*	
+	string message = "Hello Worlds, boop beep,bop bepbooop";
+	string encrypted = cipher.cipher_encrypt(alias, message);
+	string decrypted = cipher.cipher_decrypt(alias, encrypted);
+	cout << "Orig: " << message << endl;
+	cout << "Done: " << decrypted << endl;
+	*/
 		
 	// Main event loop gets input from user, encodes it, sends it off
 	while(true)
