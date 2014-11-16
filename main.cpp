@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "10.0.0.1", 7777);
+	RelayConfig rc(7777, "10.0.0.1", 7777, "Jazmyn");
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
@@ -22,15 +22,12 @@ int main(int argc, char** argv)
 	// Anyone elses initialization code goes here
 	//
 
-	//Test Cipher
-	string alias = "Jazmyn";
-
 	// This code tests the Cypher Alias code and verifies that we can encrypt
 	// and decrypt a message
 	/*
 	string message = "Hello Worlds, boop beep,bop bepbooop";
-	string encrypted = cipher_encrypt(alias, message);
-	string decrypted = cipher_decrypt(alias, encrypted);
+	string encrypted = cipher_encrypt(rc.localAlias, message);
+	string decrypted = cipher_decrypt(rc.localAlias, encrypted);
 	cout << "Orig: " << message << endl;
 	cout << "Done: " << decrypted << endl;
 	*/
@@ -38,6 +35,14 @@ int main(int argc, char** argv)
 	// Main event loop gets input from user, encodes it, sends it off
 	while(true)
 	{
+		string alias, cleartext;
+		cout << "Enter destination alias: ";
+		cin >> alias;
+		cout << "Enter message: ";
+		cin >> cleartext;
+		bool successful = sendMessage(cipher_encrypt(alias, cleartext));
+		if( successful )
+			cout << "Message sent." << endl;
 		// Other people's code goes here
 	}
 	return 0;
