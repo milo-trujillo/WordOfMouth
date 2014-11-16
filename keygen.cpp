@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <gpg-error.h>
 #include <iostream>
+#include <strings.h>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ char* encrypt(char* key,unsigned char* plain)
 {
   gcry_error_t err;
   gcry_mpi_t r_mpi;
-  if (err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_HEX,plain,0,NULL))
+  if (err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_STD,plain,0,NULL))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       cerr << "error in gcry_mpi_scan " << endl << gcry_strerror(err) << endl << gcry_strsource(err) << endl;
       exit(1);
@@ -71,7 +72,9 @@ char* encrypt(char* key,unsigned char* plain)
 
   gcry_sexp_t r_sexp;
   long unsigned int erroff;
-  if (err = gcry_sexp_build(&r_sexp,&erroff,"r_sexp(flags raw) (value %m)",r_mpi))//another one of those weird things in lisp?
+  string tmp = (char*) plain;
+  tmp+="(flags raw) (value %m)";
+  if (err = gcry_sexp_build(&r_sexp,&erroff,tmp.c_str(),r_mpi))//another one of those weird things in lisp?
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
       cerr << "error in gcry_sexp_build" << endl;
       exit(1);
@@ -105,7 +108,7 @@ unsigned char* decrypt(char* key,char* cipher)
 
   unsigned char *buffer;
   long unsigned int bufferLength;
-  if (err = gcry_mpi_aprint(GCRYMPI_FMT_HEX,&buffer,&bufferLength,r_mpi))
+  if (err = gcry_mpi_aprint(GCRYMPI_FMT_STD,&buffer,&bufferLength,r_mpi))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       cerr << "error in gcry_mpi_aprint" << endl;
       exit(1);
@@ -119,13 +122,13 @@ int main()
   keyGen(&privMsgKey,&pubMsgKey);
   keyGen(&privRelayKey,&pubRelayKey);
 
-  unsigned char* plainAlias = (unsigned char*) "GrandLordOfDeath";
+  unsigned char* plainAlias = (unsigned char*) "harrypotter";
   cout << "Plaintext Alias: " << plainAlias << endl;
   char* encryptedAlias;
-  encryptedAlias = encrypt(pubMsgKey,plainAlias);
+  encryptedAlias = encrypt(pubRelayKey,plainAlias);
   cout << "Cipher Alias: " << encryptedAlias << endl;
   unsigned char* decryptedAlias;
-  decryptedAlias = decrypt(privMsgKey,encryptedAlias);
+  decryptedAlias = decrypt(privRelayKey,encryptedAlias);
   cout << "Decrypted Alias: " << decryptedAlias << endl;
   return 0;
 }
