@@ -44,6 +44,7 @@ int main(int argc, char** argv)
 		cout << "Your message: " << cleartext << endl;
 		encrypted = cipher_encrypt(alias, cleartext);
 		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
+		cout << "To confirm, decrypted is: " << cipher_decrypt(alias, encrypted) << endl;
 		bool successful = sendMessage(encrypted);
 		if( successful )
 			cout << "Message sent." << endl;
