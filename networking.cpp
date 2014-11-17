@@ -62,6 +62,8 @@ bool sendMessage(string msg)
 		return false;
 	}
 
+	printf("Right before sending, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
+
 	// TODO: Change this line to send cyphertext once encryption is implemented
 	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
 	if( k == -1 )
@@ -113,13 +115,13 @@ void* handleMessage(void* arg)
 	// for communication between nodes, and will need to decode with our keys.
 
 	printf("Without processing, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
+	printf("Post processing, I see: %*.*s\n\n\n", cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).c_str());
 
 	// This code checks using only cyphers if the received message is destined
 	// for us or needs to be forwarded to the next node
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
-		printf("Post processing, I see: %*.*s\n\n\n", cleartext.size(), cleartext.size(), cleartext.c_str());
 		cout << "Message Received" << endl;
 		cout << "================" << endl;
 		// 'cout' had buffering problems here
