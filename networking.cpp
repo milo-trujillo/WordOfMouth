@@ -40,6 +40,10 @@ bool sendMessage(string msg)
 	// TODO: Use keys to encrypt message to the next relay in the chain
 	//string cyphertext = encryptForRelay(msg);
 
+	// Note: We attach a zero to the end of the message to indicate end of
+	// transfer, in case the socket buffer is being filled with something else
+	msg.push_back(0);
+
 	// If anything goes wrong sending a message then the parent
 	// _probably_ wants to kill the process, but we'll leave it up to them
 	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
@@ -107,7 +111,9 @@ void* handleMessage(void* arg)
 		if (k == 0) // Client disconnected, time to exit the thread
 			break;
 		if (k > 0)
-			msg += buf; // Make a C++ string from the C String
+			for( int i = 0; i < BUFFER_SIZE && buf[i] != 0; i++ )
+				msg.push_back(buf[i]);
+			//msg += buf; // Make a C++ string from the C String
 	}
 
 	// TODO: Decode the data using our private key

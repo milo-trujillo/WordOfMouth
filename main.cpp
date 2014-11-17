@@ -5,6 +5,7 @@
 
 #include <pthread.h> // Needed for multithreading stuff
 #include <iostream>
+#include <stdio.h> // For debugging
 
 #include "networking.h"
 #include "CipherAlias.h"
@@ -42,7 +43,7 @@ int main(int argc, char** argv)
 		getline(cin, cleartext);
 		cout << "Your message: " << cleartext << endl;
 		encrypted = cipher_encrypt(alias, cleartext);
-		printf("Encrypted, we see: %*.&s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
+		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
 		bool successful = sendMessage(encrypted);
 		if( successful )
 			cout << "Message sent." << endl;
