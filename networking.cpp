@@ -66,8 +66,6 @@ bool sendMessage(string msg)
 		return false;
 	}
 
-	printf("Right before sending, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
-
 	// TODO: Change this line to send cyphertext once encryption is implemented
 	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
 	if( k == -1 )
@@ -111,9 +109,7 @@ void* handleMessage(void* arg)
 		if (k == 0) // Client disconnected, time to exit the thread
 			break;
 		if (k > 0)
-			for( int i = 0; i < BUFFER_SIZE && buf[i] != 0; i++ )
-				msg.push_back(buf[i]);
-			//msg += buf; // Make a C++ string from the C String
+			msg += buf; // Make a C++ string from the C String
 	}
 
 	// TODO: Decode the data using our private key
