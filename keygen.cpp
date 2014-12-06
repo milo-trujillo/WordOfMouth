@@ -73,7 +73,7 @@ char* encrypt(char* key,unsigned char* plain)
   }
 
   gcry_sexp_t r_sexp;
-  long unsigned int erroff;
+  size_t erroff; // size_t is usually, but not always, equivalent to long unsigned int
   string tmp = (char*) plain;
   tmp+="(flags raw) (value %m)";
   if ((err = gcry_sexp_build(&r_sexp,&erroff,tmp.c_str(),r_mpi)))//another one of those weird things in lisp?
@@ -109,7 +109,7 @@ unsigned char* decrypt(char* key,char* cipher)
   //found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
 
   unsigned char *buffer;
-  long unsigned int bufferLength;
+  size_t bufferLength;
   if ((err = gcry_mpi_aprint(GCRYMPI_FMT_STD,&buffer,&bufferLength,r_mpi)))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       logErr("error in gcry_mpi_aprint");
