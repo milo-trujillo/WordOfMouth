@@ -5,12 +5,20 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <map>
+#include <unistd.h>
+
 using namespace std;
 
 string inPass;
 RelayConfig inputPassword();
-RelayConfig decrypt(string inPass);
+pair<bool,RelayConfig> decrypt(string inPass);
 void encrypt(string inPass);
+RelayConfig test();
+//pair<return1,return2> foo
+//return make_pair(return1,return2);
+//if foo.first
 
 
 //RelayConfig(int l, std::string h, int p, std::string a)
@@ -18,6 +26,21 @@ void encrypt(string inPass);
 //std::string cipher_decrypt(std::string alias, std::string message);
 //alias is the thing that is used for encrypting/decrypting
 //The test files will be called Information.txt and Encrypted.txt
+
+
+
+/*Things that this program needs to be able to do:
+	-check to make sure that there isn't an empty password file
+		-if there is, make one, and request that the user give a password, which will then be used to encrypt and decrypt the information that they give.
+	-ask the user to input their password
+		-if the user inputs the correct password, decrypt the information and return that info
+		-if the user inputs the wrong password, return an error
+		-side note: make sure that there's a delay between confirming if the password is correct or not
+	-because of the fact that the information is encrypted with the person's "password" the password isn't actually compared to anything,
+	and instead relies on the fact that decrypting with the wrong password will return some very odd strings that don't work.
+
+*/
+
 int main()
 {
 	inputPassword();
@@ -29,25 +52,37 @@ int main()
 
 RelayConfig inputPassword()
 {
-	string inPass;
-	cout << "Please input your password:" << endl;
-	cin >> inPass;
-	if(inPass.size()!=0)
+	int decrypted=0,input=0;
+	string inPass;//this is supposed to be the password that the user inputs to begin the program
+	while(decrypted==0)//repeats until the password is correct
 	{
-		cout << "Thank you, attempting to decrypt the information" << endl;
-		encrypt(inPass);
-		decrypt(inPass);
+		while(input==0)//while loop to ensure that the user has provided non-empty input
+		{
+			input=0;
+			cout << "Please input your password:" << endl;//this requests their password on-screen
+			cin >> inPass;//this here asks for input and puts it into the variable inPass
+			if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty
+			{
+				cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
+//				encrypt(inPass);
+//				decrypt(inPass);
+					input=1;
+			}
+			else
+			{
+				cout << "Error, empty password field." << endl;
+			}
+		}
+		decrypted=1;
+		usleep(3000000);//waits 3 seconds before continuing.
 	}
-	else
-	{
-		exit(1);
-	}
-	RelayConfig whatYouNeed=decrypt(inPass);
-	return whatYouNeed;
+//		RelayConfig whatYouNeed=decrypt(inPass);
+		RelayConfig whatYouNeed=test();
+		return whatYouNeed;
 	
 }
-
-RelayConfig decrypt(string passIn)
+/*
+pair<bool,RelayConfig> decrypt(string passIn)
 {
 	int i;
 	string enInPort;
@@ -74,12 +109,10 @@ RelayConfig decrypt(string passIn)
 		cout << "enAlias: " << enAlias << endl;
 		ss << cipher_decrypt( passIn,enInPort );//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
 		ss >> deInPort;
-		ss << cipher_decrypt( passIn,enIpAddress );
-		ss >> deIpAddress;
+		deIpAddress=cipher_decrypt( passIn,enIpAddress );
 		ss << cipher_decrypt( passIn,enOutPort );
 		ss >> deOutPort;
-		ss << cipher_decrypt( passIn,enAlias );
-		ss >> deAlias;
+		deAlias=cipher_decrypt( passIn,enAlias );
 		myfile.close();
 		cout << "deInPort: " << deInPort << endl;
 		cout << "deIpAddress: " << deIpAddress << endl;
@@ -94,9 +127,9 @@ RelayConfig decrypt(string passIn)
 
 	return RelayConfig(deInPort,deIpAddress,deOutPort,deAlias);
 }
-
+*/
 //between this and the last comment is all that's needed to decrypt a txt file that's already encrypted
-
+/*
 void encrypt(string passIn)
 {	
 //after this line is the stuff that encrypts an unencrpted file	
@@ -140,14 +173,53 @@ void encrypt(string passIn)
 	
 	
 	
-/*	for(i=0;i<inPass.size();i++)//since the password is no longer needed at all, we redact it
+	for(i=0;i<inPass.size();i++)//since the password is no longer needed at all, we redact it
 	{
 		inPass[i]='X';
 	}//end of the redation function
 	cout << deInPort << endl;
 	cout << deIpAddress << endl;
 
-*/
+
 
 	return;
+}*/
+
+RelayConfig test()
+{
+	
+	string enInPort;
+	string enIpAddress;
+	string enOutPort;
+	string enAlias;
+	int deInPort;
+	string deIpAddress;
+	int deOutPort;
+	string deAlias;
+	ifstream myfile("test.txt");//this takes and decrypts the information that its given, whoo!
+	stringstream ss;
+	if(myfile.is_open())
+	{
+		getline( myfile,enInPort);//gets the first line,saves it to enInPort
+		cout << "enInPort: " << enInPort << endl;//prints this out
+		getline( myfile,enIpAddress);//same
+		cout << "enIpAddress: " << enIpAddress << endl;//same
+		getline( myfile,enOutPort);//same
+		cout << "enOutPort: " << enOutPort << endl;//same
+		getline( myfile,enAlias);//same
+		cout << "enAlias: " << enAlias << endl;//same
+		myfile.close();
+		ss << enInPort;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss >> deInPort;
+		deIpAddress=enIpAddress;
+		ss << enOutPort;
+		deAlias=enAlias;
+		ss >> deOutPort;
+		cout << "Gives:" << deInPort << endl;
+		cout << "Gives:" << deIpAddress << endl;
+		cout << "Gives:" << deOutPort << endl;
+		cout << "Gives:" << deAlias << endl;
+	}
+
+	return RelayConfig(deInPort,deIpAddress,deOutPort,deAlias);
 }
