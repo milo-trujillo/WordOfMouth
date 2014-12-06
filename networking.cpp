@@ -1,10 +1,10 @@
 // These are all needed for networking stuff
 #include <sys/socket.h>  
 #include <netinet/in.h>  
-#include <string.h> 	// Needed for memset and strcmp
-#include <stdlib.h>  
 #include <arpa/inet.h> 
 #include <unistd.h> 
+
+#include <string.h> 	// Needed for memset and strcmp
 
 #include <pthread.h> // Needed for multithreading
 #include <iostream> // Needed for C++ strings
@@ -14,6 +14,7 @@
 // For error conditions
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 // Example networking code found on https://stackoverflow.com/a/9204831
 
@@ -26,7 +27,7 @@
 using namespace std;
 
 const int BUFFER_SIZE = 100; // How many characters to read from network at once
-const int MAX_MESSAGE_HISTORY = 20; // Tracks seen messages to prevent loops
+const int MAX_MESSAGE_HISTORY = 50; // Tracks seen messages to prevent loops
 
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
