@@ -5,7 +5,7 @@ CFLAGS += -g -Wall -Wno-deprecated
 # throws 'deprecated' warnings on their systems
 LIBS = -lpthread -lcrypto -lgcrypt -lgpg-error
 
-OBJS = main.o networking.o CipherAlias.o keygen.o hash.o NextNodeInfo.o
+OBJS = main.o networking.o CipherAlias.o keygen.o hash.o NextNodeInfo.o log.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
