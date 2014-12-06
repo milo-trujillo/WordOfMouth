@@ -41,15 +41,6 @@ RelayConfig test();
 
 */
 
-int main()
-{
-	inputPassword();
-	
-	return 0;
-}
-
-
-
 RelayConfig inputPassword()
 {
 	int decrypted=0,input=0;
@@ -59,8 +50,9 @@ RelayConfig inputPassword()
 		while(input==0)//while loop to ensure that the user has provided non-empty input
 		{
 			input=0;
-			cout << "Please input your password:" << endl;//this requests their password on-screen
-			cin >> inPass;//this here asks for input and puts it into the variable inPass
+			cout << "Please input your password: ";//this requests their password on-screen
+			getline(cin, inPass);
+			//cin >> inPass;//this here asks for input and puts it into the variable inPass
 			if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty
 			{
 				cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
@@ -192,22 +184,22 @@ RelayConfig test()
 	string enIpAddress;
 	string enOutPort;
 	string enAlias;
-	int deInPort;
+	int deInPort = -1;
 	string deIpAddress;
-	int deOutPort;
+	int deOutPort = -1;
 	string deAlias;
 	ifstream myfile("test.txt");//this takes and decrypts the information that its given, whoo!
 	stringstream ss;
 	if(myfile.is_open())
 	{
 		getline( myfile,enInPort);//gets the first line,saves it to enInPort
-		cout << "enInPort: " << enInPort << endl;//prints this out
+		//cout << "enInPort: " << enInPort << endl;//prints this out
 		getline( myfile,enIpAddress);//same
-		cout << "enIpAddress: " << enIpAddress << endl;//same
+		//cout << "enIpAddress: " << enIpAddress << endl;//same
 		getline( myfile,enOutPort);//same
-		cout << "enOutPort: " << enOutPort << endl;//same
+		//cout << "enOutPort: " << enOutPort << endl;//same
 		getline( myfile,enAlias);//same
-		cout << "enAlias: " << enAlias << endl;//same
+		//cout << "enAlias: " << enAlias << endl;//same
 		myfile.close();
 		ss << enInPort;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
 		ss >> deInPort;
@@ -215,10 +207,12 @@ RelayConfig test()
 		ss << enOutPort;
 		deAlias=enAlias;
 		ss >> deOutPort;
+		/*
 		cout << "Gives:" << deInPort << endl;
 		cout << "Gives:" << deIpAddress << endl;
 		cout << "Gives:" << deOutPort << endl;
 		cout << "Gives:" << deAlias << endl;
+		*/
 	}
 
 	return RelayConfig(deInPort,deIpAddress,deOutPort,deAlias);
