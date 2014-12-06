@@ -9,6 +9,7 @@
 
 #include "networking.h"
 #include "CipherAlias.h"
+#include "keygen.h"
 
 using namespace std;
 
