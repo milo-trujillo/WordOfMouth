@@ -30,6 +30,25 @@ const int BUFFER_SIZE = 100; // How many characters to read from network at once
 RelayConfig* rc = NULL;
 pthread_mutex_t screenLock; // Don't print two messages to the screen at once
 
+void reportNetworkError(int err)
+{
+	switch(err)
+	{
+		case ECONNREFUSED:
+			printf(" - Connection refused\n");
+			break;
+		case ENETDOWN:
+		case ENETUNREACH:
+			printf(" - Routing problem\n");
+			break;
+		case EACCES:
+			printf(" - Permission denied\n");
+			break;
+		default:
+			printf(" - Unknown error code #%d\n", err);
+	}
+}
+
 // Sends a message to the next node
 bool sendMessage(string msg)
 {
@@ -65,7 +84,7 @@ bool sendMessage(string msg)
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
 		printf("Error: Cannot connect to next relay!\n");
-		printf("Problem #%d\n", errno); // DEBUG
+		reportNetworkError(errno);
 		close(sock_desc);
 		return false;
 	}
@@ -75,6 +94,7 @@ bool sendMessage(string msg)
 	if( k == -1 )
 	{
 		printf("Error: Could not send message to relay!\n");
+		reportNetworkError(errno);
 		close(sock_desc);
 		return false;
 	}
@@ -108,6 +128,7 @@ void* handleMessage(void* arg)
 		if (k == -1)
 		{
 			printf("\n\tError reading from client.\n");
+			reportNetworkError(errno);
 			break;
 		}
 		if (k == 0) // Client disconnected, time to exit the thread
@@ -164,6 +185,7 @@ bool relayMessages()
 	if (sock_desc == -1)
 	{
 		printf("Cannot create socket!\n");
+		reportNetworkError(errno);
 		return false;
 	}
 
@@ -175,6 +197,7 @@ bool relayMessages()
 	if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
 	{
 		printf("Error: Cannot bind socket!\n");;
+		reportNetworkError(errno);
 		close(sock_desc);  
 		return false;
 	}
@@ -182,6 +205,7 @@ bool relayMessages()
 	if (listen(sock_desc, 20) != 0)
 	{
 		printf("Error: Cannot listen on socket!\n");
+		reportNetworkError(errno);
 		close(sock_desc);  
 		return false;
 	}
@@ -195,6 +219,7 @@ bool relayMessages()
 		if (client_sock_desc == -1)
 		{
 			printf("Error: Cannot accept client!\n");
+			reportNetworkError(errno);
 			close(sock_desc);  
 			return false;
 		}
@@ -214,14 +239,18 @@ bool isValidIpAddress(const char *ipAddress)
 	return result != 0;
 }
 
+void validateRelayConfig(const RelayConfig &test)
+{
+	if( !isValidIpAddress(test.relayHost.c_str()) )
+	{
+		cerr << "ERROR: Relay host must be an IP address!" << endl;
+		throw "bad config";
+	}
+}
+
 void* startRelaying(void* arg)
 {
 	rc = (RelayConfig*)arg;
-	if( !isValidIpAddress(rc->relayHost.c_str()) )
-	{
-		cerr << "ERROR: Relay host must be an IP address!" << endl;
-		exit(1);
-	}
 	while(relayMessages() == true);
 	// If we get here then something has gone wrong and we can no longer relay
 	// messages. It's time to shut down the node immediately.

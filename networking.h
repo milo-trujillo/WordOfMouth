@@ -20,13 +20,15 @@ struct RelayConfig
 
 // Functions here are meant to be accessed from the main interlink code only
 
+// Will throw an exception if network config is impossible
+// Please run before trying to start relaying
+void validateRelayConfig(const RelayConfig &test);
+
 // This is meant to be called from pthread_create, hence the return and args
 // Takes a pointer to a 'RelayConfig'
 void* startRelaying(void*);
 
 // Returns true if successful, false otherwise
 bool sendMessage(std::string msg);
-
-// bool initNetworking(string ip, int port);
 
 #endif
