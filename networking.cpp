@@ -21,14 +21,18 @@
 #include "networking.h"
 #include "CipherAlias.h"
 #include "keygen.h"
+#include "hash.h"
 
 using namespace std;
 
 const int BUFFER_SIZE = 100; // How many characters to read from network at once
+const int MAX_MESSAGE_HISTORY = 20; // Tracks seen messages to prevent loops
 
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
+list<string> msgHashes; // Tracks the hashes of every message we've seen recently
 pthread_mutex_t screenLock; // Don't print two messages to the screen at once
+pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 
 void reportNetworkError(int err)
 {
@@ -47,6 +51,30 @@ void reportNetworkError(int err)
 		default:
 			printf(" - Unknown error code #%d\n", err);
 	}
+}
+
+// Returns if a message has been seen previously (and should be dropped)
+bool messageSeen(const string &msg)
+{
+	string hash = genHash(msg);
+	pthread_mutex_lock(&hashLock);
+
+	// Check if we've seen the message yet
+	list<string>::iterator hashItr = msgHashes.begin();
+	for(; hashItr != msgHashes.end(); hashItr++ )
+	{
+		if( *hashItr == hash )
+		{
+			pthread_mutex_unlock(&hashLock);
+			return true;
+		}
+	}
+	// No? Alright, log that we've seen it before proceeding
+	if( msgHashes.size() == MAX_MESSAGE_HISTORY )
+		msgHashes.pop_front();
+	msgHashes.push_back(hash);
+	pthread_mutex_unlock(&hashLock);
+	return false;
 }
 
 // Sends a message to the next node
@@ -137,9 +165,21 @@ void* handleMessage(void* arg)
 			msg += buf; // Make a C++ string from the C String
 	}
 
+	// Further work has nothing to do with the incoming connection
+	close(sock_desc);  
+
 	// TODO: Decode the data using our private key
 	// Once the program is finished we'll be using public/private keypairs
 	// for communication between nodes, and will need to decode with our keys.
+
+	if( messageSeen(msg) )
+	{
+		// TODO: Better message for prod like 'unable to reach destination alias'?
+		pthread_mutex_lock(&screenLock);
+		printf("Warning! Detected looped message!\n");
+		pthread_mutex_unlock(&screenLock);
+		return NULL;
+	}
 
 	// Cyphers disabled until Staethe updates that code
 	/*
@@ -173,7 +213,6 @@ void* handleMessage(void* arg)
 	pthread_mutex_unlock(&screenLock);
 	sendMessage(msg);
 
-	close(sock_desc);  
 	return NULL;
 }
 
