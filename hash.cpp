@@ -1,4 +1,4 @@
-#include <openssl/sha.h>	// For Sha-1 hashes
+#include <openssl/sha.h>	// For Sha hashes
 #include <iostream>			// For strings
 #include <stdio.h>			// For sprintf
 
@@ -6,6 +6,15 @@ using namespace std;
 
 const int HASH_LENGTH = 20;
 
+/*
+	This is a crude means of generating a hash from any string that is hopefully
+	both shorter than that string, and unique.
+
+	The intended purpose is to generate hashes for messages we send, to easily
+	identify when a message we've sent has traversed the entire network and
+	hit us again. This prevents a 'dead message' from traveling indefinitely
+	through the network.
+*/
 string genHash(string input)
 {
 	SHA512_CTX context;
