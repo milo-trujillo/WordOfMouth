@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "129.161.198.124", 7777, "Roh");
+	RelayConfig rc(7777, "mankey-74.dynamic.rpi.edu", 7777, "Sha");
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
@@ -32,6 +32,12 @@ int main(int argc, char** argv)
 	cout << "Orig: " << message << endl;
 	cout << "Done: " << decrypted << endl;
 	*/
+
+	// TODO: Switch to daemon
+	// Instead of reading and writing everything to the terminal
+	// we can read and write with a local socket, enabling the use of a "client"
+	// program or making it easy to just log everything to a file when the user
+	// is AFK. Then this program can daemonize and run 24/7.
 		
 	// Main event loop gets input from user, encodes it, sends it off
 	while(true)
@@ -43,6 +49,7 @@ int main(int argc, char** argv)
 		getline(cin, cleartext);
 		cout << "Your message: " << cleartext << endl;
 		encrypted = cipher_encrypt(alias, cleartext);
+		// The next two lines are debugging
 		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
 		cout << "To confirm, decrypted is: " << cipher_decrypt(alias, encrypted) << endl;
 		bool successful = sendMessage(encrypted);
