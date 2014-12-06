@@ -11,6 +11,7 @@
 #include "networking.h"
 #include "CipherAlias.h"
 #include "keygen.h"
+#include "log.h"
 
 using namespace std;
 
@@ -62,7 +63,7 @@ int main(int argc, char** argv)
 		*/
 		bool successful = sendMessage(cleartext); // TODO: Change to encrypted
 		if( successful )
-			cout << "Message sent." << endl;
+			logInfo("Message sent.");
 	}
 	keyDelete(privRelayKey,pubRelayKey);
 	return 0;

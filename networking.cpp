@@ -23,11 +23,12 @@
 #include "CipherAlias.h"
 #include "keygen.h"
 #include "hash.h"
+#include "log.h"
 
 using namespace std;
 
 const int BUFFER_SIZE = 100; // How many characters to read from network at once
-const int MAX_MESSAGE_HISTORY = 50; // Tracks seen messages to prevent loops
+const unsigned int MAX_MESSAGE_HISTORY = 50; // For preventing looping messages
 
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
@@ -40,17 +41,21 @@ void reportNetworkError(int err)
 	switch(err)
 	{
 		case ECONNREFUSED:
-			printf(" - Connection refused\n");
+			logErr("[Errno] Connection refused");
 			break;
 		case ENETDOWN:
 		case ENETUNREACH:
-			printf(" - Routing problem\n");
+			logErr("[Errno] Routing problem");
 			break;
 		case EACCES:
-			printf(" - Permission denied\n");
+			logErr("[Errno] Permission denied");
 			break;
 		default:
-			printf(" - Unknown error code #%d\n", err);
+			char errnumber[4];
+			sprintf(errnumber, "%d", err);
+			string errstring = "[Errno] Unknown error code# ";
+			errstring += errnumber;
+			logErr(errstring);
 	}
 }
 
@@ -84,7 +89,7 @@ bool sendMessage(string msg)
 	if( msg.size() == 0 ) return true; // No sense in sending an empty message
 	if( rc == NULL )
 	{
-		printf("Error: Sending a message before initialization!\n");
+		logErr("Sending a message before initialization!");
 		return false;
 	}
 
@@ -100,7 +105,8 @@ bool sendMessage(string msg)
 	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
 	if( sock_desc == -1 )
 	{
-		printf("Error: Couldn't create socket to send or relay message!\n");
+		logErr("Couldn't create socket to send or relay message!");
+		reportNetworkError(errno);
 		return false;
 	}
 
@@ -112,7 +118,7 @@ bool sendMessage(string msg)
 
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
-		printf("Error: Cannot connect to next relay!\n");
+		logErr("Cannot connect to next relay!");
 		reportNetworkError(errno);
 		close(sock_desc);
 		return false;
@@ -122,7 +128,7 @@ bool sendMessage(string msg)
 	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
 	if( k == -1 )
 	{
-		printf("Error: Could not send message to relay!\n");
+		logErr("Could not send message to relay!");
 		reportNetworkError(errno);
 		close(sock_desc);
 		return false;
@@ -149,14 +155,9 @@ void* handleMessage(void* arg)
 
 		k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
 
-		// TODO: Determine if the message is destined for us or should be
-		// forwarded. This requires the PGP crypto code to decode the message
-		// and the cypher crypto code to see if the message is an attempted
-		// key exchange with us.
-
 		if (k == -1)
 		{
-			printf("\n\tError reading from client.\n");
+			logErr("Error reading from client.");
 			reportNetworkError(errno);
 			break;
 		}
@@ -169,15 +170,19 @@ void* handleMessage(void* arg)
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  
 
+	// TODO: Determine if the message is destined for us or should be
+	// forwarded. This requires the PGP crypto code to decode the message
+	// and the cypher crypto code to see if the message is an attempted
+	// key exchange with us.
+
 	// TODO: Decode the data using our private key
 	// Once the program is finished we'll be using public/private keypairs
 	// for communication between nodes, and will need to decode with our keys.
 
 	if( messageSeen(msg) )
 	{
-		// TODO: Better message for prod like 'unable to reach destination alias'?
 		pthread_mutex_lock(&screenLock);
-		printf("Warning! Detected looped message!\n");
+		logDebug("Warning! Detected looped message!");
 		pthread_mutex_unlock(&screenLock);
 		return NULL;
 	}
@@ -203,7 +208,7 @@ void* handleMessage(void* arg)
 	}
 	else
 	{
-		cout << "Relaying message" << endl;
+		logDebug("Relaying message");
 		sendMessage(msg);
 	}
 	*/
@@ -224,7 +229,7 @@ bool relayMessages()
 	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock_desc == -1)
 	{
-		printf("Cannot create socket!\n");
+		logErr("Cannot create socket!");
 		reportNetworkError(errno);
 		return false;
 	}
@@ -236,7 +241,7 @@ bool relayMessages()
 	server.sin_port = htons(rc->listenPort);  
 	if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
 	{
-		printf("Error: Cannot bind socket!\n");;
+		logErr("Cannot bind socket!");
 		reportNetworkError(errno);
 		close(sock_desc);  
 		return false;
@@ -244,7 +249,7 @@ bool relayMessages()
 
 	if (listen(sock_desc, 20) != 0)
 	{
-		printf("Error: Cannot listen on socket!\n");
+		logErr("Cannot listen on socket!");
 		reportNetworkError(errno);
 		close(sock_desc);  
 		return false;
@@ -258,7 +263,7 @@ bool relayMessages()
 		long client_sock_desc = accept(sock_desc, (sockaddr*)&client, &len); 
 		if (client_sock_desc == -1)
 		{
-			printf("Error: Cannot accept client!\n");
+			logErr("Cannot accept client!");
 			reportNetworkError(errno);
 			close(sock_desc);  
 			return false;
@@ -283,7 +288,7 @@ void validateRelayConfig(const RelayConfig &test)
 {
 	if( !isValidIpAddress(test.relayHost.c_str()) )
 	{
-		cerr << "ERROR: Relay host must be an IP address!" << endl;
+		logErr("Relay host must be an IP address!");
 		throw "bad config";
 	}
 }
@@ -294,6 +299,7 @@ void* startRelaying(void* arg)
 	while(relayMessages() == true);
 	// If we get here then something has gone wrong and we can no longer relay
 	// messages. It's time to shut down the node immediately.
+	logErr("Unexpected problem relaying! Emergency shutdown underway.");
 	exit(1);
 	return NULL;
 }
