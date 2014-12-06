@@ -9,6 +9,8 @@
 #include <pthread.h> // Needed for multithreading
 #include <iostream> // Needed for C++ strings
 
+#include <list>		// STL linked lists for tracking sent messages
+
 // For error conditions
 #include <stdlib.h>
 #include <stdio.h>
