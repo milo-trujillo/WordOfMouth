@@ -47,11 +47,14 @@ int main(int argc, char** argv)
 		getline(cin, alias);
 		cout << "Enter message: ";
 		getline(cin, cleartext);
+		// Cypher crypto disabled until Staethe replaces it with AES
+		/*
 		cout << "Your message: " << cleartext << endl;
 		encrypted = cipher_encrypt(alias, cleartext);
 		// The next two lines are debugging
 		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
 		cout << "To confirm, decrypted is: " << cipher_decrypt(alias, encrypted) << endl;
+		*/
 		bool successful = sendMessage(encrypted);
 		if( successful )
 			cout << "Message sent." << endl;

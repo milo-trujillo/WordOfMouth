@@ -117,14 +117,20 @@ void* handleMessage(void* arg)
 	// Once the program is finished we'll be using public/private keypairs
 	// for communication between nodes, and will need to decode with our keys.
 
+	// Cyphers disabled until Staethe updates that code
+	/*
 	printf("Without processing, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
 	printf("Post processing, I see: %*.*s\n\n\n", cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).c_str());
+	*/
 
 	// This code checks using only cyphers if the received message is destined
 	// for us or needs to be forwarded to the next node
+	/*
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
+	*/
+		string cleartext = msg; // Temporary hack
 		pthread_mutex_lock(&screenLock);
 		printf("Message Received\n");
 		printf("================\n");
@@ -132,12 +138,14 @@ void* handleMessage(void* arg)
 		printf("%*.*s", cleartext.size(), cleartext.size(), cleartext.c_str()); 
 		printf("\n"); // Force the screen to flush
 		pthread_mutex_unlock(&screenLock);
+	/*
 	}
 	else
 	{
+	*/
 		cout << "Relaying message" << endl;
 		sendMessage(msg);
-	}
+	//}
 
 	close(sock_desc);  
 	return NULL;
