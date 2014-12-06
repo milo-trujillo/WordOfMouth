@@ -22,10 +22,11 @@
 
 using namespace std;
 
-const int BUFFER_SIZE = 100;
+const int BUFFER_SIZE = 100; // How many characters to read from network at once
 
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
+pthread_mutex_t screenLock; // Don't print two messages to the screen at once
 
 // Sends a message to the next node
 bool sendMessage(string msg)
@@ -66,7 +67,7 @@ bool sendMessage(string msg)
 		return false;
 	}
 
-	// TODO: Change this line to send cyphertext once encryption is implemented
+	// TODO: Encrypt w/ keys before sending once cyphers are debugged
 	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
 	if( k == -1 )
 	{
@@ -124,11 +125,13 @@ void* handleMessage(void* arg)
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
-		cout << "Message Received" << endl;
-		cout << "================" << endl;
+		pthread_mutex_lock(&screenLock);
+		printf("Message Received\n");
+		printf("================\n");
 		// 'cout' had buffering problems here
 		printf("%*.*s", cleartext.size(), cleartext.size(), cleartext.c_str()); 
 		printf("\n"); // Force the screen to flush
+		pthread_mutex_unlock(&screenLock);
 	}
 	else
 	{
