@@ -5,6 +5,6 @@
 
 // This generates a hash signature verification
 // Note: It should *not* be considered cryptographically secure!
-std::string genHash(std::string input);
+std::string genHash(const std::string &input);
 
 #endif

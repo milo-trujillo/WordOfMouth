@@ -15,7 +15,7 @@ const int HASH_LENGTH = 20;
 	hit us again. This prevents a 'dead message' from traveling indefinitely
 	through the network.
 */
-string genHash(string input)
+string genHash(const string &input)
 {
 	SHA512_CTX context;
 	unsigned char buf[HASH_LENGTH];
