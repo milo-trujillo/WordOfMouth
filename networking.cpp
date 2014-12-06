@@ -63,6 +63,7 @@ bool sendMessage(string msg)
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
 		printf("Error: Cannot connect to next relay!\n");
+		printf("Problem #%d\n", errno); // DEBUG
 		close(sock_desc);
 		return false;
 	}
@@ -121,31 +122,33 @@ void* handleMessage(void* arg)
 	/*
 	printf("Without processing, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
 	printf("Post processing, I see: %*.*s\n\n\n", cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).c_str());
-	*/
 
 	// This code checks using only cyphers if the received message is destined
 	// for us or needs to be forwarded to the next node
-	/*
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
-	*/
-		string cleartext = msg; // Temporary hack
 		pthread_mutex_lock(&screenLock);
 		printf("Message Received\n");
 		printf("================\n");
 		// 'cout' had buffering problems here
-		printf("%*.*s", cleartext.size(), cleartext.size(), cleartext.c_str()); 
+		int msgLength = cleartext.size();
+		printf("%*.*s", msgLength, msgLength, cleartext.c_str()); 
 		printf("\n"); // Force the screen to flush
 		pthread_mutex_unlock(&screenLock);
-	/*
 	}
 	else
 	{
-	*/
 		cout << "Relaying message" << endl;
 		sendMessage(msg);
-	//}
+	}
+	*/
+
+	// This is temporary code to test relaying until cyphers are working again
+	pthread_mutex_lock(&screenLock);
+	printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
+	pthread_mutex_unlock(&screenLock);
+	sendMessage(msg);
 
 	close(sock_desc);  
 	return NULL;
@@ -202,9 +205,21 @@ bool relayMessages()
 	return true;  
 } 
 
+bool isValidIpAddress(const char *ipAddress)
+{
+	struct sockaddr_in sa;
+	int result = inet_pton(AF_INET, ipAddress, &(sa.sin_addr));
+	return result != 0;
+}
+
 void* startRelaying(void* arg)
 {
 	rc = (RelayConfig*)arg;
+	if( !isValidIpAddress(rc->relayHost.c_str()) )
+	{
+		cerr << "ERROR: Relay host must be an IP address!" << endl;
+		exit(1);
+	}
 	while(relayMessages() == true);
 	// If we get here then something has gone wrong and we can no longer relay
 	// messages. It's time to shut down the node immediately.

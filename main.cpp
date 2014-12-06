@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "mankey-74.dynamic.rpi.edu", 7777, "Sha");
+	RelayConfig rc(7777, "128.113.194.83", 7777, "Sha");
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
 		cout << "To confirm, decrypted is: " << cipher_decrypt(alias, encrypted) << endl;
 		*/
-		bool successful = sendMessage(encrypted);
+		bool successful = sendMessage(cleartext); // TODO: Change to encrypted
 		if( successful )
 			cout << "Message sent." << endl;
 	}
