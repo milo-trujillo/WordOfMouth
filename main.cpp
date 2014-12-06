@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdio.h> // For debugging
 
+#include "NextNodeInfo.h"
 #include "networking.h"
 #include "CipherAlias.h"
 #include "keygen.h"
@@ -15,7 +16,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	RelayConfig rc(7777, "128.113.194.83", 7777, "Sha");
+	RelayConfig rc = inputPassword();
 	validateRelayConfig(rc);
 	pthread_t relayThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
