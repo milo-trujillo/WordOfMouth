@@ -19,6 +19,8 @@ int main(int argc, char** argv)
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
 
+	char *pubRelayKey, *privRelayKey;
+	keyGen(&privRelayKey,&pubRelayKey);
 	//
 	// Anyone elses initialization code goes here
 	//
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
 	// we can read and write with a local socket, enabling the use of a "client"
 	// program or making it easy to just log everything to a file when the user
 	// is AFK. Then this program can daemonize and run 24/7.
-		
+
 	// Main event loop gets input from user, encodes it, sends it off
 	while(true)
 	{
@@ -59,5 +61,6 @@ int main(int argc, char** argv)
 		if( successful )
 			cout << "Message sent." << endl;
 	}
+	keyDelete(privRelayKey,pubRelayKey);
 	return 0;
 }
