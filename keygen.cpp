@@ -16,7 +16,7 @@ gcry_sexp_t sexp_new(const char* lisp)//basically turns a char* into a s-express
   gcry_error_t err;
   gcry_sexp_t sexp;
   long unsigned int length = strlen(lisp);
-  if (err = gcry_sexp_new(&sexp,lisp,length,1))
+  if ((err = gcry_sexp_new(&sexp,lisp,length,1)))
   {//found here: https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
     cerr << "error in gcry_sexp_new" << endl;
   }
@@ -48,7 +48,7 @@ void keyGen(char **privKey, char **pubKey)
   gcry_error_t err;
   gcry_sexp_t parms = sexp_new("(genkey(rsa(transient-key)(nbits 4:2048)))");
   gcry_sexp_t r_key;
-  if (err = gcry_pk_genkey(&r_key,parms))
+  if ((err = gcry_pk_genkey(&r_key,parms)))
   {
     cerr << "error generating key" << endl;
     exit(1);
@@ -64,7 +64,7 @@ char* encrypt(char* key,unsigned char* plain)
 {
   gcry_error_t err;
   gcry_mpi_t r_mpi;
-  if (err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_STD,plain,0,NULL))
+  if ((err = gcry_mpi_scan(&r_mpi,GCRYMPI_FMT_STD,plain,0,NULL)))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       cerr << "error in gcry_mpi_scan " << endl;
       exit(1);
@@ -74,7 +74,7 @@ char* encrypt(char* key,unsigned char* plain)
   long unsigned int erroff;
   string tmp = (char*) plain;
   tmp+="(flags raw) (value %m)";
-  if (err = gcry_sexp_build(&r_sexp,&erroff,tmp.c_str(),r_mpi))//another one of those weird things in lisp?
+  if ((err = gcry_sexp_build(&r_sexp,&erroff,tmp.c_str(),r_mpi)))//another one of those weird things in lisp?
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-S_002dexpressions.html
       cerr << "error in gcry_sexp_build" << endl;
       exit(1);
@@ -82,7 +82,7 @@ char* encrypt(char* key,unsigned char* plain)
 
   gcry_sexp_t pkey = sexp_new(key);
   gcry_sexp_t r_ciph;
-  if (err = gcry_pk_encrypt(&r_ciph,r_sexp,pkey))
+  if ((err = gcry_pk_encrypt(&r_ciph,r_sexp,pkey)))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html
       cerr << "error in gcry_pk_encrypt" << endl;
       exit(1);
@@ -97,7 +97,7 @@ unsigned char* decrypt(char* key,char* cipher)
   gcry_sexp_t data = sexp_new(cipher);
   gcry_sexp_t skey = sexp_new(key);
   gcry_sexp_t r_plain;
-  if (err = gcry_pk_decrypt(&r_plain,data,skey))
+  if ((err = gcry_pk_decrypt(&r_plain,data,skey)))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/Cryptographic-Functions.html#Cryptographic-Functions
       cerr << "error in gcry_pk_decrypt" << endl;
       exit(1);
@@ -108,7 +108,7 @@ unsigned char* decrypt(char* key,char* cipher)
 
   unsigned char *buffer;
   long unsigned int bufferLength;
-  if (err = gcry_mpi_aprint(GCRYMPI_FMT_STD,&buffer,&bufferLength,r_mpi))
+  if ((err = gcry_mpi_aprint(GCRYMPI_FMT_STD,&buffer,&bufferLength,r_mpi)))
   {//found here:https://www.gnupg.org/documentation/manuals/gcrypt/MPI-formats.html
       cerr << "error in gcry_mpi_aprint" << endl;
       exit(1);
