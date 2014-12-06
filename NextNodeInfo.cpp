@@ -74,11 +74,11 @@ RelayConfig inputPassword()
 			}
 		}
 		decrypted=1;
-		usleep(3000000);//waits 3 seconds before continuing.
 	}
+	usleep(3000000);//waits 3 seconds before continuing.
+	RelayConfig whatYouNeed=test();
 //		RelayConfig whatYouNeed=decrypt(inPass);
-		RelayConfig whatYouNeed=test();
-		return whatYouNeed;
+	return whatYouNeed;
 	
 }
 /*
