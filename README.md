@@ -1,12 +1,14 @@
 WordOfMouth
 ===========
 
-Worth of Mouth is an anonymous, distributed, encrypted addressbook for use by secret societies and other organizations.
+Worth of Mouth is an anonymous, distributed, encrypted communication system for use by secret societies and other organizations.
 
 Overview
 --------
 
-Anyone can contact anyone else in the society if you know their name, but there’s no way to get a list of the people in the society or intercept communications between any other people.
+Anyone can contact anyone else in the society if you know their name, but there’s no way to get a list of the people in the society or intercept communications between any other people. Furthermore, if any node in the network disconnects then all message passing ceases, making a trivial "kill switch" for any users involved.
+
+The program is designed to require a minimal understanding of crypto to operate.
 
 How it works
 ------------
@@ -33,12 +35,12 @@ Chat solicitation requests are temporary public keys generated for a single conv
 
 At this stage the two users have completed a key exchange, and can communicate securely through the network without knowing one another's IP addresses.
 
-At no time does any message have under two layers of encryption: The relay level encryption keys to secure messages so they are unreadable from outside the network, and either a cypher (only during first stage of key exchange) or another encryption key so that only the intended recipient may read the final message.
+At no time does any message have under two layers of encryption: The relay-level encryption keys to secure messages so they are unreadable from outside the network, and either a cypher (only during first stage of key exchange) or another encryption key so that only the intended recipient may read the final message.
 
 Crypto
 ------
 
-All public / private keypairs are made using GPG, while cyphers are made using AES. 
+All public / private keypairs are made using GPG, while cyphers are made using OpenSSL's AES. 
 
 Cyphers are only used during one side of an initial key exchange, and to decrypt the configuration file for the program upon startup, so during normal communication all messages are protected by two layers of PGP keys.
 
