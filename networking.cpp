@@ -286,6 +286,20 @@ bool isValidIpAddress(const char *ipAddress)
 
 void validateRelayConfig(const RelayConfig &test)
 {
+	if( DEBUG_ENABLED )
+	{
+		logDebug("Relay: " + test.relayHost);
+		string debug = "Relay Port: ";
+		char port[8];
+		sprintf(port, "%d", test.relayPort);
+		debug += (const char*) port;
+		logDebug(debug);
+		sprintf(port, "%d", test.listenPort);
+		debug = "Listen Port: ";
+		debug += (const char*) port;
+		logDebug(debug);
+		logDebug("Alias: " + test.localAlias);
+	}
 	if( !isValidIpAddress(test.relayHost.c_str()) )
 	{
 		logErr("Relay host must be an IP address!");
