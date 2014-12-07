@@ -203,6 +203,8 @@ RelayConfig test()
 		myfile.close();
 		ss << enInPort;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
 		ss >> deInPort;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
 		deIpAddress=enIpAddress;
 		ss << enOutPort;
 		deAlias=enAlias;
