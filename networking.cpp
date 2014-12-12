@@ -33,7 +33,7 @@ const unsigned int MAX_MESSAGE_HISTORY = 50; // For preventing looping messages
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
 list<string> msgHashes; // Tracks the hashes of every message we've seen recently
-pthread_mutex_t screenLock; // Don't print two messages to the screen at once
+pthread_mutex_t displayLock; // Don't print two messages to the screen at once
 pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 
 void reportNetworkError(int err)
@@ -138,6 +138,45 @@ bool sendMessage(string msg)
 	return true;
 }
 
+void displayMessage(const string& msg)
+{
+	pthread_mutex_lock(&displayLock);
+
+	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock_desc == -1 )
+	{
+		logErr("Couldn't create socket to display message!");
+		reportNetworkError(errno);
+		pthread_mutex_unlock(&displayLock);
+	}
+
+	struct sockaddr_in conn;
+	memset(&conn, 0, sizeof(conn));
+	conn.sin_family = AF_INET;
+	conn.sin_addr.s_addr = inet_addr(rc->relayHost.c_str());
+	conn.sin_port = htons(rc->outgoingMessagePort);
+
+	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
+	{
+		logWarn("Cannot connect to display port (message ignored)");
+		reportNetworkError(errno);
+		close(sock_desc);
+		pthread_mutex_unlock(&displayLock);
+		return;
+	}
+
+	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
+	if( k == -1 )
+	{
+		logErr("Problem during display of message!");
+		reportNetworkError(errno);
+		close(sock_desc);
+	}
+
+	//printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
+	pthread_mutex_unlock(&displayLock);
+}
+
 // Handles an individual incoming message, once the socket has already been
 // opened
 void* handleMessage(void* arg)
@@ -181,9 +220,9 @@ void* handleMessage(void* arg)
 
 	if( messageSeen(msg) )
 	{
-		pthread_mutex_lock(&screenLock);
+		pthread_mutex_lock(&displayLock);
 		logDebug("Warning! Detected looped message!");
-		pthread_mutex_unlock(&screenLock);
+		pthread_mutex_unlock(&displayLock);
 		return NULL;
 	}
 
@@ -197,14 +236,14 @@ void* handleMessage(void* arg)
 	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
 	{
 		string cleartext = cipher_decrypt(rc->localAlias, msg);
-		pthread_mutex_lock(&screenLock);
+		pthread_mutex_lock(&displayLock);
 		printf("Message Received\n");
 		printf("================\n");
 		// 'cout' had buffering problems here
 		int msgLength = cleartext.size();
 		printf("%*.*s", msgLength, msgLength, cleartext.c_str()); 
 		printf("\n"); // Force the screen to flush
-		pthread_mutex_unlock(&screenLock);
+		pthread_mutex_unlock(&displayLock);
 	}
 	else
 	{
@@ -214,9 +253,7 @@ void* handleMessage(void* arg)
 	*/
 
 	// This is temporary code to test relaying until cyphers are working again
-	pthread_mutex_lock(&screenLock);
-	printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
-	pthread_mutex_unlock(&screenLock);
+	displayMessage(msg);
 	sendMessage(msg);
 
 	return NULL;
