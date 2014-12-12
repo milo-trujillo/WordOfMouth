@@ -29,6 +29,7 @@ using namespace std;
 
 const int BUFFER_SIZE = 100; // How many characters to read from network at once
 const unsigned int MAX_MESSAGE_HISTORY = 50; // For preventing looping messages
+const char* LOCALHOST = "127.0.0.1";
 
 // Global vars are bad, but at least this is only global to the networking code
 RelayConfig* rc = NULL;
@@ -153,7 +154,7 @@ void displayMessage(const string& msg)
 	struct sockaddr_in conn;
 	memset(&conn, 0, sizeof(conn));
 	conn.sin_family = AF_INET;
-	conn.sin_addr.s_addr = inet_addr(rc->relayHost.c_str());
+	conn.sin_addr.s_addr = inet_addr(LOCALHOST);
 	conn.sin_port = htons(rc->outgoingMessagePort);
 
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
@@ -336,6 +337,14 @@ void validateRelayConfig(const RelayConfig &test)
 		debug += (const char*) port;
 		logDebug(debug);
 		logDebug("Alias: " + test.localAlias);
+		sprintf(port, "%d", test.outgoingMessagePort);
+		debug = "Display Port: ";
+		debug += (const char*) port;
+		logDebug(debug);
+		sprintf(port, "%d", test.incomingMessagePort);
+		debug = "Incoming Message Port: ";
+		debug += (const char*) port;
+		logDebug(debug);
 	}
 	if( !isValidIpAddress(test.relayHost.c_str()) )
 	{
