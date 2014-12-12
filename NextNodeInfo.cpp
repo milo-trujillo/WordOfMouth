@@ -59,15 +59,16 @@ RelayConfig inputPassword()
 //				encrypt(inPass);
 //				decrypt(inPass);
 					input=1;
+					usleep(3000000);//waits 3 seconds before allowing the user to try the password again
 			}
 			else
 			{
 				cout << "Error, empty password field." << endl;
+				usleep(3000000);//waits 3 seconds before allowing the user to try the password again
 			}
 		}
 		decrypted=1;
 	}
-	usleep(3000000);//waits 3 seconds before continuing.
 	RelayConfig whatYouNeed=test();
 //		RelayConfig whatYouNeed=decrypt(inPass);
 	return whatYouNeed;
@@ -180,35 +181,49 @@ void encrypt(string passIn)
 RelayConfig test()
 {
 	
-	string enInPort;
+	string enForeignListen;
 	string enIpAddress;
-	string enOutPort;
+	string enForeignOut;
 	string enAlias;
-	int deInPort = -1;
+	string enLocalListen;
+	string enLocalOut;
+	int deLocalListen = -1;
+	int deLocalOut = -1;
+	int deForeignListen = -1;
 	string deIpAddress;
-	int deOutPort = -1;
+	int deForeignOut = -1;
 	string deAlias;
 	ifstream myfile("test.txt");//this takes and decrypts the information that its given, whoo!
 	stringstream ss;
 	if(myfile.is_open())
 	{
-		getline( myfile,enInPort);//gets the first line,saves it to enInPort
+		getline( myfile,enForeignListen);//gets the first line,saves it to enInPort
 		//cout << "enInPort: " << enInPort << endl;//prints this out
 		getline( myfile,enIpAddress);//same
 		//cout << "enIpAddress: " << enIpAddress << endl;//same
-		getline( myfile,enOutPort);//same
+		getline( myfile,enForeignOut);//same
 		//cout << "enOutPort: " << enOutPort << endl;//same
 		getline( myfile,enAlias);//same
 		//cout << "enAlias: " << enAlias << endl;//same
 		myfile.close();
-		ss << enInPort;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
-		ss >> deInPort;
+		ss << enForeignListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss >> deForeignListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
 		deIpAddress=enIpAddress;
-		ss << enOutPort;
+		ss << enForeignOut;
 		deAlias=enAlias;
-		ss >> deOutPort;
+		ss >> deForeignOut;
+		ss.str("");
+		ss.clear();
+		ss << enLocalListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss >> deLocalListen;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
+		ss << enLocalOut;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss >> deLocalOut;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
 		/*
 		cout << "Gives:" << deInPort << endl;
 		cout << "Gives:" << deIpAddress << endl;
@@ -217,5 +232,5 @@ RelayConfig test()
 		*/
 	}
 
-	return RelayConfig(deInPort,deIpAddress,deOutPort,deAlias);
+	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut);
 }
