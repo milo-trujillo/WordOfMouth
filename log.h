@@ -14,6 +14,7 @@
 const bool DEBUG_ENABLED = true;
 
 void logErr(std::string s);
+void logWarn(std::string s);
 void logDebug(std::string s);
 void logInfo(std::string s);
 

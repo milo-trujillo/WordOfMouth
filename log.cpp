@@ -14,6 +14,13 @@ void logErr(string s)
 	pthread_mutex_unlock(&logLock);
 }
 
+void logWarn(string s)
+{
+	pthread_mutex_lock(&logLock);
+	cerr << "WARNING: " << s << endl;
+	pthread_mutex_unlock(&logLock);
+}
+
 void logDebug(string s)
 {
 	if( DEBUG_ENABLED )
