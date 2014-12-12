@@ -181,30 +181,32 @@ void encrypt(string passIn)
 RelayConfig test()
 {
 	
-	string enForeignListen;
-	string enIpAddress;
-	string enForeignOut;
-	string enAlias;
-	string enLocalListen;
-	string enLocalOut;
+	string enForeignListen="Error";
+	string enIpAddress="Error";
+	string enForeignOut="Error";
+	string enAlias="Error";
+	string enLocalListen="Error";
+	string enLocalOut="Error";
 	int deLocalListen = -1;
 	int deLocalOut = -1;
 	int deForeignListen = -1;
-	string deIpAddress;
+	string deIpAddress="Error";
 	int deForeignOut = -1;
-	string deAlias;
+	string deAlias="Error";
 	ifstream myfile("test.txt");//this takes and decrypts the information that its given, whoo!
 	stringstream ss;
 	if(myfile.is_open())
 	{
-		getline( myfile,enForeignListen);//gets the first line,saves it to enInPort
+		getline( myfile,enForeignListen );//gets the first line,saves it to enInPort
 		//cout << "enInPort: " << enInPort << endl;//prints this out
-		getline( myfile,enIpAddress);//same
+		getline( myfile,enIpAddress );//same
 		//cout << "enIpAddress: " << enIpAddress << endl;//same
-		getline( myfile,enForeignOut);//same
+		getline( myfile,enForeignOut );//same
 		//cout << "enOutPort: " << enOutPort << endl;//same
-		getline( myfile,enAlias);//same
+		getline( myfile,enAlias );//same
 		//cout << "enAlias: " << enAlias << endl;//same
+		getline( myfile,enLocalListen );
+		getline( myfile,enLocalOut );
 		myfile.close();
 		ss << enForeignListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
 		ss >> deForeignListen;
