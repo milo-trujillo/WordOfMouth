@@ -33,7 +33,20 @@ RelayConfig test();
 //logDebug
 //logInfo
 
-
+//Song lyrics from OMI's "Cheerleader", just for Milo
+/*
+"She walks like a model,
+She grants my wishes like a genie in a bottle,
+'Cause I'm the wizard of love,
+And I've got the magic wand,
+All these other girls are tempting,
+But I'm empty when you're gone.
+And they're like, 
+"Do you need me?
+Do you think I'm pretty?
+Do I make you feel like cheating?"
+And I'm like "No, not really!"
+*/
 
 
 /*Things that this program needs to be able to do:
