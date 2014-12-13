@@ -20,6 +20,7 @@
 
 // Internal header files go here
 #include "relay.h"
+#include "messages.h"
 #include "CipherAlias.h"
 #include "keygen.h"
 #include "hash.h"
@@ -29,12 +30,10 @@ using namespace std;
 
 const int BUFFER_SIZE = 100; // How many characters to read from network at once
 const unsigned int MAX_MESSAGE_HISTORY = 50; // For preventing looping messages
-const char* LOCALHOST = "127.0.0.1";
+RelayConfig* rc = NULL;
 
 // Global vars are bad, but at least this is only global to the networking code
-RelayConfig* rc = NULL;
 list<string> msgHashes; // Tracks the hashes of every message we've seen recently
-pthread_mutex_t displayLock; // Don't print two messages to the screen at once
 pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 
 void reportNetworkError(int err)
@@ -139,45 +138,6 @@ bool sendMessage(string msg)
 	return true;
 }
 
-void displayMessage(const string& msg)
-{
-	pthread_mutex_lock(&displayLock);
-
-	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
-	if( sock_desc == -1 )
-	{
-		logErr("Couldn't create socket to display message!");
-		reportNetworkError(errno);
-		pthread_mutex_unlock(&displayLock);
-	}
-
-	struct sockaddr_in conn;
-	memset(&conn, 0, sizeof(conn));
-	conn.sin_family = AF_INET;
-	conn.sin_addr.s_addr = inet_addr(LOCALHOST);
-	conn.sin_port = htons(rc->outgoingMessagePort);
-
-	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
-	{
-		logWarn("Cannot connect to display port (message ignored)");
-		reportNetworkError(errno);
-		close(sock_desc);
-		pthread_mutex_unlock(&displayLock);
-		return;
-	}
-
-	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
-	if( k == -1 )
-	{
-		logErr("Problem during display of message!");
-		reportNetworkError(errno);
-		close(sock_desc);
-	}
-
-	//printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
-	pthread_mutex_unlock(&displayLock);
-}
-
 // Handles an individual incoming message, once the socket has already been
 // opened
 void* handleMessage(void* arg)
@@ -221,9 +181,7 @@ void* handleMessage(void* arg)
 
 	if( messageSeen(msg) )
 	{
-		pthread_mutex_lock(&displayLock);
 		logDebug("Warning! Detected looped message!");
-		pthread_mutex_unlock(&displayLock);
 		return NULL;
 	}
 

@@ -21,7 +21,9 @@ struct RelayConfig
 	int incomingMessagePort, outgoingMessagePort;
 };
 
-// Functions here are meant to be accessed from the main interlink code only
+extern RelayConfig* rc;
+
+void reportNetworkError(int err);
 
 // Will throw an exception if network config is impossible
 // Please run before trying to start relaying
