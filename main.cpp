@@ -8,7 +8,7 @@
 #include <stdio.h> // For debugging
 
 #include "NextNodeInfo.h"
-#include "networking.h"
+#include "relay.h"
 #include "CipherAlias.h"
 #include "keygen.h"
 #include "log.h"
