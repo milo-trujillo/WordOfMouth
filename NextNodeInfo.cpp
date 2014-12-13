@@ -1,6 +1,6 @@
 #include <sstream>
 #include <iostream>
-#include "networking.h"
+#include "relay.h"
 #include "CipherAlias.h"
 #include <fstream>
 #include <stdio.h>
@@ -8,6 +8,7 @@
 #include <time.h>
 #include <map>
 #include <unistd.h>
+#include "log.h"
 
 using namespace std;
 
@@ -26,6 +27,12 @@ RelayConfig test();
 //std::string cipher_decrypt(std::string alias, std::string message);
 //alias is the thing that is used for encrypting/decrypting
 //The test files will be called Information.txt and Encrypted.txt
+
+//logErr
+//logWarn
+//logDebug
+//logInfo
+
 
 
 
@@ -187,6 +194,7 @@ RelayConfig test()
 	string enAlias="Error";
 	string enLocalListen="Error";
 	string enLocalOut="Error";
+	string log="";
 	int deLocalListen = -1;
 	int deLocalOut = -1;
 	int deForeignListen = -1;
@@ -198,12 +206,40 @@ RelayConfig test()
 	if(myfile.is_open())
 	{
 		getline( myfile,enForeignListen );//gets the first line,saves it to enInPort
+		if(enForeignListen!="Error")
+		{
+			log="Input encrypted foreign listen port: ";
+			log+=enForeignListen;
+			logInfo(log);
+			log="";
+		}
 		//cout << "enInPort: " << enInPort << endl;//prints this out
 		getline( myfile,enIpAddress );//same
+		if(enIpAddress!="Error")
+		{
+			log="Input encrypted ip address: ";
+			log+=enIpAddress;
+			logInfo(log);
+			log="";
+		}
 		//cout << "enIpAddress: " << enIpAddress << endl;//same
 		getline( myfile,enForeignOut );//same
+		if(enForeignOut!="Error")
+		{
+			log="Input encrypted foreign ouput port: ";
+			log+=enForeignOut;
+			logInfo(log);
+			log="";
+		}
 		//cout << "enOutPort: " << enOutPort << endl;//same
 		getline( myfile,enAlias );//same
+		if(enAlias!="Error")
+		{
+			log="Input encrypted foreign ouput port: ";
+			log+=enAlias;
+			logInfo(log);
+			log="";
+		}
 		//cout << "enAlias: " << enAlias << endl;//same
 		getline( myfile,enLocalListen );
 		getline( myfile,enLocalOut );
