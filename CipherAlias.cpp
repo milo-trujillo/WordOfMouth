@@ -2,10 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <openssl/blowfish.h>
+//#include <openssl/blowfish.h>
 #include "CipherAlias.h"
 
 
+#ifdef DONT_DEFINE_THIS
 
 //typedef SymmetricCipher Encryption
 
@@ -125,3 +126,5 @@ bool data_decoded(std::string msg)
 			return false;
 	return true;
 }
+
+#endif
