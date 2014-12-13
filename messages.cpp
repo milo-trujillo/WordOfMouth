@@ -9,6 +9,7 @@
 #include <pthread.h> // Needed for multithreading
 #include <iostream> // Needed for C++ strings
 
+#include <errno.h>
 #include <stdlib.h>
 
 #include "relay.h"
