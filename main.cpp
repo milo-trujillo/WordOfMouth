@@ -9,6 +9,7 @@
 
 #include "NextNodeInfo.h"
 #include "relay.h"
+#include "messages.h"
 #include "CipherAlias.h"
 #include "keygen.h"
 #include "log.h"
@@ -20,8 +21,11 @@ int main(int argc, char** argv)
 	RelayConfig rc = inputPassword();
 	validateRelayConfig(rc);
 	pthread_t relayThread;
+	pthread_t messageThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
 	cout << "Relaying started." << endl;
+	pthread_create(&messageThread, NULL, listenForMessages, (RelayConfig*)&rc);
+	cout << "Listening for messages." << endl;
 
 	char *pubRelayKey, *privRelayKey;
 	keyGen(&privRelayKey,&pubRelayKey);
@@ -31,6 +35,7 @@ int main(int argc, char** argv)
 
 	// This code tests the Cypher Alias code and verifies that we can encrypt
 	// and decrypt a message
+	// Cypher crypto disabled until Staethe replaces it with AES
 	/*
 	string message = "Hello Worlds, boop beep,bop bepbooop";
 	string encrypted = cipher_encrypt(rc.localAlias, message);
@@ -45,26 +50,8 @@ int main(int argc, char** argv)
 	// program or making it easy to just log everything to a file when the user
 	// is AFK. Then this program can daemonize and run 24/7.
 
-	// Main event loop gets input from user, encodes it, sends it off
-	while(true)
-	{
-		string alias, cleartext, encrypted;
-		cout << "Enter destination alias: ";
-		getline(cin, alias);
-		cout << "Enter message: ";
-		getline(cin, cleartext);
-		// Cypher crypto disabled until Staethe replaces it with AES
-		/*
-		cout << "Your message: " << cleartext << endl;
-		encrypted = cipher_encrypt(alias, cleartext);
-		// The next two lines are debugging
-		printf("Encrypted, we see:\n%*.*s\n\n", encrypted.size(), encrypted.size(), encrypted.c_str());
-		cout << "To confirm, decrypted is: " << cipher_decrypt(alias, encrypted) << endl;
-		*/
-		bool successful = sendMessage(cleartext); // TODO: Change to encrypted
-		if( successful )
-			logInfo("Message sent.");
-	}
+	// We should never pass this line
+	pthread_join(messageThread, NULL);
 	keyDelete(privRelayKey,pubRelayKey);
 	return 0;
 }
