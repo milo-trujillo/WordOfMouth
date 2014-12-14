@@ -18,7 +18,16 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+	//
+	// Before anything else we need to read existing configuration (if any)
+	// from disk or prompt the user for new information if there's no config
+	//
 	RelayConfig rc = inputPassword();
+	//
+	// Next we kick off the networking code. All later aspects of the program
+	// either call or are called from the networking code, so this needs to be
+	// started first
+	//
 	validateRelayConfig(rc);
 	pthread_t relayThread;
 	pthread_t messageThread;
@@ -26,12 +35,11 @@ int main(int argc, char** argv)
 	cout << "Relaying started." << endl;
 	pthread_create(&messageThread, NULL, listenForMessages, (RelayConfig*)&rc);
 	cout << "Listening for messages." << endl;
-
-	char *pubRelayKey, *privRelayKey;
-	keyGen(&privRelayKey,&pubRelayKey);
 	//
 	// Anyone elses initialization code goes here
 	//
+	char *pubRelayKey, *privRelayKey;
+	keyGen(&privRelayKey,&pubRelayKey);
 
 	// This code tests the Cypher Alias code and verifies that we can encrypt
 	// and decrypt a message
@@ -45,12 +53,11 @@ int main(int argc, char** argv)
 	*/
 
 	// TODO: Switch to daemon
-	// Instead of reading and writing everything to the terminal
-	// we can read and write with a local socket, enabling the use of a "client"
-	// program or making it easy to just log everything to a file when the user
-	// is AFK. Then this program can daemonize and run 24/7.
+	// This program no longer uses stdin/stdout for user interaction, so there
+	// is no longer a need to be associated with a terminal at all. We should
+	// daemonize the whole thing and log to a file or syslog.
 
-	// We should never pass this line
+	// We should never pass this line (relay and message code loops until error)
 	pthread_join(messageThread, NULL);
 	keyDelete(privRelayKey,pubRelayKey);
 	return 0;

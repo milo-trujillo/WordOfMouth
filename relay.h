@@ -21,6 +21,8 @@ struct RelayConfig
 	int incomingMessagePort, outgoingMessagePort;
 };
 
+// This should only be used by relay and message code
+// DO NOT MODIFY NOT THREAD SAFE
 extern RelayConfig* rc;
 
 void reportNetworkError(int err);

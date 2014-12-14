@@ -4,12 +4,12 @@
 #include <arpa/inet.h> 
 #include <unistd.h> 
 
-#include <string.h> 	// Needed for memset and strcmp
+#include <string.h>       // Needed for memset and strcmp
 
-#include <pthread.h> // Needed for multithreading
-#include <iostream> // Needed for C++ strings
+#include <pthread.h>      // Needed for multithreading
+#include <iostream>       // Needed for C++ strings
 
-#include <list>		// STL linked lists for tracking sent messages
+#include <list>           // STL linked lists for tracking sent messages
 
 // For error conditions
 #include <stdlib.h>
@@ -36,6 +36,7 @@ RelayConfig* rc = NULL;
 list<string> msgHashes; // Tracks the hashes of every message we've seen recently
 pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 
+// This knows how to interpret POSIX 'errno' errors and logs them accordingly
 void reportNetworkError(int err)
 {
 	switch(err)
@@ -84,12 +85,14 @@ bool messageSeen(const string &msg)
 }
 
 // Sends a message to the next node
+// We handle relay key encryption here, but expect cypher or conversation keys
+// to have already been applied to the message.
 bool sendMessage(string msg)
 {
 	if( msg.size() == 0 ) return true; // No sense in sending an empty message
 	if( rc == NULL )
 	{
-		logErr("Sending a message before initialization!");
+		logErr("Attempting to send a message before initialization!");
 		return false;
 	}
 
@@ -124,7 +127,6 @@ bool sendMessage(string msg)
 		return false;
 	}
 
-	// TODO: Encrypt w/ keys before sending once cyphers are debugged
 	int k = send(sock_desc, msg.c_str(), msg.size(), 0);
 	if( k == -1 )
 	{
@@ -138,14 +140,14 @@ bool sendMessage(string msg)
 	return true;
 }
 
-// Handles an individual incoming message, once the socket has already been
-// opened
+// Handles an individual incoming relay message, once the socket has already
+// been opened
 void* handleMessage(void* arg)
 {
 	long sock_desc = (long)arg;
-	string msg; // This is a buffer before relaying the message
-	char buf[BUFFER_SIZE]; 
-	int k;  
+	string msg; // This is a buffer for storing the assembled message
+	char buf[BUFFER_SIZE]; // For incrementally reading from the socket
+	int k; // For tracking status of the socket
 
 	while(true) 
 	{      
@@ -170,14 +172,14 @@ void* handleMessage(void* arg)
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  
 
-	// TODO: Determine if the message is destined for us or should be
-	// forwarded. This requires the PGP crypto code to decode the message
-	// and the cypher crypto code to see if the message is an attempted
-	// key exchange with us.
-
-	// TODO: Decode the data using our private key
-	// Once the program is finished we'll be using public/private keypairs
-	// for communication between nodes, and will need to decode with our keys.
+	// TODO: Unwrap first layer of crypto (relay keys)
+	// Then determine if message is destined for us: 
+	//   * if it is, deliver it
+	//   * if it is not, forward it.
+	// To determine message destination:
+	//   * Cypher message with our alias, see if it's an attempted key exchange
+	//   * Check if message is signed by any active conversation keypairs
+	//      * If it is, unsign and decrypt with appropriate private convo key
 
 	if( messageSeen(msg) )
 	{
@@ -211,7 +213,7 @@ void* handleMessage(void* arg)
 	}
 	*/
 
-	// This is temporary code to test relaying until cyphers are working again
+	// This is temporary code to test relaying until cyphers and keys are working
 	displayMessage(msg);
 	sendMessage(msg);
 
@@ -230,6 +232,7 @@ bool relayMessages()
 		return false;
 	}
 
+	// Bind to listen port, standby to receive incoming relay connections
 	struct sockaddr_in server;  
 	memset(&server, 0, sizeof(server));  
 	server.sin_family = AF_INET;
@@ -266,10 +269,11 @@ bool relayMessages()
 		}
 
 		pthread_t clientThread;
-		pthread_create(&clientThread, NULL, handleMessage, (void*)client_sock_desc);
+		pthread_create(&clientThread, NULL, 
+			handleMessage, (void*)client_sock_desc);
 	}
 
-	close(sock_desc); // Close the listen sock once we're done
+	close(sock_desc); // Close the listen sock on error or program exit
 	return true;  
 } 
 
@@ -284,6 +288,7 @@ void validateRelayConfig(const RelayConfig &test)
 {
 	if( DEBUG_ENABLED )
 	{
+		// Nasty, nasty typecasting to strings
 		logDebug("Relay: " + test.relayHost);
 		string debug = "Relay Port: ";
 		char port[8];
