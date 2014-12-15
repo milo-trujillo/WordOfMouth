@@ -207,6 +207,7 @@ RelayConfig test()
 	string enAlias="Error";
 	string enLocalListen="Error";
 	string enLocalOut="Error";
+	string enLogFile="Error";
 	string log="";
 	int deLocalListen = -1;
 	int deLocalOut = -1;
@@ -214,11 +215,14 @@ RelayConfig test()
 	string deIpAddress="Error";
 	int deForeignOut = -1;
 	string deAlias="Error";
+	string deLogFile="Error";
 	ifstream myfile("test.txt");//this takes and decrypts the information that its given, whoo!
 	stringstream ss;
 	if(myfile.is_open())
 	{
 		getline( myfile,enForeignListen );//gets the first line,saves it to enInPort
+		// We cannot print encrypted information, so these logs have been disabled
+		/*
 		if(enForeignListen!="Error")
 		{
 			log="Input encrypted foreign listen port: ";
@@ -226,8 +230,10 @@ RelayConfig test()
 			logInfo(log);
 			log="";
 		}
+		*/
 		//cout << "enInPort: " << enInPort << endl;//prints this out
 		getline( myfile,enIpAddress );//same
+		/*
 		if(enIpAddress!="Error")
 		{
 			log="Input encrypted ip address: ";
@@ -235,8 +241,10 @@ RelayConfig test()
 			logInfo(log);
 			log="";
 		}
+		*/
 		//cout << "enIpAddress: " << enIpAddress << endl;//same
 		getline( myfile,enForeignOut );//same
+		/*
 		if(enForeignOut!="Error")
 		{
 			log="Input encrypted foreign ouput port: ";
@@ -244,8 +252,10 @@ RelayConfig test()
 			logInfo(log);
 			log="";
 		}
+		*/
 		//cout << "enOutPort: " << enOutPort << endl;//same
 		getline( myfile,enAlias );//same
+		/*
 		if(enAlias!="Error")
 		{
 			log="Input encrypted foreign ouput port: ";
@@ -253,9 +263,11 @@ RelayConfig test()
 			logInfo(log);
 			log="";
 		}
+		*/
 		//cout << "enAlias: " << enAlias << endl;//same
 		getline( myfile,enLocalListen );
 		getline( myfile,enLocalOut );
+		getline( myfile,enLogFile );
 		myfile.close();
 		ss << enForeignListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
 		ss >> deForeignListen;
@@ -275,6 +287,10 @@ RelayConfig test()
 		ss >> deLocalOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
+		ss << enLogFile;
+		ss >> deLogFile;
+		ss.str("");
+		ss.clear();
 		/*
 		cout << "Gives:" << deInPort << endl;
 		cout << "Gives:" << deIpAddress << endl;
@@ -283,5 +299,5 @@ RelayConfig test()
 		*/
 	}
 
-	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut);
+	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile);
 }

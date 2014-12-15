@@ -13,6 +13,8 @@
 
 const bool DEBUG_ENABLED = true;
 
+bool startLogging(std::string logpath);
+
 void logErr(std::string s);
 void logWarn(std::string s);
 void logDebug(std::string s);
