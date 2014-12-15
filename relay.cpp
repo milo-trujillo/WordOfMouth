@@ -85,8 +85,8 @@ bool sendMessage(string msg)
 	struct sockaddr_in conn;
 	memset(&conn, 0, sizeof(conn));
 	conn.sin_family = AF_INET;
-	conn.sin_addr.s_addr = inet_addr(rc->relayHost.c_str());
-	conn.sin_port = htons(rc->relayPort); // Host to network byte order
+	conn.sin_addr.s_addr = inet_addr(rc->getRelayHost().c_str());
+	conn.sin_port = htons(rc->getRelayPort()); // Host to network byte order
 
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
@@ -206,7 +206,7 @@ bool relayMessages()
 	memset(&server, 0, sizeof(server));  
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;  
-	server.sin_port = htons(rc->listenPort);  
+	server.sin_port = htons(rc->getListenPort());  
 	if (bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
 	{
 		logErr("Cannot bind socket!");
@@ -258,27 +258,28 @@ void validateRelayConfig(const RelayConfig &test)
 	if( DEBUG_ENABLED )
 	{
 		// Nasty, nasty typecasting to strings
-		logDebug("Relay: " + test.relayHost);
+		logDebug("Relay: " + test.getRelayHost());
 		string debug = "Relay Port: ";
 		char port[8];
-		sprintf(port, "%d", test.relayPort);
+		sprintf(port, "%d", test.getRelayPort());
 		debug += (const char*) port;
 		logDebug(debug);
-		sprintf(port, "%d", test.listenPort);
+		sprintf(port, "%d", test.getListenPort());
 		debug = "Listen Port: ";
 		debug += (const char*) port;
 		logDebug(debug);
-		logDebug("Alias: " + test.localAlias);
-		sprintf(port, "%d", test.outgoingMessagePort);
+		logDebug("Alias: " + test.getAlias());
+		sprintf(port, "%d", test.getOutgoingMessagePort());
 		debug = "Display Port: ";
 		debug += (const char*) port;
 		logDebug(debug);
-		sprintf(port, "%d", test.incomingMessagePort);
+		sprintf(port, "%d", test.getIncomingMessagePort());
 		debug = "Incoming Message Port: ";
 		debug += (const char*) port;
 		logDebug(debug);
+		logDebug("Log file: " + test.getLogPath());
 	}
-	if( !isValidIpAddress(test.relayHost.c_str()) )
+	if( !isValidIpAddress(test.getRelayHost().c_str()) )
 	{
 		logErr("Relay host must be an IP address!");
 		throw "bad config";

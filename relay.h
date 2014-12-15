@@ -1,24 +1,33 @@
 #ifndef RELAY_H
 #define RELAY_H
 
-#include <iostream>
+#include <iostream> // For string
 
-struct RelayConfig
+// Stores the current configuration for this relay
+class RelayConfig
 {
-	RelayConfig(int l, std::string h, int p, std::string a, int im, int om) 
-	{
-		listenPort = l;
-		relayHost = h;
-		relayPort = p;
-		localAlias = a;
-		incomingMessagePort = im;
-		outgoingMessagePort = om;
-	}
-	int listenPort;
-	std::string relayHost;
-	int relayPort;
-	std::string localAlias;
-	int incomingMessagePort, outgoingMessagePort;
+	public:
+		RelayConfig(int l, std::string h, int p, std::string a, 
+			int im, int om, std::string logpath) 
+		{
+			listenPort = l;
+			relayHost = h;
+			relayPort = p;
+			localAlias = a;
+			incomingMessagePort = im;
+			outgoingMessagePort = om;
+			logFile = logpath;
+		}
+		int getListenPort() const { return listenPort; }
+		int getRelayPort() const { return relayPort; }
+		int getIncomingMessagePort() const { return incomingMessagePort; }
+		int getOutgoingMessagePort() const { return outgoingMessagePort; }
+		std::string getRelayHost() const { return relayHost; }
+		std::string getAlias() const { return localAlias; }
+		std::string getLogPath() const { return logFile; }
+	private:
+		int listenPort, relayPort, incomingMessagePort, outgoingMessagePort;
+		std::string relayHost, localAlias, logFile;
 };
 
 // This should only be used by relay and message code
