@@ -9,8 +9,6 @@
 #include <pthread.h>      // Needed for multithreading
 #include <iostream>       // Needed for C++ strings
 
-#include <list>           // STL linked lists for tracking sent messages
-
 // For error conditions
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,13 +26,8 @@
 
 using namespace std;
 
-const int BUFFER_SIZE = 100; // How many characters to read from network at once
-const unsigned int MAX_MESSAGE_HISTORY = 50; // For preventing looping messages
+static const int BUFFER_SIZE = 100; // How many bytes to read from network
 RelayConfig* rc = NULL;
-
-// Global vars are bad, but at least this is only global to the networking code
-list<string> msgHashes; // Tracks the hashes of every message we've seen recently
-pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 
 // This knows how to interpret POSIX 'errno' errors and logs them accordingly
 void reportNetworkError(int err)
@@ -58,30 +51,6 @@ void reportNetworkError(int err)
 			errstring += errnumber;
 			logErr(errstring);
 	}
-}
-
-// Returns if a message has been seen previously (and should be dropped)
-bool messageSeen(const string &msg)
-{
-	string hash = genHash(msg);
-	pthread_mutex_lock(&hashLock);
-
-	// Check if we've seen the message yet
-	list<string>::iterator hashItr = msgHashes.begin();
-	for(; hashItr != msgHashes.end(); hashItr++ )
-	{
-		if( *hashItr == hash )
-		{
-			pthread_mutex_unlock(&hashLock);
-			return true;
-		}
-	}
-	// No? Alright, log that we've seen it before proceeding
-	if( msgHashes.size() == MAX_MESSAGE_HISTORY )
-		msgHashes.pop_front();
-	msgHashes.push_back(hash);
-	pthread_mutex_unlock(&hashLock);
-	return false;
 }
 
 // Sends a message to the next node
