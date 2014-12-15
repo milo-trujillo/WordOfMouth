@@ -4,3 +4,4 @@
 A
 5002
 5003
+/tmp/wordofmouth-A.log

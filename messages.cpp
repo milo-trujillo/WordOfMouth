@@ -39,7 +39,7 @@ void displayMessage(const string& msg)
 	memset(&conn, 0, sizeof(conn));
 	conn.sin_family = AF_INET;
 	conn.sin_addr.s_addr = inet_addr(LOCALHOST);
-	conn.sin_port = htons(rc->outgoingMessagePort);
+	conn.sin_port = htons(rc->getOutgoingMessagePort());
 
 	if( connect(sock_desc, (sockaddr*)&conn, sizeof(conn)) != 0 )
 	{
@@ -141,7 +141,7 @@ bool readMessage()
 	memset(&server, 0, sizeof(server));  
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;  
-	server.sin_port = htons(rc->incomingMessagePort);  
+	server.sin_port = htons(rc->getIncomingMessagePort());  
 	if(bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
 	{
 		logErr("Problem listening for messages!");
