@@ -13,6 +13,7 @@
 #include "CipherAlias.h"
 #include "keygen.h"
 #include "log.h"
+#include "daemonize.h"
 
 using namespace std;
 
@@ -29,12 +30,20 @@ int main(int argc, char** argv)
 	// started first
 	//
 	validateRelayConfig(rc);
+	if( daemonize() == false )
+	{
+		printf("Unable to daemonize - Aborting\n");
+		exit(1);
+	}
+	// Note: Daemonizing closes all file handles, do *not* put logging first
+	if( startLogging(rc.getLogPath()) == false )
+		exit(1);
 	pthread_t relayThread;
 	pthread_t messageThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);
-	cout << "Relaying started." << endl;
+	logInfo("Relaying started");
 	pthread_create(&messageThread, NULL, listenForMessages, (RelayConfig*)&rc);
-	cout << "Listening for messages." << endl;
+	logInfo("Ready to receive messages");
 	//
 	// Anyone elses initialization code goes here
 	//
@@ -51,11 +60,6 @@ int main(int argc, char** argv)
 	cout << "Orig: " << message << endl;
 	cout << "Done: " << decrypted << endl;
 	*/
-
-	// TODO: Switch to daemon
-	// This program no longer uses stdin/stdout for user interaction, so there
-	// is no longer a need to be associated with a terminal at all. We should
-	// daemonize the whole thing and log to a file or syslog.
 
 	// We should never pass this line (relay and message code loops until error)
 	pthread_join(messageThread, NULL);
