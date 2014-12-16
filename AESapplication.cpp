@@ -14,11 +14,17 @@ string decrypt(string encryptedText,string key);
 int main()//this returns true if it successfully got through all of the code
 {
 	string in="This is a really quite considerably longer but still really dumb string.";
-	string password="Even dumber string";
+	string password="Evenn dumber string";
+	int inLength=in.length();
+	int passLength=password.length();
+	cout << inLength << " " << passLength << endl;
 //	unsigned char* charIn= (unsigned char*)in.c_str();
 //	cout << "charIn: " << charIn << endl;
 //	cout << in.length() << " " << password.length() << endl;//this is for testing purposes to try and pinpoint the current debug issure where multiples of 8 do things funkier than the Black Eyed Peas
-	string de=decrypt(encrypt(in,password),password);//encrypts then decrypts and saves the result off to a string
+	cout << password << endl;
+	string ide=encrypt(in,password);
+	cout << password << endl;
+	string de=decrypt(ide,password);//encrypts then decrypts and saves the result off to a string
 	cout << de << endl;//prints out the string that was just saved above
 
 /*	string plainTextString="This might be pushing the boundaries just a little bit, since it's lot more than just 17 chars.";
@@ -120,20 +126,20 @@ string decrypt(string encryptedTextString,string keyString)
 		{
 			keyString+=(char)0;
 		}
-	}
 	keyLength=keyString.length();
-
+	}
+	cout << encryptedTextLength%keyLength << endl;
+	if(encryptedTextLength%(keyLength-1)==0)
+	{
+		cout << "here de" << endl;
+		keyString+=d;
+	}
+	cout << keyString << endl;
 	unsigned char* encryptedText=(unsigned char*)encryptedTextString.c_str();
 	unsigned char* key=(unsigned char*)keyString.c_str();
 	int repetitions;
-//	if((encryptedTextLength%16)==0)
-//	{
-//		repetitions=(encryptedTextLength/16);
-//	}
-//	else
-//	{
-		repetitions=((encryptedTextLength/16)+1);//figures out how many repetitions are needed according to the length of the string
-//	}
+	repetitions=(encryptedTextLength/16);
+	repetitions++;//figures out how many repetitions are needed according to the length of the string
 
 	for(i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
@@ -193,25 +199,20 @@ string encrypt(string plainTextString,string keyString)
 		{
 			keyString+=(char)0;
 		}
+		keyLength=keyString.length();
 	}
-	keyLength=keyString.length();
+	if(plainTextLength%(keyLength-1)==0)
+	{
+		keyString+=d;
+		cout << "here en" << endl;
+	}
 
 	unsigned char encryptedText[SIZEOFARRAY];
 	unsigned char* plainText=(unsigned char*)plainTextString.c_str();
 	unsigned char* key=(unsigned char*)keyString.c_str();
-//	cout << keyString << endl;
-//	cout << key << endl;
-//	cout << plainTextString << endl;
-//	cout << plainText << endl;
 	int repetitions;
-//	if((plainTextLength%16)==0)
-//	{
-//		repetitions=(plainTextLength/16);
-//	}
-//	else
-//	{
-		repetitions=((plainTextLength/16)+1);
-//	}
+		repetitions=(plainTextLength/16);
+		repetitions++;
 
 	for(int i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
