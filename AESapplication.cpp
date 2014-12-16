@@ -12,20 +12,20 @@ string encrypt(string plainText,string key);
 string decrypt(string encryptedText,string key);
 int main()//this returns true if it successfully got through all of the code
 {
-	string in="This is a really quite considerably longer but still really dumb string.";
-	string password="Even dumber string.";
-	cout << in.length() << endl;
-	string de=decrypt(encrypt(in,password),password);
-	cout << de << endl;
+//	string in="This is a really quite considerably longer but still really dumb string.";
+//	string password="Even dumber string";
+//	cout << in.length() << " " << password.length() << endl;//this is for testing purposes to try and pinpoint the current debug issure where multiples of 8 do things funkier than the Black Eyed Peas
+//	string de=decrypt(encrypt(in,password),password);//encrypts then decrypts and saves the result off to a string
+//	cout << de << endl;//prints out the string that was just saved above
 
-//	string plainTextString="This might be pushing the boundaries just a little bit, since it's lot more than just 17 chars.";
-//	string keyString="What happens if you just happen to have a super ridiculously long password password";
-//	int plainTextLength=plainTextString.length();
-//	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
-//	int i=0,j=0;
-//	unsigned char plainText[plainTextLength],key[keyLength];//allocates space for arrays of chars equal to the length of the input plaintext and key strings
-//	int SIZEOFARRAY=(plainTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string
-/*	for(int i=0;i<plainTextLength;i++)//converts the plain to an array of chars
+	string plainTextString="This might be pushing the boundaries just a little bit, since it's lot more than just 17 chars.";
+	string keyString="less 8";
+	int plainTextLength=plainTextString.length();
+	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
+	int i=0,j=0;
+	unsigned char plainText[plainTextLength],key[keyLength];//allocates space for arrays of chars equal to the length of the input plaintext and key strings
+	int SIZEOFARRAY=(plainTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string
+	for(int i=0;i<plainTextLength;i++)//converts the plain to an array of chars
 	{
 		plainText[i]=0;
 		plainText[i]=plainTextString[i];
@@ -34,21 +34,21 @@ int main()//this returns true if it successfully got through all of the code
 	{
 		key[i]=0;
 		key[i]=keyString[i];
-	}*/
+	}
 
-/*	int repetitions=((plainTextLength/16)+1);
+	int repetitions=((plainTextLength/16)+1);
 
 	unsigned char decryptedText[SIZEOFARRAY];
-	unsigned char encryptedText[SIZEOFARRAY];*/
+	unsigned char encryptedText[SIZEOFARRAY];
 
-/*	for(int i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
+	for(int i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
 		decryptedText[i]=0;
 		encryptedText[i]=0;
-	}*/
+	}
 
-//	unsigned char partialPlainText[16],partialEncryptedText[16],partialDecryptedText[16];
-/*	for(i=0;i<repetitions;i++)
+	unsigned char partialPlainText[16],partialEncryptedText[16],partialDecryptedText[16];
+	for(i=0;i<repetitions;i++)
 	{
 		for(j=0;j<16;j++)//this function breaks up the plainText into chunks that are 16 chars long
 		{
@@ -85,41 +85,52 @@ int main()//this returns true if it successfully got through all of the code
 			decryptedText[(16*i)+j]=partialDecryptedText[j];//this stores the decrypted text chunks into a decrypted text char
 		}
 
-	}*/
+	}
 //	cout << decryptedText << endl;
 //	unsigned char decryptedText=decrypt(&key,&encryptedText);
 
-//	cout << "decryptped text: " << decryptedText << endl;
+	stringstream ss;
+	ss << decryptedText;
+	string finalDecryptedText(ss.str());
+	cout << "decrypted text: " << finalDecryptedText << endl;
 
 
 	return 0;
 }
 
 
-
+/*
 
 
 
 string decrypt(string encryptedTextString,string keyString)
 {
 	int i,j;
-	int encryptedTextLength=encryptedTextString.length();
-	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
-	unsigned char key[keyLength];//allocates space for arrays of chars equal to the length of the input plaintext and key strings
-	int SIZEOFARRAY=(encryptedTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string
-	unsigned char decryptedText[SIZEOFARRAY];
-	unsigned char encryptedText[SIZEOFARRAY];
+	int encryptedTextLength=encryptedTextString.length();//figures out how long the encryptedTextString is
+	int keyLength=keyString.length();//saves off the length of the key string
+	unsigned char key[keyLength];//allocates space for arrays of chars equal to the length of the keylength
+	int SIZEOFARRAY=(encryptedTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string, with some extra space
+	unsigned char decryptedText[SIZEOFARRAY];//sets off enough space for the decryptedText to be stored in an array
+	unsigned char encryptedText[encryptedTextLength];//sets off enough space to move the encryptedText to an array
 	for(int i=0;i<encryptedTextLength;i++)//converts the plain to an array of chars
 	{
-		encryptedText[i]=0;
-		encryptedText[i]=encryptedTextString[i];
+		encryptedText[i]=0;//zeroes out the values first
+		encryptedText[i]=encryptedTextString[i];//replaces the zeroed value with value of the encrypted string
 	}
-	for(i=0;i<keyLength;i++)//converts the key to an array of chars
+	for(i=0;i<keyLength;i++)//converts the key to an array of chars for use in the AES encryption thing
 	{
-		key[i]=0;
-		key[i]=keyString[i];
+		key[i]=0;//zeroes out the values first
+		key[i]=keyString[i];//replaces the zeroed value with value of the key
 	}
-	int repetitions=((encryptedTextLength/16)+1);
+	int repetitions;
+//	if((encryptedTextLength%16)==0)
+//	{
+//		repetitions=(encryptedTextLength/16);
+//	}
+//	else
+//	{
+		repetitions=((encryptedTextLength/16)+1);//figures out how many repetitions are needed according to the length of the string
+//	}
 
 	for(i=0;i<encryptedTextString.length();i++)
 	{
@@ -146,6 +157,7 @@ string decrypt(string encryptedTextString,string keyString)
 
 		for(j=0;j<16;j++)
 		{
+			decryptedText[(16*i)+j]=0;//zeroes out before replacing with the content of the decryption
 			decryptedText[(16*i)+j]=partialDecryptedText[j];//this stores the decrypted text chunks into a decrypted text char
 		}
 
@@ -190,7 +202,15 @@ string encrypt(string plainTextString,string keyString)
 		key[i]=0;
 		key[i]=keyString[i];
 	}
-	int repetitions=((plainTextLength/16)+1);
+	int repetitions;
+//	if((plainTextLength%16)==0)
+//	{
+//		repetitions=(plainTextLength/16);
+//	}
+//	else
+//	{
+		repetitions=((plainTextLength/16)+1);
+//	}
 
 	for(int i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
@@ -229,4 +249,4 @@ string encrypt(string plainTextString,string keyString)
 
 
 	return finalEncryptedText;
-}
+}*/
