@@ -9,25 +9,25 @@
 
 using namespace std;
 
-//string encrypt(string plainText,string key);
-//string decrypt(string encryptedText,string key);
-//int main()//this returns true if it successfully got through all of the code
-//{
-//	string errorIn="This is really  long so I'm going to keep trping until I have reached 72";//this combination of input and password produces an error for encryption.
-//	string errorPassword="Evenn longer string that somewhat unnecessary";
-//	string in="This is really  long so I'm going to keep typing until I have reached 72";//this combination of input and password works fine for encryption.
-//	string password="Evenn longer string that somewhat unnecessary";
-/*
+string encrypt(string plainText,string key);
+string decrypt(string encryptedText,string key);
+/*int main()//this returns true if it successfully got through all of the code
+{
+	string errorIn="This is really  long so I'm going to keep trping until I have reached 72";//this combination of input and password produces an error for encryption.
+	string errorPassword="Even longer string that somewhat unnecessary";
+	string in="This is really  long so I'm going to keep typing until I have reached 72";//this combination of input and password works fine for encryption.
+	string password="Evenn longer string that somewhat unnecessary";
+
 	int inLength=in.length();
 	int passLength=password.length();
 	cout << inLength << " " << passLength << endl;
  //debugging code
-*/
+
 //	cout << "initial password: " << password << endl;//debugging stuff
-/*	string ide=encrypt(in,password);//encrypts and stores the result to a string
+	string ide=encrypt(errorIn,errorPassword);//encrypts and stores the result to a string
 	if(ide!="Error")//checks to make sure that an Error wasn't returned by the encryption, and if it was successful, continues to decryption
 	{
-		string de=decrypt(ide,password);//encrypts then decrypts and saves the result off to a string
+		string de=decrypt(ide,errorPassword);//encrypts then decrypts and saves the result off to a string
 		cout << de << endl;//prints out the string that was just saved above
 	}
 	else//if the encryption was unsuccessful, it continues to this.
@@ -137,7 +137,7 @@ string decrypt(string encryptedTextString,string keyString)
 		decryptedText[i]=0;
 	}
 	AES_KEY deKey;
-	AES_set_decrypt_key(key,128,&deKey);
+	AES_set_decrypt_key(key,192,&deKey);
 	unsigned char partialEncryptedText[16],partialDecryptedText[16];
 	for(i=0;i<repetitions;i++)
 	{
@@ -191,7 +191,7 @@ string encrypt(string plainTextString,string keyString)
 		encryptedText[i]=0;
 	}
 	AES_KEY enKey;
-	AES_set_encrypt_key(key,128,&enKey);
+	AES_set_encrypt_key(key,192,&enKey);
 	unsigned char partialPlainText[16],partialEncryptedText[16];
 	for(i=0;i<repetitions;i++)//repeats this process as many times as necessary
 	{
