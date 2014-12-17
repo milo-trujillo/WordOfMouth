@@ -9,26 +9,34 @@
 
 using namespace std;
 
-string encrypt(string plainText,string key);
-string decrypt(string encryptedText,string key);
-int main()//this returns true if it successfully got through all of the code
-{
-	string in="Short";
-	string password="Even longer string that somewhat unnecessary";
+//string encrypt(string plainText,string key);
+//string decrypt(string encryptedText,string key);
+//int main()//this returns true if it successfully got through all of the code
+//{
+//	string errorIn="This is really  long so I'm going to keep trping until I have reached 72";//this combination of input and password produces an error for encryption.
+//	string errorPassword="Evenn longer string that somewhat unnecessary";
+//	string in="This is really  long so I'm going to keep typing until I have reached 72";//this combination of input and password works fine for encryption.
+//	string password="Evenn longer string that somewhat unnecessary";
+/*
 	int inLength=in.length();
 	int passLength=password.length();
 	cout << inLength << " " << passLength << endl;
-//	unsigned char* charIn= (unsigned char*)in.c_str();
-//	cout << "charIn: " << charIn << endl;
-//	cout << in.length() << " " << password.length() << endl;//this is for testing purposes to try and pinpoint the current debug issure where multiples of 8 do things funkier than the Black Eyed Peas
-	cout << "initial password: " << password << endl;
-	string ide=encrypt(in,password);
-	cout << "password after encrypt: " << password << endl;
-	string de=decrypt(ide,password);//encrypts then decrypts and saves the result off to a string
-	cout << de << endl;//prints out the string that was just saved above
-
-/*	string plainTextString="This might be pushing the boundaries just a little bit, since it's lot more than just 17 chars.";
-	string keyString="less 8";
+ //debugging code
+*/
+//	cout << "initial password: " << password << endl;//debugging stuff
+/*	string ide=encrypt(in,password);//encrypts and stores the result to a string
+	if(ide!="Error")//checks to make sure that an Error wasn't returned by the encryption, and if it was successful, continues to decryption
+	{
+		string de=decrypt(ide,password);//encrypts then decrypts and saves the result off to a string
+		cout << de << endl;//prints out the string that was just saved above
+	}
+	else//if the encryption was unsuccessful, it continues to this.
+	{
+		cout << "Error with encryption." << endl;
+	}*/
+/* This was the initially working code before separating the encryption and decryption into two functions. It still errors on the bugs the current revision of the separate functions does.
+	string plainTextString="This is really  long so I'm going to keep typing until I have reached 72";
+	string keyString="Even longer string that somewhat unnecessary";
 	int plainTextLength=plainTextString.length();
 	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
 	int i=0,j=0;
@@ -77,7 +85,6 @@ int main()//this returns true if it successfully got through all of the code
 			encryptedText[(16*i)+j]=partialEncryptedText[j];//this stores the encrypted text chunks into an encrypted text char
 		}
 	
-//	unsigned char encryptedText=encrypt(&key,&plainText);
 	
 
 
@@ -95,17 +102,16 @@ int main()//this returns true if it successfully got through all of the code
 		}
 
 	}
-//	cout << decryptedText << endl;
-//	unsigned char decryptedText=decrypt(&key,&encryptedText);
 
 	stringstream ss;
 	ss << decryptedText;
 	string finalDecryptedText(ss.str());
 	cout << "decrypted text: " << finalDecryptedText << endl;
-
 */
-	return 0;
-}
+
+//	return 0;
+
+//}
 
 
 
@@ -117,16 +123,14 @@ string decrypt(string encryptedTextString,string keyString)
 	int i,j;
 	int encryptedTextLength=encryptedTextString.length();//figures out how long the encryptedTextString is
 	int keyLength=keyString.length();//saves off the length of the key string
-	int SIZEOFARRAY=(encryptedTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string, with some extra space
+	int SIZEOFARRAY=(encryptedTextLength+8);//this adjusts the sizes of the arrays according to the size of the input string, with some extra space
 	unsigned char decryptedText[SIZEOFARRAY];//sets off enough space for the decryptedText to be stored in an array
-	cout << "encryptedTextLength: " << encryptedTextLength << endl;
-	cout << "decryptKeyLength: " << keyLength << " key: " << keyString << endl;
-	cout << "modulus: " << encryptedTextLength%(keyLength-1) << endl;
+//	cout << "encryptedTextLength: " << encryptedTextLength << endl;
+//	cout << "decryptKeyLength: " << keyLength << " key: " << keyString << endl;
+//	cout << "modulus: " << encryptedTextLength%(keyLength-1) << endl;
 	unsigned char* encryptedText=(unsigned char*)encryptedTextString.c_str();
 	unsigned char* key=(unsigned char*)keyString.c_str();
-	int repetitions;
-	repetitions=(encryptedTextLength/16);
-	repetitions++;//figures out how many repetitions are needed according to the length of the string
+	int repetitions=(encryptedTextLength/16)+1;
 
 	for(i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
@@ -168,28 +172,20 @@ string decrypt(string encryptedTextString,string keyString)
 }
 
 
-
-
-
-
-
-
 string encrypt(string plainTextString,string keyString)
 {
+	string error="Error";
 	int i,j;
 	int plainTextLength=plainTextString.length();
 	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
-	int SIZEOFARRAY=(plainTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string
-	cout << "Plaintext length: " << plainTextLength << endl;
-	cout << "encryptKeyLength: " << keyLength << " key: " << keyString << endl;
+	int SIZEOFARRAY=(plainTextLength+8);//this adjusts the sizes of the arrays according to the size of the input string
+//	cout << "Plaintext length: " << plainTextLength << endl;//debugging stuff
+//	cout << "encryptKeyLength: " << keyLength << " key: " << keyString << endl;//debugging stuff
 
 	unsigned char encryptedText[SIZEOFARRAY];
 	unsigned char* plainText=(unsigned char*)plainTextString.c_str();
 	unsigned char* key=(unsigned char*)keyString.c_str();
-	int repetitions;
-		repetitions=(plainTextLength/16);
-		repetitions++;
-
+	int repetitions=(plainTextLength/16)+1;
 	for(int i=0;i<SIZEOFARRAY;i++)//zeroes out the arrays which was causing weird issues
 	{
 		encryptedText[i]=0;
@@ -204,7 +200,6 @@ string encrypt(string plainTextString,string keyString)
 			partialPlainText[j]=0;
 			partialPlainText[j]=plainText[(16*i)+j];
 		}
-
 		AES_encrypt(partialPlainText,partialEncryptedText,&enKey);//uses the AES_KEY to encrypt the chunk of chars that was created
 
 		for(j=0;j<16;j++)
@@ -220,13 +215,23 @@ string encrypt(string plainTextString,string keyString)
 	}
 	stringstream ss;
 	ss << encryptedText;
-	string finalEncryptedText(ss.str());
+	string finalEncryptedTextString(ss.str());
 	for(i=0;i<SIZEOFARRAY;i++)
 	{
 		encryptedText[i]=0;
 	}
-	cout << "finalEncryptedTextLength: " << finalEncryptedText.length() << endl;
-
-	return finalEncryptedText;
+//	cout << "finalEncryptedTextLength: " << finalEncryptedTextString.length() << endl;//debugging diddlybop
+	if(decrypt(finalEncryptedTextString,keyString)==plainTextString)
+	{
+		cout << "Encryption successful." << endl;
+		return finalEncryptedTextString;
+	}
+	else
+	{
+		cout << endl;
+		cout << "Error encrypting. Chances are you can fix this by changing one of the n's in your password to something else, or adding an extra letter." << endl;
+		cout << endl;
+		return error;
+	}
 }
 
