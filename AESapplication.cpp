@@ -13,17 +13,17 @@ string encrypt(string plainText,string key);
 string decrypt(string encryptedText,string key);
 int main()//this returns true if it successfully got through all of the code
 {
-	string in="This is a really quite considerably longer but still really dumb string.";
-	string password="Evenn dumber string";
+	string in="Short";
+	string password="Even longer string that somewhat unnecessary";
 	int inLength=in.length();
 	int passLength=password.length();
 	cout << inLength << " " << passLength << endl;
 //	unsigned char* charIn= (unsigned char*)in.c_str();
 //	cout << "charIn: " << charIn << endl;
 //	cout << in.length() << " " << password.length() << endl;//this is for testing purposes to try and pinpoint the current debug issure where multiples of 8 do things funkier than the Black Eyed Peas
-	cout << password << endl;
+	cout << "initial password: " << password << endl;
 	string ide=encrypt(in,password);
-	cout << password << endl;
+	cout << "password after encrypt: " << password << endl;
 	string de=decrypt(ide,password);//encrypts then decrypts and saves the result off to a string
 	cout << de << endl;//prints out the string that was just saved above
 
@@ -119,22 +119,9 @@ string decrypt(string encryptedTextString,string keyString)
 	int keyLength=keyString.length();//saves off the length of the key string
 	int SIZEOFARRAY=(encryptedTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string, with some extra space
 	unsigned char decryptedText[SIZEOFARRAY];//sets off enough space for the decryptedText to be stored in an array
-
-	if(keyLength<8)
-	{
-		for(i=0;i<(8-(keyLength%8));i++)
-		{
-			keyString+=(char)0;
-		}
-	keyLength=keyString.length();
-	}
-	cout << encryptedTextLength%keyLength << endl;
-	if(encryptedTextLength%(keyLength-1)==0)
-	{
-		cout << "here de" << endl;
-		keyString+=d;
-	}
-	cout << keyString << endl;
+	cout << "encryptedTextLength: " << encryptedTextLength << endl;
+	cout << "decryptKeyLength: " << keyLength << " key: " << keyString << endl;
+	cout << "modulus: " << encryptedTextLength%(keyLength-1) << endl;
 	unsigned char* encryptedText=(unsigned char*)encryptedTextString.c_str();
 	unsigned char* key=(unsigned char*)keyString.c_str();
 	int repetitions;
@@ -152,6 +139,7 @@ string decrypt(string encryptedTextString,string keyString)
 	{
 		for(j=0;j<16;j++)
 		{
+			partialEncryptedText[j]=0;
 			partialEncryptedText[j]=encryptedText[(16*i)+j];//this breaks up the encrypted text into 16 char chunks
 		}
 
@@ -192,20 +180,8 @@ string encrypt(string plainTextString,string keyString)
 	int plainTextLength=plainTextString.length();
 	int keyLength=keyString.length();//saves off the length of the plaintext and key strings
 	int SIZEOFARRAY=(plainTextLength*2);//this adjusts the sizes of the arrays according to the size of the input string
-
-	if(keyLength<8)
-	{
-		for(i=0;i<(8-(keyLength%8));i++)
-		{
-			keyString+=(char)0;
-		}
-		keyLength=keyString.length();
-	}
-	if(plainTextLength%(keyLength-1)==0)
-	{
-		keyString+=d;
-		cout << "here en" << endl;
-	}
+	cout << "Plaintext length: " << plainTextLength << endl;
+	cout << "encryptKeyLength: " << keyLength << " key: " << keyString << endl;
 
 	unsigned char encryptedText[SIZEOFARRAY];
 	unsigned char* plainText=(unsigned char*)plainTextString.c_str();
@@ -225,6 +201,7 @@ string encrypt(string plainTextString,string keyString)
 	{
 		for(j=0;j<16;j++)//this function breaks up the plainText into chunks that are 16 chars long
 		{
+			partialPlainText[j]=0;
 			partialPlainText[j]=plainText[(16*i)+j];
 		}
 
@@ -233,6 +210,7 @@ string encrypt(string plainTextString,string keyString)
 		for(j=0;j<16;j++)
 		{
 			encryptedText[(16*i)+j]=partialEncryptedText[j];//this stores the encrypted text chunks into an encrypted text char
+			partialEncryptedText[j]=0;
 		}
 	}
 	for(i=0;j<16;i++)
@@ -247,7 +225,7 @@ string encrypt(string plainTextString,string keyString)
 	{
 		encryptedText[i]=0;
 	}
-
+	cout << "finalEncryptedTextLength: " << finalEncryptedText.length() << endl;
 
 	return finalEncryptedText;
 }
