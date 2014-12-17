@@ -9,12 +9,12 @@
 
 using namespace std;
 
-string encrypt(string plainText,string key);
+/*string encrypt(string plainText,string key);
 string decrypt(string encryptedText,string key);
-/*int main()//this returns true if it successfully got through all of the code
+int main()//this returns true if it successfully got through all of the code
 {
-	string errorIn="This is really  long so I'm going to keep trping until I have reached 72";//this combination of input and password produces an error for encryption.
-	string errorPassword="Even longer string that somewhat unnecessary";
+	string errorIn="This is a really quite considerably longer but still really dumb string.";//this combination of input and password produces an error for encryption.
+	string errorPassword="Even dumber string";
 	string in="This is really  long so I'm going to keep typing until I have reached 72";//this combination of input and password works fine for encryption.
 	string password="Evenn longer string that somewhat unnecessary";
 
