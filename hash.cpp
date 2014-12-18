@@ -1,7 +1,7 @@
 #include <openssl/sha.h>    // For Sha hashes
 #include <iostream>         // For strings
 #include <stdio.h>          // For sprintf
-#include <stdlib.h>			// For bzero
+#include <strings.h>		// For bzero
 #include <time.h>           // For epoch time() function
 
 #include <list>             // STL linked lists for tracking sent messages
