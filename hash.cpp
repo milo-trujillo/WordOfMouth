@@ -73,7 +73,13 @@ bool messageSeen(const string &msg)
 	return messageFound;
 }
 
+/*
+	This generates a 24 character digest based on an input string.
+	It is intended for use with the AES cypher code, which requires
+	binary keys of specific lengths to function.
 
+	Note: The return value is placed on the stack and must be deallocated or there will be a memory leak!
+*/
 unsigned char* generate192BitDigest(const string &key)
 {
 	SHA512_CTX context;
