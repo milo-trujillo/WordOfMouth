@@ -10,4 +10,7 @@ std::string genHash(const std::string &input);
 // Returns whether a message has been seen before (and should be dropped)
 bool messageSeen(const std::string &msg);
 
+// Generates a 24 byte digest based on any key
+unsigned char* generate192BitDigest(const std::string &key);
+
 #endif
