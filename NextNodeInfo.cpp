@@ -9,6 +9,7 @@
 #include <map>
 #include <unistd.h>
 #include "log.h"
+#include "cypher.h"
 
 using namespace std;
 
@@ -123,25 +124,25 @@ RelayConfig relayDecrypt(string passIn)
 		getline( myfile,enLocalListen );
 		getline( myfile,enLocalOut );
 		getline( myfile,enLogFile );
-		ss << decrypt( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
+		ss << decypher( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
 		ss >> deForeignListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
-		deIpAddress=decrypt( enIpAddress,passIn );
-		ss << decrypt( enForeignOut,passIn );
+		deIpAddress=decypher( enIpAddress,passIn );
+		ss << decypher( enForeignOut,passIn );
 		ss >> deForeignOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
-		deAlias=decrypt( enAlias,passIn );
-		ss << decrypt( enLocalListen,passIn );
+		deAlias=decypher( enAlias,passIn );
+		ss << decypher( enLocalListen,passIn );
 		ss >> deLocalListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
-		ss << decrypt( enLocalOut,passIn );
+		ss << decypher( enLocalOut,passIn );
 		ss >> deLocalOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
-		deLogFile=decrypt( enLogFile,passIn );
+		deLogFile=decypher( enLogFile,passIn );
 		myfile.close();
 		cout << "deForeignListen: " << deForeignListen << endl;
 		cout << "deIpAddress: " << deIpAddress << endl;
@@ -191,13 +192,13 @@ void relayEncrypt(string passIn)
 		getline( infofile,localOut );
 		getline( infofile,logFile );
 		infofile.close();
-		enForeignListen = encrypt( foreignListen,passIn );
-		enIpAddress = encrypt( ipAddress,passIn );
-		enForeignOut = encrypt( foreignOut,passIn );
-		enAlias = encrypt( alias,passIn );
-		enLocalListen = encrypt( localListen,passIn );
-		enLocalOut = encrypt( localOut,passIn );
-		enLogFile = encrypt( logFile,passIn );
+		enForeignListen = cypher( foreignListen,passIn );
+		enIpAddress = cypher( ipAddress,passIn );
+		enForeignOut = cypher( foreignOut,passIn );
+		enAlias = cypher( alias,passIn );
+		enLocalListen = cypher( localListen,passIn );
+		enLocalOut = cypher( localOut,passIn );
+		enLogFile = cypher( logFile,passIn );
 		
 //		cout << enForeignListen << endl;
 //		cout << enIpAddress << endl;
