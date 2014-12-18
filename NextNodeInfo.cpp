@@ -23,8 +23,8 @@ RelayConfig test();
 
 
 //RelayConfig(int l, std::string h, int p, std::string a)
-//std::string cipher_encrypt(std::string alias, std::string message);
-//std::string cipher_decrypt(std::string alias, std::string message);
+//std::string encrypt(std::string alias, std::string message);
+//std::string decrypt(std::string alias, std::string message);
 //alias is the thing that is used for encrypting/decrypting
 //The test files will be called Information.txt and Encrypted.txt
 
@@ -76,8 +76,6 @@ RelayConfig inputPassword()
 			if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty
 			{
 				cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
-//				encrypt(inPass);
-//				decrypt(inPass);
 					input=1;
 					usleep(3000000);//waits 3 seconds before allowing the user to try the password again
 			}
@@ -94,94 +92,130 @@ RelayConfig inputPassword()
 	return whatYouNeed;
 	
 }
-/*
-pair<bool,RelayConfig> decrypt(string passIn)
+
+RelayConfig relayDecrypt(string passIn)
 {
 	int i;
-	string enInPort;
+	string enForeignListen;
 	string enIpAddress;
-	string enOutPort;
+	string enForeignOut;
 	string enAlias;
-	int deInPort;
+	string enLocalListen;
+	string enLocalOut;
+	string enLogFile;
+	int deForeignListen;
 	string deIpAddress;
-	int deOutPort;
+	int deForeignOut;
 	string deAlias;
+	int deLocalListen;
+	int deLocalOut;
+	string deLogFile;
 //good grief, that's way too many variables
 
 	ifstream myfile("Encrypted.txt");//this takes and decrypts the information that its given, whoo!
 	if(myfile.is_open())
 	{
 		stringstream ss;
-		getline( myfile,enInPort);
-		cout << "enInPort: " << enInPort << endl;
-		getline( myfile,enIpAddress);
-		cout << "enIpAddress: " << enIpAddress << endl;
-		getline( myfile,enOutPort);
-		cout << "enOutPort: " << enOutPort << endl;
-		getline( myfile,enAlias);
-		cout << "enAlias: " << enAlias << endl;
-		ss << cipher_decrypt( passIn,enInPort );//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
-		ss >> deInPort;
-		deIpAddress=cipher_decrypt( passIn,enIpAddress );
-		ss << cipher_decrypt( passIn,enOutPort );
-		ss >> deOutPort;
-		deAlias=cipher_decrypt( passIn,enAlias );
+		getline( myfile,enForeignListen );
+		getline( myfile,enIpAddress );
+		getline( myfile,enForeignOut );
+		getline( myfile,enAlias );
+		getline( myfile,enLocalListen );
+		getline( myfile,enLocalOut );
+		getline( myfile,enLogFile );
+		ss << decrypt( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
+		ss >> deForeignListen;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
+		deIpAddress=decrypt( enIpAddress,passIn );
+		ss << decrypt( enForeignOut,passIn );
+		ss >> deForeignOut;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
+		deAlias=decrypt( enAlias,passIn );
+		ss << decrypt( enLocalListen,passIn );
+		ss >> deLocalListen;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
+		ss << decrypt( enLocalOut,passIn );
+		ss >> deLocalOut;
+		ss.str(""); // Clear the stringstream
+		ss.clear(); // And any weird state it may have entered
+		deLogFile=decrypt( enLogFile,passIn );
 		myfile.close();
-		cout << "deInPort: " << deInPort << endl;
+		cout << "deForeignListen: " << deForeignListen << endl;
 		cout << "deIpAddress: " << deIpAddress << endl;
-		cout << "deOutPort: " << deOutPort << endl;
+		cout << "deForeignOut: " << deForeignOut << endl;
 		cout << "deAlias: " << deAlias << endl;
+		cout << "deLocalListen: " << deLocalListen << endl;
+		cout << "deLocalOut: " << deLocalOut << endl;
+		cout << "deLogFile: " << deLogFile << endl;
 	}
 
 	for(i=0;i<inPass.size();i++)//since the password is no longer needed at all, we redact it
     {
         inPass[i]='X';
     }//end of the redation function
-
-	return RelayConfig(deInPort,deIpAddress,deOutPort,deAlias);
+	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile);
 }
-*/
+
 //between this and the last comment is all that's needed to decrypt a txt file that's already encrypted
-/*
-void encrypt(string passIn)
+
+void relayEncrypt(string passIn)
 {	
 //after this line is the stuff that encrypts an unencrpted file	
-	string inPort;
+	string foreignListen;
 	string ipAddress;
-	string outPort;
+	string foreignOut;
 	string alias;
-	string enInPort;
+	string localListen;
+	string localOut;
+	string logFile;
+	string enForeignListen;
 	string enIpAddress;
-	string enOutPort;
+	string enForeignOut;
 	string enAlias;
+	string enLocalListen;
+	string enLocalOut;
+	string enLogFile;
 	int i;
 
-	ifstream myfile("Information.txt");//reads through Information.txt and stores each line into a variable for use in creating the encrypted information
-	if(myfile.is_open())//this for sure works, so no problems here
+	ifstream infofile("Information.txt");//reads through Information.txt and stores each line into a variable for use in creating the encrypted information
+	if(infofile.is_open())//this for sure works, so no problems here
 	{
-		getline( myfile,inPort);
-		getline( myfile,ipAddress);
-		getline( myfile,outPort);
-		getline( myfile,alias);
-		myfile.close();
-		enInPort = cipher_encrypt( passIn, inPort );
-		enIpAddress = cipher_encrypt( passIn, ipAddress );
-		enOutPort = cipher_encrypt( passIn, outPort );
-		enAlias = cipher_encrypt( passIn, alias );
-		cout << enInPort << endl;
-		cout << enIpAddress << endl;
-		cout << enOutPort << endl;
-		cout << enAlias << endl;
+		getline( infofile,foreignListen );
+		getline( infofile,ipAddress );
+		getline( infofile,foreignOut );
+		getline( infofile,alias );
+		getline( infofile,localListen );
+		getline( infofile,localOut );
+		getline( infofile,logFile );
+		infofile.close();
+		enForeignListen = encrypt( foreignListen,passIn );
+		enIpAddress = encrypt( ipAddress,passIn );
+		enForeignOut = encrypt( foreignOut,passIn );
+		enAlias = encrypt( alias,passIn );
+		enLocalListen = encrypt( localListen,passIn );
+		enLocalOut = encrypt( localOut,passIn );
+		enLogFile = encrypt( logFile,passIn );
+		
+//		cout << enForeignListen << endl;
+//		cout << enIpAddress << endl;
+//		cout << enForeignOut << endl;
+//		cout << enAlias << endl;
 	}
 	
-	ofstream otherfile("Encrypted.txt");//this is for taking the stuff that was read from Information.txt and storing it into the encrypted txt file
-	if(otherfile.is_open())
+	ofstream encryptedfile("Encrypted.txt");//this is for taking the stuff that was read from Information.txt and storing it into the encrypted txt file
+	if(encryptedfile.is_open())
 	{
-		otherfile << enInPort << endl;
-		otherfile << enIpAddress << endl;
-		otherfile << enOutPort << endl;
-		otherfile << enAlias << endl;
-		otherfile.close();
+		encryptedfile << enForeignListen << endl;
+		encryptedfile << enIpAddress << endl;
+		encryptedfile << enForeignOut << endl;
+		encryptedfile << enAlias << endl;
+		encryptedfile << enLocalListen << endl;
+		encryptedfile << enLocalOut << endl;
+		encryptedfile << enLogFile << endl;
+		encryptedfile.close();
 	}
 	
 	
@@ -189,14 +223,14 @@ void encrypt(string passIn)
 	for(i=0;i<inPass.size();i++)//since the password is no longer needed at all, we redact it
 	{
 		inPass[i]='X';
-	}//end of the redation function
-	cout << deInPort << endl;
-	cout << deIpAddress << endl;
+	}//end of the redaction function
+//	cout << deForeignListen << endl;
+//	cout << deIpAddress << endl;
 
 
 
 	return;
-}*/
+}
 
 RelayConfig test()
 {
@@ -220,7 +254,7 @@ RelayConfig test()
 	stringstream ss;
 	if(myfile.is_open())
 	{
-		getline( myfile,enForeignListen );//gets the first line,saves it to enInPort
+		getline( myfile,enForeignListen );//gets the first line,saves it to enForeignListen
 		// We cannot print encrypted information, so these logs have been disabled
 		/*
 		if(enForeignListen!="Error")
@@ -231,7 +265,7 @@ RelayConfig test()
 			log="";
 		}
 		*/
-		//cout << "enInPort: " << enInPort << endl;//prints this out
+		//cout << "enForeignListen: " << enForeignListen << endl;//prints this out
 		getline( myfile,enIpAddress );//same
 		/*
 		if(enIpAddress!="Error")
@@ -253,7 +287,7 @@ RelayConfig test()
 			log="";
 		}
 		*/
-		//cout << "enOutPort: " << enOutPort << endl;//same
+		//cout << "enForeignOut: " << enForeignOut << endl;//same
 		getline( myfile,enAlias );//same
 		/*
 		if(enAlias!="Error")
@@ -269,7 +303,7 @@ RelayConfig test()
 		getline( myfile,enLocalOut );
 		getline( myfile,enLogFile );
 		myfile.close();
-		ss << enForeignListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss << enForeignListen;//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
 		ss >> deForeignListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
@@ -279,11 +313,11 @@ RelayConfig test()
 		ss >> deForeignOut;
 		ss.str("");
 		ss.clear();
-		ss << enLocalListen;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss << enLocalListen;//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
 		ss >> deLocalListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
-		ss << enLocalOut;//reads it line by line, the 1st saved to a variable enInPort, and then decrypts with the password, saving that to return it
+		ss << enLocalOut;//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
 		ss >> deLocalOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
@@ -292,9 +326,9 @@ RelayConfig test()
 		ss.str("");
 		ss.clear();
 		/*
-		cout << "Gives:" << deInPort << endl;
+		cout << "Gives:" << deForeignListen << endl;
 		cout << "Gives:" << deIpAddress << endl;
-		cout << "Gives:" << deOutPort << endl;
+		cout << "Gives:" << deForeignOut << endl;
 		cout << "Gives:" << deAlias << endl;
 		*/
 	}
