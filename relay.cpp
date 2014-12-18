@@ -19,7 +19,6 @@
 // Internal header files go here
 #include "relay.h"
 #include "messages.h"
-#include "CipherAlias.h"
 #include "keygen.h"
 #include "hash.h"
 #include "log.h"
@@ -156,30 +155,13 @@ void* handleMessage(void* arg)
 		return NULL;
 	}
 
-	// Cyphers disabled until Staethe updates that code
+	// TODO: Disable the temporary code below and enable the immediately
+	// following code block once we're ready
 	/*
-	printf("Without processing, I see: %*.*s\n\n\n", msg.size(), msg.size(), msg.c_str());
-	printf("Post processing, I see: %*.*s\n\n\n", cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).size(), cipher_decrypt(rc->localAlias, msg).c_str());
-
-	// This code checks using only cyphers if the received message is destined
-	// for us or needs to be forwarded to the next node
-	if( data_decoded(cipher_decrypt(rc->localAlias, msg)) )
-	{
-		string cleartext = cipher_decrypt(rc->localAlias, msg);
-		pthread_mutex_lock(&displayLock);
-		printf("Message Received\n");
-		printf("================\n");
-		// 'cout' had buffering problems here
-		int msgLength = cleartext.size();
-		printf("%*.*s", msgLength, msgLength, cleartext.c_str()); 
-		printf("\n"); // Force the screen to flush
-		pthread_mutex_unlock(&displayLock);
-	}
-	else
-	{
-		logDebug("Relaying message");
+	// This will take care of any kind of crypto layers the message may
+	// have, display it if appropriate, and tell us whether to relay it
+	if( deliverMessage(msg) )
 		sendMessage(msg);
-	}
 	*/
 
 	// This is temporary code to test relaying until cyphers and keys are working

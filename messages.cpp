@@ -15,6 +15,7 @@
 #include "relay.h"
 #include "messages.h"
 #include "log.h"
+#include "cypher.h"
 
 using namespace std;
 
@@ -60,6 +61,26 @@ void displayMessage(const string& msg)
 
 	//printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
 	pthread_mutex_unlock(&displayLock);
+}
+
+// Attempts to unwrap any layers of crypto to determine if the message
+// belongs to us. If it does, display and return false. Else return true.
+bool deliverMessage(const std::string &msg)
+{
+	/*
+		Right now all we're checking is whether the message was cyphered
+		with our username. As more complexity is added we'll need to
+		attempt decrypting with each conversation key, and any key-exchange
+		pairs we still have.
+	*/
+	string decyphered = decypher(msg, rc->getAlias());
+	if( isReadableText(decyphered) )
+	{
+		displayMessage(decyphered);
+		return false;
+	}
+	else
+		return true;
 }
 
 // Handles an individual incoming message, once the socket has already been
@@ -118,6 +139,7 @@ void* handleUserMessage(void* arg)
 	}
 
 	// TODO: Cypher the message based on the provided username
+	string cyphered = cypher(msg, destinationAlias);
 	if( errorReading == false )
 		sendMessage(msg);
 
