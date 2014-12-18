@@ -10,7 +10,6 @@
 #include "NextNodeInfo.h"
 #include "relay.h"
 #include "messages.h"
-#include "CipherAlias.h"
 #include "keygen.h"
 #include "log.h"
 #include "daemonize.h"
@@ -49,17 +48,6 @@ int main(int argc, char** argv)
 	//
 	char *pubRelayKey, *privRelayKey;
 	keyGen(&privRelayKey,&pubRelayKey);
-
-	// This code tests the Cypher Alias code and verifies that we can encrypt
-	// and decrypt a message
-	// Cypher crypto disabled until Staethe replaces it with AES
-	/*
-	string message = "Hello Worlds, boop beep,bop bepbooop";
-	string encrypted = cipher_encrypt(rc.localAlias, message);
-	string decrypted = cipher_decrypt(rc.localAlias, encrypted);
-	cout << "Orig: " << message << endl;
-	cout << "Done: " << decrypted << endl;
-	*/
 
 	// We should never pass this line (relay and message code loops until error)
 	pthread_join(messageThread, NULL);

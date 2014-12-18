@@ -1,7 +1,6 @@
 #include <sstream>
 #include <iostream>
 #include "relay.h"
-#include "CipherAlias.h"
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
