@@ -6,4 +6,6 @@
 std::string cypher(const std::string &msg, const std::string &key);
 std::string decypher(const std::string &msg, const std::string &key);
 
+bool isReadableText(const std::string &msg);
+
 #endif

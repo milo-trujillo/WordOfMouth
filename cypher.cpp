@@ -94,3 +94,11 @@ string cypher(const string &msg, const string &key)
 	delete aes_key;
 	return result;
 }
+
+bool isReadableText(const string &msg)
+{
+	for( int i = 0; i < msg.size(); i++ )
+		if( msg[i] > 126 || msg[i] < 33 ) // Outside ASCII
+			return false;
+	return true;
+}
