@@ -77,8 +77,6 @@ bool daemonize()
 
 	// Attach file descriptors 0, 1, and 2 to /dev/null
 	// This is of course, stdin, stdout, and stderr
-	// TODO: Reenable following code after logging to disk implemented
-	/*
 	fd0 = open("/dev/null", O_RDWR);
 	fd1 = dup(0);
 	fd2 = dup(0);
@@ -88,6 +86,5 @@ bool daemonize()
 		logErr("Unexpected file descriptors after closing standard I/O");
 		exit(1);
 	}
-	*/
 	return true;
 }
