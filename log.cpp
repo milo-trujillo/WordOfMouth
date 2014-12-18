@@ -14,7 +14,7 @@ bool startLogging(string logpath)
 {
 	bool succeeded = false;
 	pthread_mutex_lock(&logLock);
-	logfile.open(logpath);
+	logfile.open(logpath.c_str());
 	if( logfile.is_open() )
 	{
 		loggingInitialized = true;
