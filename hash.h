@@ -11,6 +11,7 @@ std::string genHash(const std::string &input);
 bool messageSeen(const std::string &msg);
 
 // Generates a 24 byte digest based on any key
+// NOTE: Digest is placed on the stack, remember to call delete!
 unsigned char* generate192BitDigest(const std::string &key);
 
 #endif
