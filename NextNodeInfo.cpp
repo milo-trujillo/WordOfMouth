@@ -17,7 +17,7 @@ using namespace std;
 bool fileExists(const string& fileName);
 //string inPass;
 RelayConfig inputPassword();
-pair<bool,RelayConfig> decrypt(string inPass);
+pair<bool,RelayConfig> relayDecrypt(string inPass);
 void encrypt(string inPass);
 RelayConfig test();
 //pair<return1,return2> foo
@@ -63,12 +63,20 @@ And I'm like "No, not really!"
 	and instead relies on the fact that decrypting with the wrong password will return some very odd strings that don't work.
 
 */
+int main()
+{
+	inputPassword();
+
+	return 0;
+}
+
 
 RelayConfig inputPassword()
 {
 	string configFile="enco.txt";//enco for encryptedconfig
 	int decrypted=0,input=0;
 	string inPass="";//this is supposed to be the password that the user inputs to begin the program
+//	pair<bool,RelayConfig()> decryptReturn;
 	if(!fileExists(configFile))//fileExists is a bool, returning true if it exists, so this chunk of code only applies if the file doesn't exist.
 	{
 		//This bit here just defines the large number of strings that I needed for this bit of code
@@ -81,7 +89,6 @@ RelayConfig inputPassword()
 		string localOut,enLocalOut;
 		string logFile,enLogFile;
 		string inPass;
-
 
 		//The following requests input from the user to fill in the config file
 		cout << "It appears that you do not have a file configured with the information you need to start the program." << endl;
@@ -127,14 +134,16 @@ RelayConfig inputPassword()
 			enco.close();
 		}
 	}
-
+	
+	pair<bool,RelayConfig> decryptReturn=relayDecrypt(inPass);
+	RelayConfig whatYouNeed=decryptReturn.second;
 	//This portion requests that the user input their password to receive the information that they need to open the program
 	while(decrypted==0)//repeats until the password is correct
 	{
 		while(input==0)//while loop to ensure that the user has provided non-empty input
 		{
 			input=0;
-			if(passIn="")//Because it's possible that the user has just created their password, this checks that first. If the user inputs the password incorrectly, it returns to this state.
+			if(inPass=="")//Because it's possible that the user has just created their password, this checks that first. If the user inputs the password incorrectly, it returns to this state.
 			{
 				cout << "Please input your password: ";//this requests their password on-screen
 				getline(cin, inPass);
@@ -145,23 +154,24 @@ RelayConfig inputPassword()
 					cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
 					input=1;
 					usleep(3000000);//waits 3 seconds before allowing the user to try the password again
-					if(relayDecrypt.first)
+					decryptReturn=relayDecrypt(inPass);
+					if(decryptReturn.first)
 					{
-						whatYouNeed=relayDecrypt.second;
+						RelayConfig whatYouNeed=decryptReturn.second;
 						decrypted=1;
 					}
 					else
 					{
 						cout << "Error. Incorrect password." << endl;
 						decrypted=0;
-						passIn="";
+						inPass="";
 					}
 			}
 			else
 			{
 				cout << "Error, empty password field." << endl;
 				usleep(3000000);//waits 3 seconds before allowing the user to try the password again
-				passIn="";
+				inPass="";
 			}
 		}
 		input=0;
@@ -170,16 +180,16 @@ RelayConfig inputPassword()
 //	RelayConfig whatYouNeed=test();
 
 	//This little function here simply redacts the password after it has been used and is no longer needed.
-	for(i=0;i<passIn.length();i++)
-	{
-		passIn[i]="X";
-	}
+//	for(int i=0;i<inPass.length();i++)
+//	{
+//		inPass[i]="X";
+//	}
 
 	return whatYouNeed;
 	
 }
 
-pair<bool,RelayConfig> relayDecrypt(string passIn)
+pair<bool,RelayConfig> relayDecrypt(string inPass)
 {
 	int i;
 	string enForeignListen;
@@ -215,9 +225,9 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 
 		//Decrypts each piece using the input password, checking at each step to make sure that it's human-readable
 		//Theoretically, this check should prevent crashes that would occur if the wrong password is entered, and it tries to store a non-integer to an integer variable..
-		if( isReadableText( decypher( enForeignListn,passIn ) ) )
+		if( isReadableText( decypher( enForeignListen,inPass ) ) )
 		{
-			ss << decypher( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
+			ss << decypher( enForeignListen,inPass );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
 			ss >> deForeignListen;
 			ss.str(""); // Clear the stringstream
 			ss.clear(); // And any weird state it may have entered
@@ -226,10 +236,10 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 		{
 			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 		}
-		if( isReadableText( decypher( enIpAddress,passIn ) ) )
+		if( isReadableText( decypher( enIpAddress,inPass ) ) )
 		{
-			deIpAddress=decypher( enIpAddress,passIn );
-			ss << decypher( enForeignOut,passIn );
+			deIpAddress=decypher( enIpAddress,inPass );
+			ss << decypher( enForeignOut,inPass );
 			ss >> deForeignOut;
 			ss.str(""); // Clear the stringstream
 			ss.clear(); // And any weird state it may have entered
@@ -238,17 +248,17 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 		{
 			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 		}
-		if( isReadableText( decypher( enAlias,passIn ) ) )
+		if( isReadableText( decypher( enAlias,inPass ) ) )
 		{
-			deAlias=decypher( enAlias,passIn );
+			deAlias=decypher( enAlias,inPass );
 		}
 		else
 		{
 			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 		}
-		if( isReadableText( decypher( enLocalListen,passIn ) ) )
+		if( isReadableText( decypher( enLocalListen,inPass ) ) )
 		{
-		ss << decypher( enLocalListen,passIn );
+		ss << decypher( enLocalListen,inPass );
 		ss >> deLocalListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
@@ -257,9 +267,9 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 		{
 			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 		}
-		if( isReadableText( decypher( enLocalOut,passIn ) ) )
+		if( isReadableText( decypher( enLocalOut,inPass ) ) )
 		{
-		ss << decypher( enLocalOut,passIn );
+		ss << decypher( enLocalOut,inPass );
 		ss >> deLocalOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
@@ -268,9 +278,9 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 		{
 			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 		}
-		if( isReadableText( decypher( enLogFile,passIn ) ) )
+		if( isReadableText( decypher( enLogFile,inPass ) ) )
 		{
-		deLogFile=decypher( enLogFile,passIn );
+		deLogFile=decypher( enLogFile,inPass );
 		}
 		else
 		{
@@ -288,7 +298,7 @@ pair<bool,RelayConfig> relayDecrypt(string passIn)
 
 //between this and the last comment is all that's needed to decrypt a txt file that's already encrypted
 /*This is now taken care of in the main call to this thing.
-void relayEncrypt(string passIn)
+void relayEncrypt(string inPass)
 {	
 //after this line is the stuff that encrypts an unencrpted file	
 	string foreignListen;
@@ -318,13 +328,13 @@ void relayEncrypt(string passIn)
 		getline( infofile,localOut );
 		getline( infofile,logFile );
 		infofile.close();
-		enForeignListen = cypher( foreignListen,passIn );
-		enIpAddress = cypher( ipAddress,passIn );
-		enForeignOut = cypher( foreignOut,passIn );
-		enAlias = cypher( alias,passIn );
-		enLocalListen = cypher( localListen,passIn );
-		enLocalOut = cypher( localOut,passIn );
-		enLogFile = cypher( logFile,passIn );
+		enForeignListen = cypher( foreignListen,inPass );
+		enIpAddress = cypher( ipAddress,inPass );
+		enForeignOut = cypher( foreignOut,inPass );
+		enAlias = cypher( alias,inPass );
+		enLocalListen = cypher( localListen,inPass );
+		enLocalOut = cypher( localOut,inPass );
+		enLogFile = cypher( logFile,inPass );
 		
 //		cout << enForeignListen << endl;
 //		cout << enIpAddress << endl;
