@@ -14,8 +14,8 @@
 
 using namespace std;
 
-bool fileExists(const string* fileName);
-string inPass;
+bool fileExists(const string& fileName);
+//string inPass;
 RelayConfig inputPassword();
 pair<bool,RelayConfig> decrypt(string inPass);
 void encrypt(string inPass);
