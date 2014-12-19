@@ -9,9 +9,12 @@
 #include <unistd.h>
 #include "log.h"
 #include "cypher.h"
+#include <sys/stat.h>
+#include <cmath>
 
 using namespace std;
 
+bool fileExists(const string* fileName);
 string inPass;
 RelayConfig inputPassword();
 pair<bool,RelayConfig> decrypt(string inPass);
@@ -63,37 +66,120 @@ And I'm like "No, not really!"
 
 RelayConfig inputPassword()
 {
+	string configFile="enco.txt";//enco for encryptedconfig
 	int decrypted=0,input=0;
-	string inPass;//this is supposed to be the password that the user inputs to begin the program
+	string inPass="";//this is supposed to be the password that the user inputs to begin the program
+	if(!fileExists(configFile))//fileExists is a bool, returning true if it exists, so this chunk of code only applies if the file doesn't exist.
+	{
+		//This bit here just defines the large number of strings that I needed for this bit of code
+		//Anything with the prefix "en" is the encrypted version of the string.
+		string foreignListen,enForeignListen;
+		string ipAddress,enIpAddress;
+		string foreignOut,enForeignOut;
+		string alias,enAlias;
+		string localListen,enLocalListen;
+		string localOut,enLocalOut;
+		string logFile,enLogFile;
+		string inPass;
+
+
+		//The following requests input from the user to fill in the config file
+		cout << "It appears that you do not have a file configured with the information you need to start the program." << endl;
+		cout << "Please input the correct information according to the following prompts: " << endl;
+		cout << "First, please input the password that you would like to use." << endl;
+		getline( cin,inPass);
+		cout << "Next, input the port that you listen for incoming messages on: " << endl;
+		getline( cin,foreignListen );
+		cout << "Next, input the ip address that you send information to: " << endl;
+		getline( cin,ipAddress );
+		cout << "Next, input the port that you send to for outgoing messages: " << endl;
+		getline( cin,foreignOut );
+		cout << "Next, input the alias of the person that you send your messages to: " << endl;
+		getline( cin,alias );
+		cout << "Next, input the port that you listen on locally (for communication within your machine): " << endl;
+		getline( cin,localListen );
+		cout << "Next, input the port that you sent to locally (for communication within your machine): " << endl;
+		getline( cin,localOut );
+		cout << "Finally, input the name of the logfile that you use: " << endl;
+		getline( cin,logFile );
+
+		//The following encrypts the input given by the user above
+		enForeignListen = cypher( foreignListen,inPass );
+		enIpAddress = cypher( enIpAddress,inPass );
+		enForeignOut = cypher( foreignOut,inPass );
+		enAlias = cypher( alias,inPass );
+		enLocalListen = cypher( localListen,inPass );
+		enLocalOut = cypher( localOut,inPass );
+		enLogFile = cypher( logFile,inPass );
+
+		//The following creates the encrypted file using the encrypted information attained above.
+		ofstream enco;//opens up an output file stream
+		enco.open("enco.txt");//opens the file enco.txt
+		if(enco.is_open())//because we just opened it, this should be true.
+		{
+			enco << enForeignListen << endl;//puts the encrypted listen port in the top line
+			enco << enIpAddress << endl;//ip address in next
+			enco << enForeignOut << endl;//and so on
+			enco << enAlias << endl;
+			enco << enLocalListen << endl;
+			enco << enLocalOut << endl;
+			enco << enLogFile << endl;
+			enco.close();
+		}
+	}
+
+	//This portion requests that the user input their password to receive the information that they need to open the program
 	while(decrypted==0)//repeats until the password is correct
 	{
 		while(input==0)//while loop to ensure that the user has provided non-empty input
 		{
 			input=0;
-			cout << "Please input your password: ";//this requests their password on-screen
-			getline(cin, inPass);
+			if(passIn="")//Because it's possible that the user has just created their password, this checks that first. If the user inputs the password incorrectly, it returns to this state.
+			{
+				cout << "Please input your password: ";//this requests their password on-screen
+				getline(cin, inPass);
+			}
 			//cin >> inPass;//this here asks for input and puts it into the variable inPass
 			if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty
 			{
-				cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
+					cout << "Thank you, attempting to decrypt the information" << endl;//this is pretty straightforward, just tells the user that it's checking whether the password worked
 					input=1;
 					usleep(3000000);//waits 3 seconds before allowing the user to try the password again
+					if(relayDecrypt.first)
+					{
+						whatYouNeed=relayDecrypt.second;
+						decrypted=1;
+					}
+					else
+					{
+						cout << "Error. Incorrect password." << endl;
+						decrypted=0;
+						passIn="";
+					}
 			}
 			else
 			{
 				cout << "Error, empty password field." << endl;
 				usleep(3000000);//waits 3 seconds before allowing the user to try the password again
+				passIn="";
 			}
 		}
-		decrypted=1;
+		input=0;
+//		decrypted=1;
 	}
-	RelayConfig whatYouNeed=test();
-//		RelayConfig whatYouNeed=decrypt(inPass);
+//	RelayConfig whatYouNeed=test();
+
+	//This little function here simply redacts the password after it has been used and is no longer needed.
+	for(i=0;i<passIn.length();i++)
+	{
+		passIn[i]="X";
+	}
+
 	return whatYouNeed;
 	
 }
 
-RelayConfig relayDecrypt(string passIn)
+pair<bool,RelayConfig> relayDecrypt(string passIn)
 {
 	int i;
 	string enForeignListen;
@@ -112,10 +198,13 @@ RelayConfig relayDecrypt(string passIn)
 	string deLogFile;
 //good grief, that's way too many variables
 
-	ifstream myfile("Encrypted.txt");//this takes and decrypts the information that its given, whoo!
+	ifstream myfile("enco.txt");//this takes and decrypts the information that its given, whoo!
 	if(myfile.is_open())
 	{
+		//Opens up a stringstream
 		stringstream ss;
+
+		//Reads from the encrypted config file
 		getline( myfile,enForeignListen );
 		getline( myfile,enIpAddress );
 		getline( myfile,enForeignOut );
@@ -123,44 +212,82 @@ RelayConfig relayDecrypt(string passIn)
 		getline( myfile,enLocalListen );
 		getline( myfile,enLocalOut );
 		getline( myfile,enLogFile );
-		ss << decypher( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
-		ss >> deForeignListen;
-		ss.str(""); // Clear the stringstream
-		ss.clear(); // And any weird state it may have entered
-		deIpAddress=decypher( enIpAddress,passIn );
-		ss << decypher( enForeignOut,passIn );
-		ss >> deForeignOut;
-		ss.str(""); // Clear the stringstream
-		ss.clear(); // And any weird state it may have entered
-		deAlias=decypher( enAlias,passIn );
+
+		//Decrypts each piece using the input password, checking at each step to make sure that it's human-readable
+		//Theoretically, this check should prevent crashes that would occur if the wrong password is entered, and it tries to store a non-integer to an integer variable..
+		if( isReadableText( decypher( enForeignListn,passIn ) ) )
+		{
+			ss << decypher( enForeignListen,passIn );//reads it line by line, the 1st saved to a variable enForeignListen, and then decrypts with the password, saving that to return it
+			ss >> deForeignListen;
+			ss.str(""); // Clear the stringstream
+			ss.clear(); // And any weird state it may have entered
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
+		if( isReadableText( decypher( enIpAddress,passIn ) ) )
+		{
+			deIpAddress=decypher( enIpAddress,passIn );
+			ss << decypher( enForeignOut,passIn );
+			ss >> deForeignOut;
+			ss.str(""); // Clear the stringstream
+			ss.clear(); // And any weird state it may have entered
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
+		if( isReadableText( decypher( enAlias,passIn ) ) )
+		{
+			deAlias=decypher( enAlias,passIn );
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
+		if( isReadableText( decypher( enLocalListen,passIn ) ) )
+		{
 		ss << decypher( enLocalListen,passIn );
 		ss >> deLocalListen;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
+		if( isReadableText( decypher( enLocalOut,passIn ) ) )
+		{
 		ss << decypher( enLocalOut,passIn );
 		ss >> deLocalOut;
 		ss.str(""); // Clear the stringstream
 		ss.clear(); // And any weird state it may have entered
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
+		if( isReadableText( decypher( enLogFile,passIn ) ) )
+		{
 		deLogFile=decypher( enLogFile,passIn );
+		}
+		else
+		{
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		}
 		myfile.close();
-		cout << "deForeignListen: " << deForeignListen << endl;
-		cout << "deIpAddress: " << deIpAddress << endl;
-		cout << "deForeignOut: " << deForeignOut << endl;
-		cout << "deAlias: " << deAlias << endl;
-		cout << "deLocalListen: " << deLocalListen << endl;
-		cout << "deLocalOut: " << deLocalOut << endl;
-		cout << "deLogFile: " << deLogFile << endl;
 	}
 
-	for(i=0;i<inPass.size();i++)//since the password is no longer needed at all, we redact it
-    {
-        inPass[i]='X';
-    }//end of the redation function
-	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile);
+	//My logic for this is that if all 7 pieces are human-readable, then I should get 7 
+
+	return make_pair( true,RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile) );
 }
 
-//between this and the last comment is all that's needed to decrypt a txt file that's already encrypted
 
+
+//between this and the last comment is all that's needed to decrypt a txt file that's already encrypted
+/*This is now taken care of in the main call to this thing.
 void relayEncrypt(string passIn)
 {	
 //after this line is the stuff that encrypts an unencrpted file	
@@ -230,7 +357,7 @@ void relayEncrypt(string passIn)
 
 
 	return;
-}
+}*/
 
 RelayConfig test()
 {
@@ -334,4 +461,30 @@ RelayConfig test()
 	}
 
 	return RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile);
+}
+
+/*
+	Oh hey, I found this online and it looks like it'll work for checking if a file exists, yay!
+	This function requires the inclusion of <sys/stat.h>
+	According to people in the comments, this method is faster than using the options available from fstream
+	Now, for the comments included in the code for this:
+
+
+	Check if a file exists
+@param[in] filename - the name of the file to check
+
+@return		 true if the file exists, else false
+
+
+*/
+
+bool fileExists(const string& filename)
+{
+	struct stat buf;
+	if(stat(filename.c_str(), &buf) != -1)
+	{
+		return true;
+	}
+
+	return false;
 }
