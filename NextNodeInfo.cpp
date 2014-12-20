@@ -81,34 +81,58 @@ RelayConfig inputPassword()
 	{
 		//This bit here just defines the large number of strings that I needed for this bit of code
 		//Anything with the prefix "en" is the encrypted version of the string.
-		string foreignListen,enForeignListen;
-		string ipAddress,enIpAddress;
-		string foreignOut,enForeignOut;
-		string alias,enAlias;
-		string localListen,enLocalListen;
-		string localOut,enLocalOut;
-		string logFile,enLogFile;
-		string inPass;
+		string foreignListen="",enForeignListen;
+		string ipAddress="",enIpAddress;
+		string foreignOut="",enForeignOut;
+		string alias="",enAlias;
+		string localListen="",enLocalListen;
+		string localOut="",enLocalOut;
+		string logFile="",enLogFile;
 
 		//The following requests input from the user to fill in the config file
 		cout << "It appears that you do not have a file configured with the information you need to start the program." << endl;
 		cout << "Please input the correct information according to the following prompts: " << endl;
-		cout << "First, please input the password that you would like to use." << endl;
-		getline( cin,inPass);
-		cout << "Next, input the port that you listen for incoming messages on: " << endl;
-		getline( cin,foreignListen );
-		cout << "Next, input the ip address that you send information to: " << endl;
-		getline( cin,ipAddress );
-		cout << "Next, input the port that you send to for outgoing messages: " << endl;
-		getline( cin,foreignOut );
-		cout << "Next, input the alias of the person that you send your messages to: " << endl;
-		getline( cin,alias );
-		cout << "Next, input the port that you listen on locally (for communication within your machine): " << endl;
-		getline( cin,localListen );
-		cout << "Next, input the port that you sent to locally (for communication within your machine): " << endl;
-		getline( cin,localOut );
-		cout << "Finally, input the name of the logfile that you use: " << endl;
-		getline( cin,logFile );
+		while(inPass=="")//doesn't accept an empty string
+		{
+			cout << "First, please input the password that you would like to use." << endl;
+			getline( cin,inPass);
+		}
+		while(foreignListen=="")
+		{
+			cout << "Next, input the port that you listen for incoming messages on: " << endl;
+			getline( cin,foreignListen );
+		}
+		while(ipAddress=="")
+		{
+			cout << "Next, input the ip address that you send information to: " << endl;
+			getline( cin,ipAddress );
+		}
+		while(foreignOut=="")
+		{
+			cout << "Next, input the port that you send to for outgoing messages: " << endl;
+			getline( cin,foreignOut );
+		}
+		while(alias=="")
+		{
+			cout << "Next, input the alias of the person that you send your messages to: " << endl;
+			getline( cin,alias );
+		}
+		while(localListen=="")
+		{
+			cout << "Next, input the port that you listen on locally (for communication within your machine): " << endl;
+			getline( cin,localListen );
+		}
+		while(localOut=="")
+		{
+			cout << "Next, input the port that you sent to locally (for communication within your machine): " << endl;
+			getline( cin,localOut );
+		}
+		while(logFile=="")
+		{
+			cout << "Finally, input the name of the logfile that you use: " << endl;
+			getline( cin,logFile );
+		}
+
 
 		//The following encrypts the input given by the user above
 		enForeignListen = cypher( foreignListen,inPass );
