@@ -40,6 +40,10 @@ static void hex_print(const void* pv, size_t len)
 
 string decypher(const string &msg, const string &key)
 {
+	if( key.size() == 0 )
+		throw "No key provided!";
+	if( msg.size() == 0 )
+		return "";
 	unsigned char* aes_key = generate192BitDigest(key);
 	const size_t inputslength = msg.size();
 	// Decrypted will actually be much smaller than encrypted, but
@@ -67,6 +71,10 @@ string decypher(const string &msg, const string &key)
 
 string cypher(const string &msg, const string &key)
 {
+	if( key.size() == 0 )
+		throw "No key provided!";
+	if( msg.size() == 0 )
+		return "";
 	unsigned char* aes_key = generate192BitDigest(key);
 	const size_t inputslength = msg.size();
 	const size_t outputslength = ((inputslength + AES_BLOCK_SIZE) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
