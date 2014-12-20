@@ -87,42 +87,42 @@ RelayConfig inputPassword()
 		cout << "Please input the correct information according to the following prompts: " << endl;
 		while(inPass=="")//doesn't accept an empty string
 		{
-			cout << "First, please input the password that you would like to use." << endl;
+			cout << "Choose a password for startup: "; // << endl;
 			getline( cin,inPass);
 		}
 		while(foreignListen=="")
 		{
-			cout << "Next, input the port that you listen for incoming messages on: " << endl;
+			cout << "Enter the port other relays will contact you on: "; // << endl;
 			getline( cin,foreignListen );
 		}
 		while(ipAddress=="")
 		{
-			cout << "Next, input the ip address that you send information to: " << endl;
+			cout << "Enter the IP of the next relay: "; // << endl;
 			getline( cin,ipAddress );
 		}
 		while(foreignOut=="")
 		{
-			cout << "Next, input the port that you send to for outgoing messages: " << endl;
+			cout << "Enter the port you contact the next relay on: "; // << endl;
 			getline( cin,foreignOut );
 		}
 		while(alias=="")
 		{
-			cout << "Next, input the alias of the person that you send your messages to: " << endl;
+			cout << "Enter the alias of the local user: "; // << endl;
 			getline( cin,alias );
 		}
 		while(localListen=="")
 		{
-			cout << "Next, input the port that you listen on locally (for communication within your machine): " << endl;
+			cout << "Enter the port your relay will listen on for new messages: "; // << endl;
 			getline( cin,localListen );
 		}
 		while(localOut=="")
 		{
-			cout << "Next, input the port that you sent to locally (for communication within your machine): " << endl;
+			cout << "Enter the port you will display messages on: "; // << endl;
 			getline( cin,localOut );
 		}
 		while(logFile=="")
 		{
-			cout << "Finally, input the name of the logfile that you use: " << endl;
+			cout << "Finally, input the name of the logfile that you use: "; // << endl;
 			getline( cin,logFile );
 		}
 
@@ -139,7 +139,7 @@ RelayConfig inputPassword()
 		//The following creates the encrypted file using the encrypted information attained above.
 		ofstream enco;//opens up an output file stream
 		enco.open("enco.txt");//opens the file enco.txt
-		if(enco.is_open())//because we just opened it, this should be true.
+		if(enco.is_open())//true unless there was a problem, like permission denied
 		{
 			enco << enForeignListen << endl;//puts the encrypted listen port in the top line
 			enco << enIpAddress << endl;//ip address in next
@@ -224,7 +224,8 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 	string deLogFile;
 //good grief, that's way too many variables
 
-	ifstream myfile("enco.txt");//this takes and decrypts the information that its given, whoo!
+	ifstream myfile;//this takes and decrypts the information that its given, whoo!
+	myfile.open("enco.txt");//opens the file enco.txt
 	if(myfile.is_open())
 	{
 		//Opens up a stringstream
