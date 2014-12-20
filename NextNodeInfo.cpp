@@ -63,13 +63,6 @@ And I'm like "No, not really!"
 	and instead relies on the fact that decrypting with the wrong password will return some very odd strings that don't work.
 
 */
-int main()
-{
-	inputPassword();
-
-	return 0;
-}
-
 
 RelayConfig inputPassword()
 {
@@ -215,7 +208,6 @@ RelayConfig inputPassword()
 
 pair<bool,RelayConfig> relayDecrypt(string inPass)
 {
-	int i;
 	string enForeignListen;
 	string enIpAddress;
 	string enForeignOut;
