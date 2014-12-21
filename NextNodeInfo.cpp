@@ -224,7 +224,11 @@ RelayConfig inputPassword()
 			enco.close();
 		}
 	}
-	
+	if(inPass=="")
+	{
+		cout << "Please input your password: " << endl;	
+		getline( cin,inPass );
+	}
 	pair<bool,RelayConfig> decryptReturn=relayDecrypt(inPass);
 	RelayConfig whatYouNeed=decryptReturn.second;
 	//This portion requests that the user input their password to receive the information that they need to open the program
@@ -298,12 +302,12 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 	string deLogFile = "error";
 //good grief, that's way too many variables
 
-	if(inPass=="")
-	{
-		cout << "Error, password string empty for relayDecrypt function. Please input password again." << endl;
-		getline( cin,inPass );
+//	if(inPass=="")
+//	{
+//		cout << "Error, password string empty for relayDecrypt function. Please input password again." << endl;
+//		getline( cin,inPass );
 //		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
-	}
+//	}
 	ifstream myfile;//this takes and decrypts the information that its given, whoo!
 	myfile.open("enco.txt");//opens the file enco.txt
 	if(myfile.is_open())
