@@ -64,6 +64,13 @@ And I'm like "No, not really!"
 
 */
 
+//int main()
+//{
+//	inputPassword();
+	
+//	return 0;
+//}
+
 RelayConfig inputPassword()
 {
 	string configFile="enco.txt";//enco for encryptedconfig
@@ -127,14 +134,79 @@ RelayConfig inputPassword()
 		}
 
 
+
 		//The following encrypts the input given by the user above
-		enForeignListen = cypher( foreignListen,inPass );
-		enIpAddress = cypher( enIpAddress,inPass );
-		enForeignOut = cypher( foreignOut,inPass );
-		enAlias = cypher( alias,inPass );
-		enLocalListen = cypher( localListen,inPass );
-		enLocalOut = cypher( localOut,inPass );
-		enLogFile = cypher( logFile,inPass );
+		if(inPass!="")
+		{
+			enForeignListen = cypher( foreignListen,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enForeignListen = cypher( foreignListen,inPass );
+		}
+		if(inPass!="")
+		{
+			enIpAddress = cypher( enIpAddress,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enIpAddress = cypher( enIpAddress,inPass );
+		}
+		if(inPass!="")
+		{
+			enForeignOut = cypher( foreignOut,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enForeignOut = cypher( foreignOut,inPass );
+		}
+		if(inPass!="")
+		{
+			enAlias = cypher( alias,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enAlias = cypher( alias,inPass );
+		}
+		if(inPass!="")
+		{
+			enLocalListen = cypher( localListen,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enLocalListen = cypher( localListen,inPass );
+		}
+		if(inPass!="")
+		{
+			enLocalOut = cypher( localOut,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enLocalOut = cypher( localOut,inPass );
+		}
+		if(inPass!="")
+		{
+			enLogFile = cypher( logFile,inPass );
+		}
+		else
+		{
+			cout << "Error, please input password again." << endl;
+			getline( cin,inPass );
+			enLogFile = cypher( logFile,inPass );
+		}
+
 
 		//The following creates the encrypted file using the encrypted information attained above.
 		ofstream enco;//opens up an output file stream
@@ -179,7 +251,7 @@ RelayConfig inputPassword()
 					}
 					else
 					{
-						cout << "Error. Incorrect password." << endl;
+//						cout << "Error. Incorrect password." << endl;
 						decrypted=0;
 						inPass="";
 					}
