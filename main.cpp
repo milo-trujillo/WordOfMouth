@@ -32,11 +32,11 @@ int main(int argc, char** argv)
 	if( daemonize() == false )
 	{
 		printf("Unable to daemonize - Aborting\n");
-		exit(1);
+		return 1;
 	}
 	// Note: Daemonizing closes all file handles, do *not* put logging first
 	if( startLogging(rc.getLogPath()) == false )
-		exit(1);
+		return 1;
 	pthread_t relayThread;
 	pthread_t messageThread;
 	pthread_create(&relayThread, NULL, startRelaying, (RelayConfig*)&rc);

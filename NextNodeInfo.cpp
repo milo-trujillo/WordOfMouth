@@ -280,20 +280,20 @@ RelayConfig inputPassword()
 
 pair<bool,RelayConfig> relayDecrypt(string inPass)
 {
-	string enForeignListen;
-	string enIpAddress;
-	string enForeignOut;
-	string enAlias;
-	string enLocalListen;
-	string enLocalOut;
-	string enLogFile;
-	int deForeignListen;
-	string deIpAddress;
-	int deForeignOut;
-	string deAlias;
-	int deLocalListen;
-	int deLocalOut;
-	string deLogFile;
+	string enForeignListen = "error";
+	string enIpAddress = "error";
+	string enForeignOut = "error";
+	string enAlias = "error";
+	string enLocalListen = "error";
+	string enLocalOut = "error";
+	string enLogFile = "error";
+	int deForeignListen = -1;
+	string deIpAddress = "error";
+	int deForeignOut = -1;
+	string deAlias = "error";
+	int deLocalListen = -1;
+	int deLocalOut = -1;
+	string deLogFile = "error";
 //good grief, that's way too many variables
 
 	if(inPass=="")
