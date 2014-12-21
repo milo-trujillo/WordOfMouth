@@ -29,7 +29,7 @@ static pthread_mutex_t hashLock; // Prevent thread collision accessing msgHashes
 string genHash(const string &input)
 {
 	SHA512_CTX context;
-	unsigned char buf[HASH_LENGTH];
+	unsigned char buf[SHA512_DIGEST_LENGTH];
 	if(!SHA512_Init(&context))
 		return "error";
 
@@ -39,11 +39,9 @@ string genHash(const string &input)
 	if(!SHA512_Final(buf, &context))
 		return "error";
 
-	char conv[HASH_LENGTH * 2];
 	string hash;
-	for( int i = 0; i < HASH_LENGTH; i++ )
-		sprintf(conv + (i*2), "%02x", buf[i]);
-	hash = conv;
+	for( int i = 0; i < SHA512_DIGEST_LENGTH; i++ )
+		hash.push_back((char)buf[i]);
 	return hash;
 }
 
@@ -83,8 +81,8 @@ bool messageSeen(const string &msg)
 unsigned char* generate192BitDigest(const string &key)
 {
 	SHA512_CTX context;
-	size_t buf_size = sizeof(unsigned char) * DIGEST_192_LENGTH;
-	unsigned char* buf = new unsigned char (buf_size);
+	size_t buf_size = SHA512_DIGEST_LENGTH;
+	unsigned char* buf = new unsigned char [buf_size];
 	bzero(buf, buf_size);
 	if(!SHA512_Init(&context))
 	{

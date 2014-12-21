@@ -65,7 +65,7 @@ string decypher(const string &msg, const string &key)
 	string result;
 	for( int i = 0; i < inputslength && aes_output[i] != 0; i++ )
 		result.push_back((char)aes_output[i]);
-	delete aes_key;
+	delete [] aes_key;
 	return result;
 }
 
@@ -99,7 +99,7 @@ string cypher(const string &msg, const string &key)
 	string result;
 	for( int i = 0; i < outputslength; i++ )
 		result.push_back((char)aes_output[i]);
-	delete aes_key;
+	delete [] aes_key;
 	return result;
 }
 
