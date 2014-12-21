@@ -107,6 +107,7 @@ RelayConfig inputPassword()
 			cout << "Enter the IP of the next relay: "; // << endl;
 			getline( cin,ipAddress );
 		}
+//		cout << "IP Address: " << ipAddress << endl;
 		while(foreignOut=="")
 		{
 			cout << "Enter the port you contact the next relay on: "; // << endl;
@@ -148,7 +149,7 @@ RelayConfig inputPassword()
 		}
 		if(inPass!="")
 		{
-			enIpAddress = cypher( enIpAddress,inPass );
+			enIpAddress = cypher( ipAddress,inPass );
 		}
 		else
 		{
@@ -273,6 +274,7 @@ RelayConfig inputPassword()
 //	{
 //		inPass[i]="X";
 //	}
+	cout << "Relay successfully decrypted" << endl;
 
 	return whatYouNeed;
 	
@@ -298,8 +300,9 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 
 	if(inPass=="")
 	{
-		cout << "Error" << endl;
-		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		cout << "Error, password string empty for relayDecrypt function. Please input password again." << endl;
+		getline( cin,inPass );
+//		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
 	}
 	ifstream myfile;//this takes and decrypts the information that its given, whoo!
 	myfile.open("enco.txt");//opens the file enco.txt
@@ -382,8 +385,17 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 		}
 		myfile.close();
 	}
-
 	//My logic for this is that if all 7 pieces are human-readable, then I should get 7 
+
+/*
+	cout << "deForeignListen: " << deForeignListen << endl;
+	cout << "deIpAddress: " << deIpAddress << endl;
+	cout << "deForeignOut: " << deForeignOut << endl;
+	cout << "deAlias: " << deAlias << endl;
+	cout << "deLocalListen: " << deLocalListen << endl;
+	cout << "deLocalOut: " << deLocalOut << endl;
+	cout << "deLogFile: " << deLogFile << endl;
+*/
 
 	return make_pair( true,RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile) );
 }
