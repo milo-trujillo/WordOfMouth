@@ -9,7 +9,6 @@
 
 using namespace std;
 
-static const int HASH_LENGTH = 20;
 static const int DIGEST_192_LENGTH = 24;
 static const unsigned int MAX_MESSAGE_AGE = 600; // 10 minutes (epoch time)
 
@@ -69,38 +68,4 @@ bool messageSeen(const string &msg)
 	msgHashes.push_back(make_pair(hash, currentTime));
 	pthread_mutex_unlock(&hashLock);
 	return messageFound;
-}
-
-/*
-	This generates a 24 character digest based on an input string.
-	It is intended for use with the AES cypher code, which requires
-	binary keys of specific lengths to function.
-
-	Note: The return value is placed on the stack and must be deallocated or there will be a memory leak!
-*/
-unsigned char* generate192BitDigest(const string &key)
-{
-	SHA512_CTX context;
-	size_t buf_size = SHA512_DIGEST_LENGTH;
-	unsigned char* buf = new unsigned char [buf_size];
-	bzero(buf, buf_size);
-	if(!SHA512_Init(&context))
-	{
-		sprintf((char*)buf, "error");
-		return buf;
-	}
-
-	if(!SHA512_Update(&context, (unsigned char*)key.c_str(), key.size()))
-	{
-		sprintf((char*)buf, "error");
-		return buf;
-	}
-
-	if(!SHA512_Final(buf, &context))
-	{
-		sprintf((char*)buf, "error");
-		return buf;
-	}
-
-	return buf;
 }

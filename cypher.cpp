@@ -44,7 +44,8 @@ string decypher(const string &msg, const string &key)
 		throw "No key provided!";
 	if( msg.size() == 0 )
 		return "";
-	unsigned char* aes_key = generate192BitDigest(key);
+	// The aes_key must be a binary blob of (at a minimum) 24 characters
+	string aes_key = genHash(key);
 	const size_t inputslength = msg.size();
 	// Decrypted will actually be much smaller than encrypted, but
 	// we don't know the exact size, so we're making a huge buffer
@@ -59,13 +60,12 @@ string decypher(const string &msg, const string &key)
 	memcpy(iv_dec, salt, AES_BLOCK_SIZE);
 	
 	AES_KEY dec_key;
-	AES_set_decrypt_key(aes_key, KEYLENGTH, &dec_key);
+	AES_set_decrypt_key((unsigned char*) aes_key.c_str(), KEYLENGTH, &dec_key);
 	AES_cbc_encrypt(aes_input, aes_output, inputslength, &dec_key, iv_dec, AES_DECRYPT);
 
 	string result;
 	for( int i = 0; i < inputslength && aes_output[i] != 0; i++ )
 		result.push_back((char)aes_output[i]);
-	delete [] aes_key;
 	return result;
 }
 
@@ -75,7 +75,7 @@ string cypher(const string &msg, const string &key)
 		throw "No key provided!";
 	if( msg.size() == 0 )
 		return "";
-	unsigned char* aes_key = generate192BitDigest(key);
+	string aes_key = genHash(key);
 	const size_t inputslength = msg.size();
 	const size_t outputslength = ((inputslength + AES_BLOCK_SIZE) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
 	// Encrypted will be much bigger than decrypted
@@ -90,7 +90,7 @@ string cypher(const string &msg, const string &key)
 	memcpy(iv_enc, salt, AES_BLOCK_SIZE);
 	
 	AES_KEY enc_key;
-	AES_set_encrypt_key(aes_key, KEYLENGTH, &enc_key);
+	AES_set_encrypt_key((unsigned char*)aes_key.c_str(), KEYLENGTH, &enc_key);
 	AES_cbc_encrypt(aes_input, aes_output, inputslength, &enc_key, iv_enc, AES_ENCRYPT);
 
 	// Remember that an unsigned char array is *not* a string,
@@ -99,7 +99,6 @@ string cypher(const string &msg, const string &key)
 	string result;
 	for( int i = 0; i < outputslength; i++ )
 		result.push_back((char)aes_output[i]);
-	delete [] aes_key;
 	return result;
 }
 
