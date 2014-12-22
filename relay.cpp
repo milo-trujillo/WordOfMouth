@@ -155,18 +155,16 @@ void* handleMessage(void* arg)
 		return NULL;
 	}
 
-	// TODO: Disable the temporary code below and enable the immediately
-	// following code block once we're ready
-	/*
 	// This will take care of any kind of crypto layers the message may
 	// have, display it if appropriate, and tell us whether to relay it
 	if( deliverMessage(msg) )
 		sendMessage(msg);
-	*/
 
 	// This is temporary code to test relaying until cyphers and keys are working
+	/*
 	displayMessage(msg);
 	sendMessage(msg);
+	*/
 
 	return NULL;
 }

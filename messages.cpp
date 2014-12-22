@@ -138,10 +138,9 @@ void* handleUserMessage(void* arg)
 			msg += buf; // Make a C++ string from the C String
 	}
 
-	// TODO: Cypher the message based on the provided username
 	string cyphered = cypher(msg, destinationAlias);
 	if( errorReading == false )
-		sendMessage(msg);
+		sendMessage(cyphered);
 
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  
