@@ -302,12 +302,12 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 	string deLogFile = "error";
 //good grief, that's way too many variables
 
-//	if(inPass=="")
-//	{
-//		cout << "Error, password string empty for relayDecrypt function. Please input password again." << endl;
-//		getline( cin,inPass );
-//		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
-//	}
+	if(inPass=="")
+	{
+		cout << "Error, password string empty for relayDecrypt function. Please input password again." << endl;
+		getline( cin,inPass );
+		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+	}
 	ifstream myfile;//this takes and decrypts the information that its given, whoo!
 	myfile.open("enco.txt");//opens the file enco.txt
 	if(myfile.is_open())
