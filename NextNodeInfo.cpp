@@ -94,43 +94,43 @@ RelayConfig inputPassword()
 		cout << "Please input the correct information according to the following prompts: " << endl;
 		while(inPass=="")//doesn't accept an empty string
 		{
-			cout << "Choose a password for startup: "; // << endl;
+			cout << "Choose a password for startup: ";
 			getline( cin,inPass);
 		}
 		while(foreignListen=="")
 		{
-			cout << "Enter the port other relays will contact you on: "; // << endl;
+			cout << "Enter the port other relays will contact you on: ";
 			getline( cin,foreignListen );
 		}
 		while(ipAddress=="")
 		{
-			cout << "Enter the IP of the next relay: "; // << endl;
+			cout << "Enter the IP of the next relay: ";
 			getline( cin,ipAddress );
 		}
 //		cout << "IP Address: " << ipAddress << endl;
 		while(foreignOut=="")
 		{
-			cout << "Enter the port you contact the next relay on: "; // << endl;
+			cout << "Enter the port you contact the next relay on: ";
 			getline( cin,foreignOut );
 		}
 		while(alias=="")
 		{
-			cout << "Enter the alias of the local user: "; // << endl;
+			cout << "Enter the alias of the local user: ";
 			getline( cin,alias );
 		}
 		while(localListen=="")
 		{
-			cout << "Enter the port your relay will listen on for new messages: "; // << endl;
+			cout << "Enter the port your relay will listen on for new messages: ";
 			getline( cin,localListen );
 		}
 		while(localOut=="")
 		{
-			cout << "Enter the port you will display messages on: "; // << endl;
+			cout << "Enter the port you will display messages on: ";
 			getline( cin,localOut );
 		}
 		while(logFile=="")
 		{
-			cout << "Finally, input the name of the logfile that you use: "; // << endl;
+			cout << "Finally, input the name of the logfile that you use: ";
 			getline( cin,logFile );
 		}
 
@@ -143,7 +143,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enForeignListen = cypher( foreignListen,inPass );
 		}
@@ -153,7 +153,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enIpAddress = cypher( enIpAddress,inPass );
 		}
@@ -163,7 +163,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enForeignOut = cypher( foreignOut,inPass );
 		}
@@ -173,7 +173,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enAlias = cypher( alias,inPass );
 		}
@@ -183,7 +183,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enLocalListen = cypher( localListen,inPass );
 		}
@@ -193,7 +193,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enLocalOut = cypher( localOut,inPass );
 		}
@@ -203,7 +203,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enLogFile = cypher( logFile,inPass );
 		}
@@ -226,7 +226,7 @@ RelayConfig inputPassword()
 	}
 	if(inPass=="")
 	{
-		cout << "Please input your password: " << endl;	
+		cout << "Please input your password: ";	
 		getline( cin,inPass );
 	}
 	pair<bool,RelayConfig> decryptReturn=relayDecrypt(inPass);
@@ -278,7 +278,7 @@ RelayConfig inputPassword()
 //	{
 //		inPass[i]="X";
 //	}
-	cout << "Relay successfully decrypted" << endl;
+	cout << "Relay configuration successfully decrypted" << endl;
 
 	return whatYouNeed;
 	
