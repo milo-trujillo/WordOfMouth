@@ -105,7 +105,8 @@ string cypher(const string &msg, const string &key)
 bool isReadableText(const string &msg)
 {
 	for( int i = 0; i < msg.size(); i++ )
-		if( msg[i] > 126 || msg[i] < 33 ) // Outside ASCII
+		// If outside printable ASCII range
+		if( (msg[i] > 126 || msg[i] < 33) && msg[i] != '\n' )
 			return false;
 	return true;
 }
