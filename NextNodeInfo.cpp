@@ -280,7 +280,10 @@ RelayConfig inputPassword()
 //	{
 //		inPass[i]="X";
 //	}
-	cout << "Relay successfully decrypted" << endl;
+	if(VERBOSE)
+	{
+		cout << "Relay successfully decrypted" << endl;
+	}
 
 	return whatYouNeed;
 	
@@ -294,7 +297,7 @@ RelayConfig inputPassword()
 
 pair<bool,RelayConfig> relayDecrypt(string inPass)
 {
-	int i=0,m=0;
+	int i=0;
 	string enForeignListen = "enerror";
 	string enIpAddress = "enerror";
 	string enForeignOut = "enerror";
@@ -332,15 +335,19 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 
 		//Reads from the encrypted config file
 		string enConcatenated((istreambuf_iterator<char>(myfile)),istreambuf_iterator<char>());
-//		if( isReadableText( decypher( enConcatenated,inPass ) ) )
-//		{
+		if( isReadableText( decypher( enConcatenated,inPass ) ) )
+		{
 		deConcatenated=decypher( enConcatenated,inPass );	
-//		}
-//		else
-//		{
-//			cout << "File non-decryptable." << endl;
-//			i++;
-//		}
+		}
+		else
+		{
+			if(VERBOSE)
+			{
+				cout << "File non-decryptable." << endl;
+			}
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+			i++;
+		}
 
 		//Decrypts each piece using the input password, checking at each step to make sure that it's human-readable
 		//Theoretically, this check should prevent crashes that would occur if the wrong password is entered, and it tries to store a non-integer to an integer variable..
@@ -469,31 +476,6 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 	ss >> deLocalOut;
 	ss.str("");
 	ss.clear();
-
-
-	if(!isReadableText(deForeignListenString))
-	m++;
-	if(!isReadableText(deIpAddress))
-	m++;
-	if(!isReadableText(deForeignOutString))
-	m++;
-	if(!isReadableText(deAlias))
-	m++;
-	if(!isReadableText(deLocalListenString))
-	m++;
-	if(!isReadableText(deLocalOutString))
-	m++;
-	if(!isReadableText(deLogFile))
-	m++;
-
-	if(m>0)
-	{
-		if(VERBOSE)
-		{
-			cout << "Decryption unsuccessful, returning error RelayConfig." << endl;
-		}
-		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
-	}
 
 	if(VERBOSE)
 	{
