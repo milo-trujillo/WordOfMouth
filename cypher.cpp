@@ -90,7 +90,7 @@ string cypher(const string &msg, const string &key)
 	memcpy(iv_enc, salt, AES_BLOCK_SIZE);
 	
 	AES_KEY enc_key;
-	AES_set_encrypt_key((unsigned char*)aes_key.c_str(), KEYLENGTH, &enc_key);
+	AES_set_encrypt_key((unsigned char*) aes_key.c_str(), KEYLENGTH, &enc_key);
 	AES_cbc_encrypt(aes_input, aes_output, inputslength, &enc_key, iv_enc, AES_ENCRYPT);
 
 	// Remember that an unsigned char array is *not* a string,
