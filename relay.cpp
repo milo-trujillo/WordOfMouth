@@ -46,7 +46,7 @@ void reportNetworkError(int err)
 		default:
 			char errnumber[4];
 			sprintf(errnumber, "%d", err);
-			string errstring = "[Errno] Unknown error code# ";
+			string errstring = "[Errno] Unknown error code #";
 			errstring += errnumber;
 			logErr(errstring);
 	}
@@ -120,8 +120,7 @@ void* handleMessage(void* arg)
 	while(true) 
 	{      
 		// Flush the buffer in case something is left over from a prior read
-		for(int i = 0; i < BUFFER_SIZE; i++)
-			buf[i] = 0;
+		bzero(buf, BUFFER_SIZE);
 
 		k = recv(sock_desc, buf, BUFFER_SIZE, 0);      
 
@@ -139,6 +138,8 @@ void* handleMessage(void* arg)
 
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  
+
+	logDebug("Message received");
 
 	// TODO: Unwrap first layer of crypto (relay keys)
 	// Then determine if message is destined for us: 

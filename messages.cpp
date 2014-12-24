@@ -76,11 +76,15 @@ bool deliverMessage(const std::string &msg)
 	string decyphered = decypher(msg, rc->getAlias());
 	if( isReadableText(decyphered) )
 	{
+		logDebug("Displaying received message");
 		displayMessage(decyphered);
 		return false;
 	}
 	else
+	{
+		logDebug("Relaying message");
 		return true;
+	}
 }
 
 // Handles an individual incoming message, once the socket has already been
