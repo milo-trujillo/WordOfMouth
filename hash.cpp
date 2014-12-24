@@ -9,7 +9,9 @@
 
 using namespace std;
 
-static const int DIGEST_192_LENGTH = 24;
+// This is the minimum size of a key for 192-bit AES. Our hashes are
+// much bigger, so we never actually need the constant.
+//static const int DIGEST_192_LENGTH = 24;
 static const unsigned int MAX_MESSAGE_AGE = 600; // 10 minutes (epoch time)
 
 // Global vars are bad, but at least this is only global to the hash code
