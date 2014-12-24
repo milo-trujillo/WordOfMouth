@@ -197,7 +197,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
-			cout << "Error, please input password again." << endl;
+			cout << "Error, please input password again: ";
 			getline( cin,inPass );
 			enConcatenated = cypher( concatenated,inPass );
 		}
@@ -215,7 +215,7 @@ RelayConfig inputPassword()
 
 	while(inPass=="")
 	{
-		cout << "Please input your password: " << endl;	
+		cout << "Please input your password: ";	
 		getline( cin,inPass );
 		if(inPass!="")
 		{
