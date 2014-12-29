@@ -76,7 +76,7 @@ bool deliverMessage(const std::string &msg)
 	string decyphered = decypher(msg, rc->getAlias());
 	if( isReadableText(decyphered) )
 	{
-		logDebug("Displaying received message");
+		logDebug("Displaying decrypted message");
 		displayMessage(decyphered);
 		return false;
 	}
