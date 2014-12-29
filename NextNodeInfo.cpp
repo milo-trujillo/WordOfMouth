@@ -13,31 +13,34 @@
 
 #define VERBOSE 0
 //if you want all the debugging couts turned on, set this to 1, else 0
+#define FILENAME "enco.txt"
+//this allows the compiler to change the name of the encrypted config file to whatever they'd like (perhaps for obscurity?)
+//if this is done, be sure to keep the quotation marks around the name, as well as the .txt at the end.
+//for example, changing "enco.txt" to "encryptedconfig" is not valid, but changing it to "thisisuseless.txt" is valid.
 
 using namespace std;
 
-bool fileExists(const string& fileName);
-//string inPass;
-RelayConfig inputPassword();
-pair<bool,RelayConfig> relayDecrypt(string inPass);
-void encrypt(string inPass);
-RelayConfig test();
+bool fileExists(const string& fileName);//this function checks to see whether a certain file exists, and is more efficient than using fstream
+RelayConfig inputPassword();//this is the main part of the NextNodeInfo function, requesting the user's password or other information
+pair<bool,RelayConfig> relayDecrypt(string inPass);//this is what decrypts the information in the encrypted file containing the config for WOM
+
+
+//The following is just notes on how to make pairs
 //pair<return1,return2> foo
 //return make_pair(return1,return2);
 //if foo.first
 
 
-//RelayConfig(int l, std::string h, int p, std::string a)
-//std::string encrypt(std::string alias, std::string message);
-//std::string decrypt(std::string alias, std::string message);
-//alias is the thing that is used for encrypting/decrypting
-//The test files will be called Information.txt and Encrypted.txt
 
-//logErr
-//logWarn
-//logDebug
-//logInfo
+//The following is notes regarding the log and its usage
+//logErr(string)
+//logWarn(string)
+//logDebug(string)
+//logInfo(string)
 
+
+
+//The following is song lyrics for Milo
 //Song lyrics from OMI's "Cheerleader", just for Milo
 /*
 "She walks like a model,
@@ -63,103 +66,126 @@ And I'm like "No, not really!"
 		-side note: make sure that there's a delay between confirming if the password is correct or not
 	-because of the fact that the information is encrypted with the person's "password" the password isn't actually compared to anything,
 	and instead relies on the fact that decrypting with the wrong password will return some very odd strings that don't work.
-
 */
 
-//int main()
-//{
-//	inputPassword();
-	
-//	return 0;
-//}
+/*Things that this program can already do:
+	-Detect whether there is a config file that has been created, and if it hasn't, prompts the user for input regarding the config file.
+		-in addition, it can also detect whether or not a file exists, as a side function useable by other parts of the program by including the header.
+	-Requests user password.
+		-either decrypts the config successfully or unsuccessfully, and returns that result.
+			-if unsuccessful, requests the password to be input again
+		-detects whether the password field was blank, and requests input again if it is.
+			-empties the password variable after each iteration.
+	-Regardless of whether the result was successful, it waits 3 seconds before continuing through another iteration, or continuing to completion.
+	-If a config file doesn't exits, encrypts the information that the user inputs to create the config file, and read from an encrypted config file if the correct password is given.
+	-Detect whether or not an empty password field has been input.
+*/
+
+
+
 
 RelayConfig inputPassword()
 {
-	string configFile="enco.txt";//enco for encryptedconfig
-	int decrypted=0,input=0;
+	string configFile=FILENAME;//this stores away the name of the config file
 	string inPass="";//this is supposed to be the password that the user inputs to begin the program
-//	pair<bool,RelayConfig()> decryptReturn;
-	if(!fileExists(configFile))//fileExists is a bool, returning true if it exists, so this chunk of code only applies if the file doesn't exist.
+	if(!fileExists(configFile))//fileExists returnss a boolean, returning true if it exists, so this chunk of code only applies if the file doesn't exist.
 	{
-		//This bit here just defines the large number of strings that I needed for this bit of code
-		//Anything with the prefix "en" is the encrypted version of the string.
-		string foreignListen="",enForeignListen;
-		string ipAddress="",enIpAddress;
-		string foreignOut="",enForeignOut;
-		string alias="",enAlias;
-		string localListen="",enLocalListen;
-		string localOut="",enLocalOut;
-		string logFile="",enLogFile;
-		string concatenated,enConcatenated;
-		//The following requests input from the user to fill in the config file
+		//This bit here just defines the large number of strings that I needed for this bit of code, for the input, encryption, and concatenation.
+		string foreignListen="";
+		string ipAddress="";
+		string foreignOut="";
+		string alias="";
+		string localListen="";
+		string localOut="";
+		string logFile="";
+		//up until this point, this is just for user input, and the strings are unnecessary anywhere else in the code, which is why they're declared within the if statement
+		//after taking in this input, it's all saved into the string concatenated
+		//this is done by taking one piece, pushing a newline character to the end of it, then taking the next piece, and so on (for later separation of the parts after decryption)
+		string concatenated;
+		string enConcatenated;//This is the string that the encrypted version of concatenated is saved to before putting it in the text file
+
+
+		//The following requests input from the user to fill in the config file, and this code will only be executed if a config file doesn't exist.
 		cout << "It appears that you do not have a file configured with the information you need to start the program." << endl;
 		cout << "Please input the correct information according to the following prompts: " << endl;
-		while(inPass=="")//doesn't accept an empty string
+
+		//The following is how the request for information to fill the config file is made, up until the next comment block.
+		//Because each part of the config follows a standard method of input gathering, I'm only commenting the password part.
+
+		while(inPass=="")//doesn't accept an empty string for the input
 		{
-			cout << "Choose a password for startup: "; // << endl;
-			getline( cin,inPass);
-			if(VERBOSE)
+			cout << "Choose a password for startup: ";//Because of the fact that the program hasn't daemonized at this point, cout tells the user what is being requested
+			getline( cin,inPass);//This takes in the user input from cin, and stores it to the variable inPass (in order to store away the password they use for encryption later)
+			if(VERBOSE)//this statement is handled by a preprocessor macro at the top, where VERBOSE is defined as 0 or 1 to give fairly complete debugging info
 			{
 				cout << "inPass: " << inPass << " length: " << inPass.length() << endl;
+				//This couts the input password (repeats it back to the user) as well as its length (there were issues before, so this is mostly just leftover.
 			}
 		}
+
 		while(foreignListen=="")
 		{
-			cout << "Enter the port other relays will contact you on: "; // << endl;
+			cout << "Enter the port other relays will contact you on: ";
 			getline( cin,foreignListen );
 			if(VERBOSE)
 			{
 				cout << "foreignListen: " << foreignListen << " length: " << foreignListen.length() << endl;
 			}
 		}
+
 		while(ipAddress=="")
 		{
-			cout << "Enter the IP of the next relay: "; // << endl;
+			cout << "Enter the IP of the next relay: ";
 			getline( cin,ipAddress );
 			if(VERBOSE)
 			{
 				cout << "ipAddress: " << ipAddress << " length: " << ipAddress.length() <<  endl;
 			}
 		}
+
 		while(foreignOut=="")
 		{
-			cout << "Enter the port you contact the next relay on: "; // << endl;
+			cout << "Enter the port you contact the next relay on: ";
 			getline( cin,foreignOut );
 			if(VERBOSE)
 			{
 				cout << "foreignOut: " << foreignOut << " length: " << foreignOut.length() << endl;
 			}
 		}
+
 		while(alias=="")
 		{
-			cout << "Enter the alias of the local user: "; // << endl;
+			cout << "Enter the alias of the local user: ";
 			getline( cin,alias );
 			if(VERBOSE)
 			{
 				cout << "alias: " << alias << " length: " << alias.length() << endl;
 			}
 		}
+
 		while(localListen=="")
 		{
-			cout << "Enter the port your relay will listen on for new messages: "; // << endl;
+			cout << "Enter the port your relay will listen on for new messages: ";
 			getline( cin,localListen );
 			if(VERBOSE)
 			{
 				cout << "localListen: " << localListen << " length: " << localListen.length() << endl;
 			}
 		}
+
 		while(localOut=="")
 		{
-			cout << "Enter the port you will display messages on: "; // << endl;
+			cout << "Enter the port you will display messages on: ";
 			getline( cin,localOut );
 			if(VERBOSE)
 			{
 				cout << "localOut: " << localOut << " length: " << localOut.length() << endl;
 			}
 		}
+
 		while(logFile=="")
 		{
-			cout << "Finally, input the name of the logfile that you use: "; // << endl;
+			cout << "Finally, input the name of the logfile that you use: ";
 			getline( cin,logFile );
 			if(VERBOSE)
 			{
@@ -167,13 +193,29 @@ RelayConfig inputPassword()
 			}
 		}
 
+		/*
+			If ever needed, more pieces can be added to the config fairly easily. In this section of the code, what needs to happen is that
+			a small block of code needs to be written as follows:
+			while(NEWINFO=="")
+			{
+				cout << "Enter the [NEWINFO DESCRIPTION]: ";
+				getline( cin,NEWINFO );
+				if(VERBOSE)
+				{
+					cout << "NEWINFO: " << NEWINFO << " length: " << NEWINFO.length() << endl;
+				}
+			}
+
+			Where NEWINFO is the new piece of information that is appended to the RelayConfig.
+		*/
+
 		//This takes all of the input that the user just gave, and puts it all into one long string for encryption.
-		concatenated=foreignListen;
-		concatenated.push_back('\n');
-		concatenated.append(ipAddress);
-		concatenated.push_back('\n');
-		concatenated.append(foreignOut);
-		concatenated.push_back('\n');
+		concatenated=foreignListen;//Keep in mind that this has to be in the order of RelayConfig in order to work. It starts by setting concatenated to the first part of RelayConfig
+		concatenated.push_back('\n');//Then it appends a newline character to it.
+		concatenated.append(ipAddress);//Then the next part of RelayConfig as added
+		concatenated.push_back('\n');//And so on.
+		concatenated.append(foreignOut);//The newline characters are used as separaters for later when the config file needs to be decrypted
+		concatenated.push_back('\n');//And then when the decrypted file needs to be separated into each piece again.
 		concatenated.append(alias);
 		concatenated.push_back('\n');
 		concatenated.append(localListen);
@@ -184,105 +226,106 @@ RelayConfig inputPassword()
 		concatenated.push_back('\n');
 
 		//The following encrypts the input given by the user above
-		if(inPass!="")
+		if(inPass!="")//theoretically this will ALWAYS succeed because of the fact that the code doesn't accept a null password, but you never know.
 		{
 			if( decypher( cypher( concatenated,inPass ),inPass )==concatenated)
-			{
-				enConcatenated = cypher( concatenated,inPass );
+			{//This checks to make sure that decrypting the encrypted version of the concatenation is the same as the unencrypted form, kind of as a failsafe to make sure that nothing bad happened
+				enConcatenated = cypher( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
 			}
 			else
 			{
-				cout << "Error encrypting." << endl;
+				cout << "Error encrypting. Please delete your encrypted config file and try again." << endl;//Like I said, if something weird happened, the user wants to know.
 			}
 		}
 		else
 		{
-			cout << "Error, please input password again: ";
-			getline( cin,inPass );
-			enConcatenated = cypher( concatenated,inPass );
+			cout << "Error, please input password again: ";//If for some reason the password is gone, it asks the user to input it again, which really shouldn't happen.
+			getline( cin,inPass );//stores the user's input into the terminal into the variable inPass.
+			if( decypher( cypher( concatenated,inPass ),inPass )==concatenated)
+			{//This checks to make sure that decrypting the encrypted version of the concatenation is the same as the unencrypted form, kind of as a failsafe to make sure that nothing bad happened
+				enConcatenated = cypher( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
+			}
+			else
+			{
+				cout << "Error encrypting. Please delete your encrypted config file and try again." << endl;//Like I said, if something weird happened, the user wants to know.
+			}
 		}
 
 
 		//The following creates the encrypted file using the encrypted information attained above.
-		ofstream enco;//opens up an output file stream
-		enco.open("enco.txt");//opens the file enco.txt
-		if(enco.is_open())//true unless there was a problem, like permission denied
+		ofstream enco;//opens up an output file stream in order to store enConcatenated to a new file
+		enco.open(FILENAME);//opens the config file, which in turn creates the file
+		if(enco.is_open())//should be true unless there was some weird problem, like file access permission being denied
 		{
-			enco << enConcatenated;
+			enco << enConcatenated;//stores enConcatenated directly into the file.
 		}
-		enco.close();
+		enco.close();//closes the file
 	}
 
-	while(inPass=="")
-	{
-		cout << "Please input your password: ";	
-		getline( cin,inPass );
-		if(inPass!="")
+	//for some reason, not having this little bit of code here caused inconsistencies with sleep times, which means somebody could potentially bruteforce the password by
+	//repeatedly opening the program and inputting the password.
+	while(inPass=="")//assuming the file was just made, this will be skipped over and the program will jump right to the next part of the code.
+	{//otherwise, this little piece will be executed
+		cout << "Please input your password: ";//requests the user for their password
+		getline( cin,inPass );//retrieves the password from cin and stores it to inPass
+		if(inPass!="")//if they actually put in a password, this is entered
 		{
-			cout << "Thank you, attempting to decrypt the information" << endl;
-			usleep(3000000);
+			cout << "Thank you, attempting to decrypt the information" << endl;//tells the user that it's attempting to decrypt the config file
+			usleep(3000000);//waits for 3 seconds before continuing out of the loop
 		}
-		else
+		else//otherwise if they entered a null string
 		{
-			cout << "Error, empty password field." << endl;
-			usleep(3000000);
+			cout << "Error, empty password field." << endl;//the program tells them
+			usleep(3000000);//and still waits for 3 seconds before continuing
 		}
 	}
-	pair<bool,RelayConfig> decryptReturn=relayDecrypt(inPass);
-	if(decryptReturn.first==true)
+
+
+	pair<bool,RelayConfig> decryptReturn=relayDecrypt(inPass);//this declaration was necessary in order to compile, and so the following bit of code makes up
+	//for the weirdness by checking to make sure that it was successful before continuing on
+	if(decryptReturn.first==false)//if the decryption was successful, the program can continue on freely without entering the while loops at all
 	{
-		decrypted=1;
-	}
-	else
-	{
-		decrypted=0;
-		input=0;
 		inPass="";
+		cout << "Error. Incorrect password." << endl;
 	}
 	RelayConfig whatYouNeed=decryptReturn.second;
+
+
 	//This portion requests that the user input their password to receive the information that they need to open the program
 	while(1)//repeats until the password is correct
 	{
 		if(inPass=="")//Because it's possible that the user has just created their password, this checks that first. If the user inputs the password incorrectly, it returns to this state.
 		{
-			inPass="";
 			cout << "Please input your password: ";//this requests their password on-screen
-			getline(cin, inPass);
-			cout << "Thank you, attempting to decrypt the information" << endl;
+			getline( cin,inPass );//this takes in the user's password typed into the terminal and stores it to inPass
+			cout << "Thank you, attempting to decrypt the information" << endl;//tells the user that it is attempting to decrypt the information
 		}
-		//cin >> inPass;//this here asks for input and puts it into the variable inPass
-		if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty
+		if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty so that it doesn't attempt to decrypt with a null string
 		{
 			usleep(3000000);//waits 3 seconds before allowing the user to try the password again
-			decryptReturn=relayDecrypt(inPass);
-			if(decryptReturn.first==true)
+			decryptReturn=relayDecrypt(inPass);//saves off the result of relayDecrypt into the decryptReturn
+			if(decryptReturn.first==true)//if successful, this statement will be entered
 			{
-				whatYouNeed=decryptReturn.second;
-				break;
+				whatYouNeed=decryptReturn.second;//it stores off the RelayConfig for returning from the function
+				break;//then exits out of the while loop with this
 			}
 			else
 			{
-				cout << "Error. Incorrect password." << endl;
-				decrypted=0;
-				inPass="";
+				cout << "Error. Incorrect password." << endl;//otherwise it tells the user that the encryption was unsuccessful
+				inPass="";//resets the inPass variable to 0, and continues through the while loop again
 			}
 		}
 		else
 		{
-			cout << "Error, empty password field." << endl;
+			cout << "Error, empty password field." << endl;//if the user input an empty password field, it tells them so before repeating the loop
 			usleep(3000000);//waits 3 seconds before allowing the user to try the password again
-			inPass="";
+			inPass="";//just in case something funky happened, this reset the inPass field to being empt
 		}
 	}
 
-	//This little function here simply redacts the password after it has been used and is no longer needed.
-//	for(int i=0;i<inPass.length();i++)
-//	{
-//		inPass[i]="X";
-//	}
-	if(VERBOSE)
+	if(VERBOSE)//if descriptive debugging is enabled, this is entered
 	{
-		cout << "Relay successfully decrypted" << endl;
+		cout << "Relay successfully decrypted" << endl;//and it tells the user that the decryption was successful.
 	}
 
 	return whatYouNeed;
@@ -297,14 +340,9 @@ RelayConfig inputPassword()
 
 pair<bool,RelayConfig> relayDecrypt(string inPass)
 {
-	int i=0;
-	string enForeignListen = "enerror";
-	string enIpAddress = "enerror";
-	string enForeignOut = "enerror";
-	string enAlias = "enerror";
-	string enLocalListen = "enerror";
-	string enLocalOut = "enerror";
-	string enLogFile = "enerror";
+	int i=0;//generic variable
+
+	//The following are what get used for the RelayConfigReturn
 	int deForeignListen = -1;
 	string deIpAddress = "";
 	int deForeignOut = -1;
@@ -312,78 +350,71 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 	int deLocalListen = -1;
 	int deLocalOut = -1;
 	string deLogFile = "";
-	string extra1,extra2,extra3;
+
+	//these are for the decryption of the config file itself
 	string deConcatenated="";
 	string deForeignListenString,deForeignOutString,deLocalListenString,deLocalOutString;
-	//good grief, that's way too many variables
 
 
 	//Opens up a stringstream and clears it
 	stringstream ss;
-	ss.str(""); // Clear the stringstream
-	ss.clear(); // And any weird state it may have entered
+	ss.str("");
+	ss.clear();
 
-	if(inPass=="")
+	if(inPass=="")//checks to make sure that this function wasn't called with an empty inPass
 	{
-		cout << "Error, password string empty for relayDecrypt function." << endl;
-		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
+		cout << "Error, password string empty for relayDecrypt function." << endl;//if it was, it prints out an error
+		return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );//and returns a pair that should error out any function that calls this with an empty inPass
 	}
-	ifstream myfile;//this takes and decrypts the information that its given, whoo!
-	myfile.open("enco.txt");//opens the file enco.txt
-	if(myfile.is_open())
+
+	//this opens up the encrypted file and attempts to decrypt it
+	ifstream myfile;
+	myfile.open(FILENAME);//opens the config file
+	if(myfile.is_open())//checks to make sure that the file opened correctly (could be issues with perms or something)
 	{
 
-		//Reads from the encrypted config file
+		//Reads from the encrypted config file and stores it into the string enConcatenated
 		string enConcatenated((istreambuf_iterator<char>(myfile)),istreambuf_iterator<char>());
-		if( isReadableText( decypher( enConcatenated,inPass ) ) )
+		if( isReadableText( decypher( enConcatenated,inPass ) ) )//checks to make sure that decrypting gives a readable text
 		{
-		deConcatenated=decypher( enConcatenated,inPass );	
+			deConcatenated=decypher( enConcatenated,inPass );//if it is, then it stores the results of decryption to deConcatenated
 		}
-		else
+		else//otherwise an error is returned
 		{
 			if(VERBOSE)
 			{
-				cout << "File non-decryptable." << endl;
+				cout << "File non-decryptable." << endl;//if verbosia is turned on, then it tells the user that decryption was unsuccessful
 			}
-			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );
-			i++;
+			return make_pair( false,RelayConfig(-1,"Error",-1,"Error",-1,-1,"Error") );//returns an error RelayConfig pair
 		}
 
-		//Decrypts each piece using the input password, checking at each step to make sure that it's human-readable
-		//Theoretically, this check should prevent crashes that would occur if the wrong password is entered, and it tries to store a non-integer to an integer variable..
 	}
 	myfile.close();
-	//My logic for this is that if all 7 pieces are human-readable, then I should get 7 
 
-/*
-	cout << "deForeignListen: " << deForeignListen << endl;
-	cout << "deIpAddress: " << deIpAddress << endl;
-	cout << "deForeignOut: " << deForeignOut << endl;
-	cout << "deAlias: " << deAlias << endl;
-	cout << "deLocalListen: " << deLocalListen << endl;
-	cout << "deLocalOut: " << deLocalOut << endl;
-	cout << "deLogFile: " << deLogFile << endl;
-*/
-
-
-	
-
-
-	int decryptlength=deConcatenated.length(),j=0;
-	for(i=0;i<decryptlength;i++)
+	int decryptlength=deConcatenated.length();//this only iterates over the length of the string, so i have to know its length
+	int j=0;//this is used in order to keep track of which part of the RelayConfig the decrypt function is on when splitting the deConcatenated string apart
+	for(i=0;i<decryptlength;i++)//iterates over the length of the string
 	{
-		if(j==0)
+		//alright, this next part is a bit tricky and relies on the fact that each piece of the RelayConfig was previously separated by newlines
+		//since each part follows the same procedure, I'm only going to comment one example of it to explain how this works
+		//if more parts are added to RelayConfig, following the pattern below will account for it
+		if(j==0)//this simply checks which part of the RelayConfig that the separation is currently on, the ForeignListen port is 0, ipAddress is 1, and so on
 		{
-			if(deConcatenated[i]!='\n')
+			if(deConcatenated[i]!='\n')//it only executes this portion of the code up until the newline character
 			{
 				deForeignListenString.append(deConcatenated,i,1);
+				//ok, so the append method of strings is kind of weird since there are like. 7 ways it can work.
+				//what this does is it appends a portion of deConcatenated to deForeignListenString
+				//by looking at deConcatenated[i] to begin, and taking in one character
+				//in essence only appending a single character to the deForeignListenString
 			}
-			else
+			else//if it reaches a newline character, we want to skip over it and move onto the next part of the RelayConfig
 			{
-				i++;
-				j++;
+				i++;//this skips over the newline character
+				j++;//this moves to the next part of the RelayConfig
 			}
 		}
+
 		if(j==1)
 		{
 			if(deConcatenated[i]!='\n')
@@ -396,6 +427,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 				j++;
 			}
 		}
+
 		if(j==2)
 		{
 			if(deConcatenated[i]!='\n')
@@ -408,6 +440,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 				j++;
 			}
 		}
+
 		if(j==3)
 		{
 			if(deConcatenated[i]!='\n')
@@ -420,6 +453,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 				j++;
 			}
 		}
+
 		if(j==4)
 		{
 			if(deConcatenated[i]!='\n')
@@ -432,6 +466,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 				j++;
 			}
 		}
+
 		if(j==5)
 		{
 			if(deConcatenated[i]!='\n')
@@ -444,6 +479,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 				j++;
 			}
 		}
+
 		if(j==6)
 		{
 			if(deConcatenated[i]!='\n')
@@ -459,12 +495,12 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 			
 	}
 
-
-	ss << deForeignListenString;
-	ss >> deForeignListen;
-	ss.str("");
-	ss.clear();
-	ss << deForeignOutString;
+	//because of the fact that some of the RelayConfig pieces are integers and not strings, we have to convert them with stringstream
+	ss << deForeignListenString;//this takes in the string
+	ss >> deForeignListen;//and this stores it t an integer
+	ss.str("");//empties stringstream
+	ss.clear();//and any weird state it might have entered
+	ss << deForeignOutString;//rinse and repeat for all the ints
 	ss >> deForeignOut;
 	ss.str("");
 	ss.clear();
@@ -479,7 +515,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 
 	if(VERBOSE)
 	{
-		cout << "Decryption successful, returning RelayConfig." << endl;
+		cout << "Decryption successful, returning RelayConfig." << endl;//once again, this only prints out if full debugging couts are turned on in the preprocessors up top
 	}
 
 	return make_pair( true,RelayConfig(deForeignListen,deIpAddress,deForeignOut,deAlias,deLocalListen,deLocalOut,deLogFile) );
@@ -503,7 +539,7 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 
 */
 
-bool fileExists(const string& filename)
+bool fileExists(const string& filename)//I'm not entirely sure how stat works, so I won't pretend to know. I just know that this does check to see if a file exists, and it works.
 {
 	struct stat buf;
 	if(stat(filename.c_str(), &buf) != -1)
