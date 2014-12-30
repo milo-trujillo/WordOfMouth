@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/aes.h>
+#include <openssl/bio.h> // These two for Base64
+#include <openssl/evp.h>
 
 #include "hash.h" // For generating digests
 
@@ -16,8 +18,11 @@ static const unsigned char salt[AES_BLOCK_SIZE] =
 static const int KEYLENGTH = 192;
 
 /*
-	Shout out to the example code over here:
+	Shout out to other awesome developers for figuring out OpenSSL!
+	Example code for AES here:
 	http://stackoverflow.com/questions/18152913/aes-aes-cbc-128-aes-cbc-192-aes-cbc-256-encryption-decryption-with-openssl-c
+	And Base64 here:
+	https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
 */
 
 // a simple hex-print routine. could be modified to print 16 bytes-per-line
@@ -99,6 +104,50 @@ string cypher(const string &msg, const string &key)
 	string result;
 	for( int i = 0; i < outputslength; i++ )
 		result.push_back((char)aes_output[i]);
+	return result;
+}
+
+string base64Encode(const string &str)
+{
+	BIO *base64_filter = BIO_new( BIO_f_base64() );
+	BIO_set_flags( base64_filter, BIO_FLAGS_BASE64_NO_NL );
+	BIO *bio = BIO_new( BIO_s_mem() );
+	BIO_set_flags( bio, BIO_FLAGS_BASE64_NO_NL );
+	bio = BIO_push( base64_filter, bio );
+	BIO_write( bio, str.c_str(), str.length() );
+	BIO_flush( bio );
+
+	char *new_data;
+	long bytes_written = BIO_get_mem_data( bio, &new_data );
+
+	string result( new_data, bytes_written );
+	BIO_free_all( bio );
+	return result;
+}
+
+string base64Decode(const string &str)
+{
+	BIO *bio, *base64_filter, *bio_out;
+	char inbuf[512];
+	int inlen;
+
+	base64_filter = BIO_new( BIO_f_base64() );
+	BIO_set_flags( base64_filter, BIO_FLAGS_BASE64_NO_NL );
+	bio = BIO_new_mem_buf( (void*)str.c_str(), str.length() );
+	bio = BIO_push( base64_filter, bio );
+	bio_out = BIO_new( BIO_s_mem() );
+
+	while( (inlen = BIO_read(bio, inbuf, 512)) > 0 )
+		BIO_write( bio_out, inbuf, inlen );
+
+	BIO_flush( bio_out );
+
+	char *new_data;
+	long bytes_written = BIO_get_mem_data( bio_out, &new_data );
+
+	string result( new_data, bytes_written );
+	BIO_free_all( bio );
+	BIO_free_all( bio_out );
 	return result;
 }
 
