@@ -20,6 +20,7 @@
 #include "relay.h"
 #include "messages.h"
 #include "keygen.h"
+#include "cypher.h"
 #include "hash.h"
 #include "log.h"
 
@@ -67,9 +68,12 @@ bool sendMessage(string msg)
 	// TODO: Use keys to encrypt message to the next relay in the chain
 	//string cyphertext = encryptForRelay(msg);
 
+	// Post-encryption the binary data needs to be encoded to be safely transfered
+	msg = base64Encode(msg);
+
 	// Note: We attach a zero to the end of the message to indicate end of
 	// transfer, in case the socket buffer is being filled with something else
-	msg.push_back(0);
+	//msg.push_back(0);
 
 	// If anything goes wrong sending a message then the parent
 	// _probably_ wants to kill the process, but we'll leave it up to them
@@ -138,6 +142,7 @@ void* handleMessage(void* arg)
 
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  
+	msg = base64Decode(msg); // Unwrap Ascii-armor
 
 	logDebug("Message received");
 
