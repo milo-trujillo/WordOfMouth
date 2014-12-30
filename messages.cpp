@@ -57,9 +57,10 @@ void displayMessage(const string& msg)
 		logErr("Problem during display of message!");
 		reportNetworkError(errno);
 		close(sock_desc);
+		pthread_mutex_unlock(&displayLock);
+		return;
 	}
-
-	//printf("Message Received: %*.*s\n", (int)msg.size(), (int)msg.size(), msg.c_str());
+	close(sock_desc);
 	pthread_mutex_unlock(&displayLock);
 }
 
