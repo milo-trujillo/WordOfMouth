@@ -71,10 +71,6 @@ bool sendMessage(string msg)
 	// Post-encryption the binary data needs to be encoded to be safely transfered
 	msg = base64Encode(msg);
 
-	// Note: We attach a zero to the end of the message to indicate end of
-	// transfer, in case the socket buffer is being filled with something else
-	//msg.push_back(0);
-
 	// If anything goes wrong sending a message then the parent
 	// _probably_ wants to kill the process, but we'll leave it up to them
 	int sock_desc = socket(AF_INET, SOCK_STREAM, 0);
