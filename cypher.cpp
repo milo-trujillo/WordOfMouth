@@ -151,11 +151,13 @@ string base64Decode(const string &str)
 	return result;
 }
 
+// Returns true if all characters within valid ASCII range, false otherwise
 bool isReadableText(const string &msg)
 {
 	for( int i = 0; i < msg.size(); i++ )
-		// If outside printable ASCII range
-		if( (msg[i] > 126 || msg[i] < 33) && msg[i] != '\n' )
+		if( msg[i] < 0 || msg[i] > 127 )
 			return false;
+		// If outside printable ASCII range
+		//if( (msg[i] > 126 || msg[i] < 33) && msg[i] != '\n' )
 	return true;
 }
