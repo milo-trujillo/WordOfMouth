@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/aes.h>
+#include <openssl/aes.h> // These two for AES
+#include <openssl/rand.h>
 #include <openssl/bio.h> // These two for Base64
 #include <openssl/evp.h>
 
+#include "cypher.h"
 #include "hash.h" // For generating digests
 
 using namespace std;
 
-// The salt needs to be consistent across all linked copies of the
-// program, but doesn't need to be cryptographically secure, so I've
-// just hardcoded a random value in here.
+// The salt is a fall-back initialization vector if we cannot use a
+// randomly generated one. Using this weakens the crypto, but is sometimes
+// necessary.
 static const unsigned char salt[AES_BLOCK_SIZE] = 
 	{ 0xB6, 0x2C, 0x1B, 0x56, 0x2B, 0xD1, 0x74, 0x93, 0xC2, 0xBF,
 	  0x41, 0x04, 0x33, 0xED, 0xDC, 0x74 };
@@ -25,25 +27,7 @@ static const int KEYLENGTH = 192;
 	https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
 */
 
-// a simple hex-print routine. could be modified to print 16 bytes-per-line
-// This is for debugging only
-/*
-static void hex_print(const void* pv, size_t len)
-{
-	const unsigned char * p = (const unsigned char*)pv;
-	if (NULL == pv)
-		printf("NULL");
-	else
-	{
-		size_t i = 0;
-		for (; i<len;++i)
-			printf("%02X ", *p++);
-	}
-	printf("\n");
-}
-*/
-
-string decypher(const string &msg, const string &key)
+string decypher(const string &msg, const unsigned char* iv, const string &key)
 {
 	if( key.size() == 0 )
 		throw "No key provided!";
@@ -62,7 +46,7 @@ string decypher(const string &msg, const string &key)
 
 	// Init vectors are basically salts that AES modifies as it rolls
 	unsigned char iv_dec[AES_BLOCK_SIZE];
-	memcpy(iv_dec, salt, AES_BLOCK_SIZE);
+	memcpy(iv_dec, iv, AES_BLOCK_SIZE);
 	
 	AES_KEY dec_key;
 	AES_set_decrypt_key((unsigned char*) aes_key.c_str(), KEYLENGTH, &dec_key);
@@ -74,7 +58,7 @@ string decypher(const string &msg, const string &key)
 	return result;
 }
 
-string cypher(const string &msg, const string &key)
+string cypher(const string &msg, const unsigned char* iv, const string &key)
 {
 	if( key.size() == 0 )
 		throw "No key provided!";
@@ -91,8 +75,9 @@ string cypher(const string &msg, const string &key)
 	bzero(aes_output, sizeof(aes_output));
 
 	// Init vectors are basically salts that AES modifies as it rolls
+	// They must be randomly generated and never reused
 	unsigned char iv_enc[AES_BLOCK_SIZE];
-	memcpy(iv_enc, salt, AES_BLOCK_SIZE);
+	memcpy(iv_enc, iv, AES_BLOCK_SIZE);
 	
 	AES_KEY enc_key;
 	AES_set_encrypt_key((unsigned char*) aes_key.c_str(), KEYLENGTH, &enc_key);
@@ -105,6 +90,45 @@ string cypher(const string &msg, const string &key)
 	for( int i = 0; i < outputslength; i++ )
 		result.push_back((char)aes_output[i]);
 	return result;
+}
+
+// The 'weak' functions are just wrappers that use our pre-generated salt
+string cypherWeak(const string &msg, const string &key)
+{
+	return cypher(msg, salt, key);
+}
+
+string decypherWeak(const string &msg, const string &key)
+{
+	return decypher(msg, salt, key);
+}
+
+// Encrypts a message, including an integrity check hash
+cypheredMessage cypherMessage(string msg, const string &key)
+{
+	cypheredMessage result;
+	msg += genHash(msg);
+	unsigned char iv[AES_BLOCK_SIZE];
+	RAND_bytes(iv, AES_BLOCK_SIZE); // OpenSSL cryptographic randomness
+	for( int i = 0; i < AES_BLOCK_SIZE; i++ )
+		result.iv.push_back(iv[i]);
+	result.msg = cypher(msg, iv, key);
+	return result;
+}
+
+// Decrypts a message, stripping the hash and returning <success, message>
+pair<bool, string> decypherMessage(const cypheredMessage &cyphertext, 
+	const string &key)
+{
+	string cleartext = decypher(cyphertext.msg, 
+		(unsigned char*) cyphertext.iv.c_str(), key);
+	if( cleartext.size() <= HASH_LENGTH )
+		return make_pair(false, ""); // Decryption failed if no hash present
+	string hash = cleartext.substr(cleartext.size() - HASH_LENGTH);
+	string msg = cleartext.substr(0, cleartext.size() - HASH_LENGTH);
+	if( genHash(msg) == hash )
+		return make_pair(true, msg);
+	return make_pair(false, "");
 }
 
 string base64Encode(const string &str)
