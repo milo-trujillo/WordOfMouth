@@ -3,6 +3,8 @@
 
 #include <iostream> // For C++ strings
 
+#define HASH_LENGTH 64
+
 // This generates a hash for signature verification
 std::string genHash(const std::string &input);
 
