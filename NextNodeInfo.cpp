@@ -228,9 +228,9 @@ RelayConfig inputPassword()
 		//The following encrypts the input given by the user above
 		if(inPass!="")//theoretically this will ALWAYS succeed because of the fact that the code doesn't accept a null password, but you never know.
 		{
-			if( decypher( cypher( concatenated,inPass ),inPass )==concatenated)
+			if( decypherWeak( cypherWeak( concatenated,inPass ),inPass )==concatenated)
 			{//This checks to make sure that decrypting the encrypted version of the concatenation is the same as the unencrypted form, kind of as a failsafe to make sure that nothing bad happened
-				enConcatenated = cypher( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
+				enConcatenated = cypherWeak( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
 			}
 			else
 			{
@@ -241,9 +241,9 @@ RelayConfig inputPassword()
 		{
 			cout << "Error, please input password again: ";//If for some reason the password is gone, it asks the user to input it again, which really shouldn't happen.
 			getline( cin,inPass );//stores the user's input into the terminal into the variable inPass.
-			if( decypher( cypher( concatenated,inPass ),inPass )==concatenated)
+			if( decypherWeak( cypherWeak( concatenated,inPass ),inPass )==concatenated)
 			{//This checks to make sure that decrypting the encrypted version of the concatenation is the same as the unencrypted form, kind of as a failsafe to make sure that nothing bad happened
-				enConcatenated = cypher( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
+				enConcatenated = cypherWeak( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
 			}
 			else
 			{
@@ -375,9 +375,9 @@ pair<bool,RelayConfig> relayDecrypt(string inPass)
 
 		//Reads from the encrypted config file and stores it into the string enConcatenated
 		string enConcatenated((istreambuf_iterator<char>(myfile)),istreambuf_iterator<char>());
-		if( isReadableText( decypher( enConcatenated,inPass ) ) )//checks to make sure that decrypting gives a readable text
+		if( isReadableText( decypherWeak( enConcatenated,inPass ) ) )//checks to make sure that decrypting gives a readable text
 		{
-			deConcatenated=decypher( enConcatenated,inPass );//if it is, then it stores the results of decryption to deConcatenated
+			deConcatenated=decypherWeak( enConcatenated,inPass );//if it is, then it stores the results of decryption to deConcatenated
 		}
 		else//otherwise an error is returned
 		{
