@@ -66,7 +66,7 @@ void displayMessage(const string& msg)
 
 // Attempts to unwrap any layers of crypto to determine if the message
 // belongs to us. If it does, display and return false. Else return true.
-bool deliverMessage(const std::string &msg)
+bool deliverMessage(const string &msg)
 {
 	/*
 		Right now all we're checking is whether the message was cyphered
@@ -74,11 +74,14 @@ bool deliverMessage(const std::string &msg)
 		attempt decrypting with each conversation key, and any key-exchange
 		pairs we still have.
 	*/
-	string decyphered = decypher(msg, rc->getAlias());
-	if( isReadableText(decyphered) )
+	cypheredMessage cm;
+	cm.iv = base64Decode(msg.substr(0, msg.find('\n')));
+	cm.msg = base64Decode(msg.substr(msg.find('\n') + 1));
+	pair<bool, string> ct = decypherMessage(cm, rc->getAlias());
+	if( ct.first == true )
 	{
 		logDebug("Displaying decrypted message");
-		displayMessage(decyphered);
+		displayMessage(ct.second);
 		return false;
 	}
 	else
@@ -143,9 +146,9 @@ void* handleUserMessage(void* arg)
 			msg += buf; // Make a C++ string from the C String
 	}
 
-	string cyphered = cypher(msg, destinationAlias);
+	cypheredMessage cm = cypherMessage(msg, destinationAlias);
 	if( errorReading == false )
-		sendMessage(cyphered);
+		sendMessage(base64Encode(cm.iv) + "\n" + base64Encode(cm.msg));
 
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  

@@ -45,6 +45,7 @@ void validateRelayConfig(const RelayConfig &test);
 void* startRelaying(void*);
 
 // Returns true if successful, false otherwise
+// Message must be text (base64 encode if you're sending binary data)
 bool sendMessage(std::string msg);
 
 #endif
