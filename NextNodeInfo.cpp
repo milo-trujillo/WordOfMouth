@@ -270,8 +270,13 @@ RelayConfig inputPassword()
 		getline( cin,inPass );//retrieves the password from cin and stores it to inPass
 		if(inPass!="")//if they actually put in a password, this is entered
 		{
-			cout << "Thank you, attempting to decrypt the information" << endl;//tells the user that it's attempting to decrypt the config file
-			usleep(3000000);//waits for 3 seconds before continuing out of the loop
+			cout << "Thank you, attempting to decrypt the information." << flush;
+			usleep(1000000);
+			cout << "." << flush;
+			usleep(1000000);
+			cout << "." << flush;//tells the user that it's attempting to decrypt the config file
+			usleep(1000000);//waits for 3 seconds before continuing out of the loop
+			cout << endl;
 		}
 		else//otherwise if they entered a null string
 		{
@@ -298,11 +303,16 @@ RelayConfig inputPassword()
 		{
 			cout << "Please input your password: ";//this requests their password on-screen
 			getline( cin,inPass );//this takes in the user's password typed into the terminal and stores it to inPass
-			cout << "Thank you, attempting to decrypt the information" << endl;//tells the user that it is attempting to decrypt the information
+			cout << "Thank you, attempting to decrypt the information." << flush;//tells the user that it is attempting to decrypt the information
 		}
 		if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty so that it doesn't attempt to decrypt with a null string
 		{
-			usleep(3000000);//waits 3 seconds before allowing the user to try the password again
+			usleep(1000000);
+			cout << "." << flush;
+			usleep(1000000);
+			cout << "." << flush;
+			usleep(1000000);
+			cout << endl;//waits 3 seconds before allowing the user to try the password again
 			decryptReturn=relayDecrypt(inPass);//saves off the result of relayDecrypt into the decryptReturn
 			if(decryptReturn.first==true)//if successful, this statement will be entered
 			{
