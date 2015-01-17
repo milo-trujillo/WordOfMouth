@@ -169,7 +169,10 @@ bool readMessage()
 	struct sockaddr_in server;  
 	memset(&server, 0, sizeof(server));  
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = INADDR_ANY;  
+	// In the future maybe we want to make this a configurable setting, or add
+	// some kind of crypto to message submissions. Until then only accepting
+	// submitted messages from localhost, so users can't do dangerous things.
+	server.sin_addr.s_addr = inet_addr(LOCALHOST); // Only listen on loopback
 	server.sin_port = htons(rc->getIncomingMessagePort());  
 	if(bind(sock_desc, (sockaddr*)&server, sizeof(server)) != 0)
 	{
