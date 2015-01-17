@@ -15,4 +15,4 @@ $(OBJS): %.o: %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm *.o $(PROGNAME)
+	rm -f *.o $(PROGNAME)
