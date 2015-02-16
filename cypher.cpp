@@ -205,3 +205,8 @@ string cypheredMessage::toString()
 {
 	return base64Encode(iv + msg);
 }
+
+bool cypheredMessage::isInvalid()
+{
+	return (iv == "BAD" && msg == "BAD");
+}

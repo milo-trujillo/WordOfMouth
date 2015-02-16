@@ -74,19 +74,27 @@ bool deliverMessage(const string &msg)
 		attempt decrypting with each conversation key, and any key-exchange
 		pairs we still have.
 	*/
-	cypheredMessage cm;
-	cm.iv = base64Decode(msg.substr(0, msg.find('\n')));
-	cm.msg = base64Decode(msg.substr(msg.find('\n') + 1));
+	cypheredMessage cm(msg);
+	if( DEBUG_ENABLED )
+	{
+		logDebug("Message received: " + msg);	
+	}
+	if( cm.isInvalid() )
+	{
+		logWarn("Received a corrupted message");
+		return false;
+	}
+
 	pair<bool, string> ct = decypherMessage(cm, rc->getAlias());
 	if( ct.first == true )
 	{
-		logDebug("Displaying decrypted message");
+		logInfo("Displaying decrypted message");
 		displayMessage(ct.second);
 		return false;
 	}
 	else
 	{
-		logDebug("Relaying message");
+		logInfo("Relaying message");
 		return true;
 	}
 }
@@ -146,9 +154,8 @@ void* handleUserMessage(void* arg)
 			msg += buf; // Make a C++ string from the C String
 	}
 
-	cypheredMessage cm = cypherMessage(msg, destinationAlias);
 	if( errorReading == false )
-		sendMessage(base64Encode(cm.iv) + "\n" + base64Encode(cm.msg));
+		sendMessage(cypherMessage(msg, destinationAlias).toString());
 
 	// Further work has nothing to do with the incoming connection
 	close(sock_desc);  

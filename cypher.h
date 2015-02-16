@@ -31,6 +31,7 @@ class cypheredMessage
 		// This is the public interface for people outside the cypher code
 		cypheredMessage(std::string encodedString);
 		std::string toString(); // For saving message to disk, network, etc
+		bool isInvalid(); // Returns true if message is corrupt or illegal
 
 	private:
 		// And here's the interface internal to the cypher code
