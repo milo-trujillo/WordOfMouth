@@ -611,8 +611,8 @@ string fileToString(const string& nameOfFile)
 	const char* nameOfFileChar=nameOfFile.c_str();
 	string failure="Failure.";
 	ifstream myfile;
-	if(fileExists(nameOfFile))//first checks to make sure that the file exists before trying anything, and if it does, continues\
-	If the file does not exist, it returns an error.
+	if(fileExists(nameOfFile))//first checks to make sure that the file exists before trying anything, and if it does, continues
+//	If the file does not exist, it returns an error.
 	{
 		myfile.open(nameOfFileChar);//opens the file that is begin converted to a string.
 		if(myfile.is_open())//checks to make sure that the file opened correctly (could be issues with perms or something)
@@ -639,3 +639,21 @@ string fileToString(const string& nameOfFile)
 	return failure;
 	
 }
+
+/*
+This could be helpful elsewhere?
+
+//This chunk of stuff is supposed to hide the text input into the terminal.
+		termios oldt;
+		tcgetattr(STDIN_FILENO, &oldt);
+		termios newt = oldt;
+		newt.c_lflag &= ~ECHO;
+		tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+
+		getline( cin,inPass );//obviously cin and inPass can be swapped for something else
+		cout << endl;//adding this means that anything printed to the terminal will end up on a new line
+//(though this line can be removed if that is a wanted feature
+
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldt);//This reverts the terminal to where you can see what you type.
+*/
