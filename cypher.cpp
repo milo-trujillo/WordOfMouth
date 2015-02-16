@@ -124,6 +124,7 @@ pair<bool, string> decypherMessage(const cypheredMessage &cyphertext,
 		(unsigned char*) cyphertext.iv.c_str(), key);
 	if( cleartext.size() <= HASH_LENGTH )
 		return make_pair(false, ""); // Decryption failed if no hash present
+	// Note: Does one of these have to be +- 1 ? Could break all decryption
 	string hash = cleartext.substr(cleartext.size() - HASH_LENGTH);
 	string msg = cleartext.substr(0, cleartext.size() - HASH_LENGTH);
 	if( genHash(msg) == hash )
@@ -189,6 +190,8 @@ bool isReadableText(const string &msg)
 cypheredMessage::cypheredMessage(string encodedString)
 {
 	string unencoded = base64Decode(encodedString);
+	// If there's not enough room for the IV and the hash then there's
+	// definitely no message to decode.
 	if( unencoded.size() < (AES_BLOCK_SIZE + HASH_LENGTH) )
 	{
 		iv = "BAD";
@@ -203,6 +206,8 @@ cypheredMessage::cypheredMessage(string encodedString)
 
 string cypheredMessage::toString()
 {
+	// Could storing as strings be a problem? Will the AES data ever have
+	// a null byte that the string treats as a terminator?
 	return base64Encode(iv + msg);
 }
 
