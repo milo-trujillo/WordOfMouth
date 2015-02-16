@@ -10,6 +10,7 @@
 #include "cypher.h"
 #include <sys/stat.h>
 #include <cmath>
+#include <termios.h>
 
 #define VERBOSE 0
 //if you want all the debugging couts turned on, set this to 1, else 0
@@ -23,7 +24,7 @@ using namespace std;
 bool fileExists(const string& fileName);//this function checks to see whether a certain file exists, and is more efficient than using fstream
 RelayConfig inputPassword();//this is the main part of the NextNodeInfo function, requesting the user's password or other information
 pair<bool,RelayConfig> relayDecrypt(string inPass);//this is what decrypts the information in the encrypted file containing the config for WOM
-
+string fileToString(const string& nameOfFile);
 
 //The following is just notes on how to make pairs
 //pair<return1,return2> foo
@@ -115,7 +116,21 @@ RelayConfig inputPassword()
 		while(inPass=="")//doesn't accept an empty string for the input
 		{
 			cout << "Choose a password for startup: ";//Because of the fact that the program hasn't daemonized at this point, cout tells the user what is being requested
+
+
+//This chunk of stuff is supposed to hide the text input into the terminal. Theoretically. I hope.
+			termios oldt;
+			tcgetattr(STDIN_FILENO, &oldt);
+			termios newt = oldt;
+			newt.c_lflag &= ~ECHO;
+			tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
 			getline( cin,inPass);//This takes in the user input from cin, and stores it to the variable inPass (in order to store away the password they use for encryption later)
+
+			tcsetattr(STDIN_FILENO, TCSANOW, &oldt);//This reverts the terminal to showing what you're typing
+
+			cout << endl;
+
 			if(VERBOSE)//this statement is handled by a preprocessor macro at the top, where VERBOSE is defined as 0 or 1 to give fairly complete debugging info
 			{
 				cout << "inPass: " << inPass << " length: " << inPass.length() << endl;
@@ -239,6 +254,7 @@ RelayConfig inputPassword()
 		}
 		else
 		{
+			logWarn("WARNING: Input password empty somehow. It shouldn't be.");
 			cout << "Error, please input password again: ";//If for some reason the password is gone, it asks the user to input it again, which really shouldn't happen.
 			getline( cin,inPass );//stores the user's input into the terminal into the variable inPass.
 			if( decypherWeak( cypherWeak( concatenated,inPass ),inPass )==concatenated)
@@ -267,7 +283,21 @@ RelayConfig inputPassword()
 	while(inPass=="")//assuming the file was just made, this will be skipped over and the program will jump right to the next part of the code.
 	{//otherwise, this little piece will be executed
 		cout << "Please input your password: ";//requests the user for their password
+
+
+//This chunk of stuff is supposed to hide the text input into the terminal. Theoretically. I hope.
+		termios oldt;
+		tcgetattr(STDIN_FILENO, &oldt);
+		termios newt = oldt;
+		newt.c_lflag &= ~ECHO;
+		tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+
 		getline( cin,inPass );//retrieves the password from cin and stores it to inPass
+		cout << endl;
+
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldt);//This reverts the terminal to where you can see what you type.
+
 		if(inPass!="")//if they actually put in a password, this is entered
 		{
 			cout << "Thank you, attempting to decrypt the information." << flush;
@@ -302,13 +332,27 @@ RelayConfig inputPassword()
 		if(inPass=="")//Because it's possible that the user has just created their password, this checks that first. If the user inputs the password incorrectly, it returns to this state.
 		{
 			cout << "Please input your password: ";//this requests their password on-screen
+
+//This chunk of stuff is supposed to hide the text input into the terminal. Theoretically. I hope.
+			termios oldt;
+			tcgetattr(STDIN_FILENO, &oldt);
+			termios newt = oldt;
+			newt.c_lflag &= ~ECHO;
+			tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
 			getline( cin,inPass );//this takes in the user's password typed into the terminal and stores it to inPass
-			cout << "Thank you, attempting to decrypt the information." << flush;
+			cout << endl;
+
+			tcsetattr(STDIN_FILENO, TCSANOW, &oldt);//This reverts the terminal to showing what you're typing
+
+
+			cout << "Thank you, attempting to decrypt the information" << flush;
 			usleep(1000000);
 			cout << "." << flush;
 			usleep(1000000);
 			cout << "." << flush;
 			usleep(1000000);
+			cout << "." << flush;
 			cout << endl;//tells the user that it is attempting to decrypt the information
 		}
 		if(inPass.size()!=0)//checks to make sure that the password input isn't completely empty so that it doesn't attempt to decrypt with a null string
@@ -558,4 +602,40 @@ bool fileExists(const string& filename)//I'm not entirely sure how stat works, s
 	}
 
 	return false;
+}
+
+
+
+string fileToString(const string& nameOfFile)
+{
+	const char* nameOfFileChar=nameOfFile.c_str();
+	string failure="Failure.";
+	ifstream myfile;
+	if(fileExists(nameOfFile))//first checks to make sure that the file exists before trying anything, and if it does, continues\
+	If the file does not exist, it returns an error.
+	{
+		myfile.open(nameOfFileChar);//opens the file that is begin converted to a string.
+		if(myfile.is_open())//checks to make sure that the file opened correctly (could be issues with perms or something)
+		{
+			//Reads from the file and stores it into the string wholeFile.
+			string wholeFile((istreambuf_iterator<char>(myfile)),istreambuf_iterator<char>());//this thing here is what reads from the file into the string. it's weird.
+			myfile.close();//closes the file after it is finished.
+			return wholeFile;//returns the string properly
+		}
+		else
+		{
+			logErr("Failed to open file in function fileToString.");
+			return failure;
+		}
+		myfile.close();//if it didn't close properly, it closes it here.
+	}
+	else
+	{
+		logWarn("Warning, file does not exist when called in function fileToString.");
+		return failure;
+	}
+
+	logErr("Error, failed to convert file to string in function fileToString.");
+	return failure;
+	
 }
