@@ -208,6 +208,8 @@ string cypheredMessage::toString()
 {
 	// Could storing as strings be a problem? Will the AES data ever have
 	// a null byte that the string treats as a terminator?
+	// ADD SOME DEBUGGING HERE TO COMPARE IV AND MSG SIZES BEFORE AND AFTER
+	// SENDING TO ANOTHER SYSTEM
 	return base64Encode(iv + msg);
 }
 
