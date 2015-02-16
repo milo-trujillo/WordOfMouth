@@ -185,3 +185,23 @@ bool isReadableText(const string &msg)
 		//if( (msg[i] > 126 || msg[i] < 33) && msg[i] != '\n' )
 	return true;
 }
+
+cypheredMessage::cypheredMessage(string encodedString)
+{
+	string unencoded = base64Decode(encodedString);
+	if( unencoded.size() < (AES_BLOCK_SIZE + HASH_LENGTH) )
+	{
+		iv = "BAD";
+		msg = "BAD";
+	}
+	else
+	{
+		iv = unencoded.substr(0, AES_BLOCK_SIZE);
+		msg = unencoded.substr(AES_BLOCK_SIZE + 1);
+	}
+}
+
+string cypheredMessage::toString()
+{
+	return base64Encode(iv + msg);
+}

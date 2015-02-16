@@ -4,12 +4,11 @@
 #include <map>      // For pairs
 #include <iostream> // For strings
 
-// Stores an encrypted message and its initialization vector
-struct cypheredMessage
-{
-	std::string msg;
-	std::string iv;
-};
+class cypheredMessage;
+
+// Ascii armor data to make it safe for transit in a more complex protocol
+std::string base64Encode(const std::string &str);
+std::string base64Decode(const std::string &str);
 
 // Encrypts a message, including an integrity check hash
 cypheredMessage cypherMessage(std::string msg, const std::string &key);
@@ -22,11 +21,27 @@ std::pair<bool, std::string> decypherMessage(const cypheredMessage &cyphertext,
 std::string cypherWeak(const std::string &msg, const std::string &key);
 std::string decypherWeak(const std::string &msg, const std::string &key);
 
-// Ascii armor data to make it safe for transit in a more complex protocol
-std::string base64Encode(const std::string &str);
-std::string base64Decode(const std::string &str);
-
 // Returns if a message is ASCII text
 bool isReadableText(const std::string &msg);
+
+// Stores an encrypted message and its initialization vector
+class cypheredMessage
+{
+	public:
+		// This is the public interface for people outside the cypher code
+		cypheredMessage(std::string encodedString);
+		std::string toString(); // For saving message to disk, network, etc
+
+	private:
+		// And here's the interface internal to the cypher code
+		cypheredMessage(){}
+
+		std::string iv;
+		std::string msg;
+
+		friend cypheredMessage cypherMessage(std::string, const std::string&);
+		friend std::pair<bool, std::string> decypherMessage(
+			const cypheredMessage&, const std::string&);
+};
 
 #endif
