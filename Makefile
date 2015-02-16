@@ -6,7 +6,7 @@ CFLAGS += -ggdb -Wall -Wno-deprecated -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 LIBS = -lpthread -lcrypto -lgcrypt -lgpg-error
 
-OBJS = main.o daemonize.o relay.o messages.o cypher.o keygen.o hash.o NextNodeInfo.o log.o
+OBJS = main.o daemonize.o relay.o messages.o cypher.o keygen.o hash.o NextNodeInfo.o log.o scrub.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
