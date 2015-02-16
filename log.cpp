@@ -63,8 +63,8 @@ void logInfo(string s)
 {
 	pthread_mutex_lock(&logLock);
 	if( loggingInitialized )
-		logfile << "Log: " << s << endl;
+		logfile << "Info: " << s << endl;
 	else
-		cout << "Log: " << s << endl;
+		cout << "Info: " << s << endl;
 	pthread_mutex_unlock(&logLock);
 }

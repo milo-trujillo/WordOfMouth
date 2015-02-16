@@ -75,10 +75,7 @@ bool deliverMessage(const string &msg)
 		pairs we still have.
 	*/
 	cypheredMessage cm(msg);
-	if( DEBUG_ENABLED )
-	{
-		logDebug("Message received: " + msg);	
-	}
+	logDebug("Message received: " + msg);	
 	if( cm.isInvalid() )
 	{
 		logWarn("Received a corrupted message");
