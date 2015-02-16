@@ -44,6 +44,10 @@ void reportNetworkError(int err)
 		case EACCES:
 			logErr("[Errno] Permission denied");
 			break;
+		case EADDRINUSE:
+		case EADDRNOTAVAIL:
+			logErr("[Errno] Cannot bind - address in use?");
+			break;
 		default:
 			char errnumber[4];
 			sprintf(errnumber, "%d", err);
