@@ -266,6 +266,11 @@ RelayConfig inputPassword()
 				cout << "Error encrypting. Please delete your encrypted config file and try again." << endl;//Like I said, if something weird happened, the user wants to know.
 			}
 		}
+		for(int n=0;n<inPass.size();n++)
+		{
+			inPass[n]='X';
+		}
+		inPass="";
 
 
 		//The following creates the encrypted file using the encrypted information attained above.
