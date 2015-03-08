@@ -1,16 +1,19 @@
 #include <sstream>
 #include <iostream>
-#include "relay.h"
 #include <fstream>
 #include <stdio.h>
 #include <time.h>
 #include <map>
-#include <unistd.h>
+#include <unistd.h>//for usleep
+#include <sys/stat.h>//to check if a file exists
+#include <cmath>
+#include <termios.h>//for the fancy thing that hides password entry
+
+//Project file includes
+#include "relay.h"
 #include "log.h"
 #include "cypher.h"
-#include <sys/stat.h>
-#include <cmath>
-#include <termios.h>
+#include "scrub.h"
 
 #define VERBOSE 0
 //if you want all the debugging couts turned on, set this to 1, else 0
@@ -256,21 +259,16 @@ RelayConfig inputPassword()
 		{
 			logWarn("WARNING: Input password empty somehow. It shouldn't be.");
 			cout << "Error, please input password again: ";//If for some reason the password is gone, it asks the user to input it again, which really shouldn't happen.
-			getline( cin,inPass );//stores the user's input into the terminal into the variable inPass.
-			if( decypherWeak( cypherWeak( concatenated,inPass ),inPass )==concatenated)
+			getline( cin, inPass );//stores the user's input into the terminal into the variable inPass.
+			if( decypherWeak( cypherWeak( concatenated, inPass ), inPass ) == concatenated )
 			{//This checks to make sure that decrypting the encrypted version of the concatenation is the same as the unencrypted form, kind of as a failsafe to make sure that nothing bad happened
-				enConcatenated = cypherWeak( concatenated,inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
+				enConcatenated = cypherWeak( concatenated, inPass );//if encryption doesn't fail, then it stores the encrypted version into the enConcatenated string.
 			}
 			else
 			{
 				cout << "Error encrypting. Please delete your encrypted config file and try again." << endl;//Like I said, if something weird happened, the user wants to know.
 			}
 		}
-		for(int n=0;n<inPass.size();n++)
-		{
-			inPass[n]='X';
-		}
-		inPass="";
 
 
 		//The following creates the encrypted file using the encrypted information attained above.
@@ -386,6 +384,8 @@ RelayConfig inputPassword()
 	{
 		cout << "Relay successfully decrypted" << endl;//and it tells the user that the decryption was successful.
 	}
+
+	scrub(inPass);
 
 	return whatYouNeed;
 	
