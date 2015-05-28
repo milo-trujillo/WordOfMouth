@@ -3,6 +3,11 @@ WordOfMouth
 
 Worth of Mouth is an anonymous, distributed, encrypted communication system for use by secret societies and other organizations.
 
+Notice
+------
+
+This is the original version of the project, following a design we came up with after one night. It is poorly written in several areas and we've since revised our design. The Master branch contains the up to date version of the project.
+
 Overview
 --------
 
