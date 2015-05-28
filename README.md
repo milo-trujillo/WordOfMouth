@@ -40,7 +40,7 @@ At no time does any message have under two layers of encryption: The relay-level
 Crypto
 ------
 
-All public / private keypairs are made using GPG, while cyphers are made using OpenSSL's AES. 
+All public / private keypairs are made using GPG, while cyphers are made using GnuTLS' AES. 
 
 Cyphers are only used during one side of an initial key exchange, and to decrypt the configuration file for the program upon startup, so during normal communication all messages are protected by two layers of PGP keys.
 
@@ -51,8 +51,4 @@ Aside from standard C and C++ libraries, the following will be needed to build:
 
 * pthread
 
-* gcrypt
-
-* gpg-error
-
-* openssl
+* gnutls
