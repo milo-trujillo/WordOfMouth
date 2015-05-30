@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	// Note: Daemonizing closes all file handles, do *not* put logging first
 	if( startLogging("/tmp/wordofmouth-log.txt") == false )
 		return 1;
-	message m("Plaintext demo message");
+	Message m("Plaintext demo message");
 	log(LOG_INFO, "Startup successful.");
 	return 0;
 }

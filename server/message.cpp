@@ -10,7 +10,7 @@ using namespace std;
 	happen if we hit a null byte.
 */
 
-message::message(string plaintext)
+Message::Message(string plaintext)
 {
 	int len = plaintext.length();
 	data = new char[len];
@@ -20,7 +20,7 @@ message::message(string plaintext)
 	status = PLAINTEXT;
 }
 
-message::message(const char* plaintext)
+Message::Message(const char* plaintext)
 {
 	int len = strlen(plaintext);
 	data = new char[len];
@@ -30,7 +30,7 @@ message::message(const char* plaintext)
 	status = PLAINTEXT;
 }
 
-message::message(const char* src, const int s, cryptoType state)
+Message::Message(const char* src, const int s, cryptoType state)
 {
 	data = new char[s];
 	for( int i = 0; i < s; i++ )
@@ -39,7 +39,7 @@ message::message(const char* src, const int s, cryptoType state)
 	status = state;
 }
 
-message::message(const message& m)
+Message::Message(const Message& m)
 {
 	_size = m._size;
 	data = new char[m._size];
@@ -48,7 +48,7 @@ message::message(const message& m)
 	status = m.status;
 }
 
-message& message::operator=(const message& m)
+Message& Message::operator=(const Message& m)
 {
 	_size = m._size;
 	data = new char[m._size];
@@ -58,13 +58,13 @@ message& message::operator=(const message& m)
 	return *this;
 }
 
-message::~message()
+Message::~Message()
 {
 	delete [] data;
 }
 
 // For now we just throw the char* into a string, later we'll Base64 encode it.
-string message::getAsciiArmor() const
+string Message::getAsciiArmor() const
 {
 	return string(data);
 }
@@ -74,32 +74,32 @@ string message::getAsciiArmor() const
 // from other source files and return success / error.
 //
 
-bool message::cypher(const char* key)
+bool Message::cypher(const char* key)
 {
 	return false;
 }
 
-bool message::decypher(const char* key)
+bool Message::decypher(const char* key)
 {
 	return false;
 }
 
-bool message::sign(const char* privkey)
+bool Message::sign(const char* privkey)
 {
 	return false;
 }
 
-bool message::unsign(const char* pubkey)
+bool Message::unsign(const char* pubkey)
 {
 	return false;
 }
 
-bool message::encrypt(const char* pubkey)
+bool Message::encrypt(const char* pubkey)
 {
 	return false;
 }
 
-bool message::decrypt(const char* privkey)
+bool Message::decrypt(const char* privkey)
 {
 	return false;
 }
