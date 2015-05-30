@@ -11,7 +11,7 @@ CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 LIBS = -lpthread -lcrypto
 
-OBJS = main.o daemonize.o log.o
+OBJS = main.o daemonize.o log.o message.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
