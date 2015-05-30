@@ -50,6 +50,11 @@ Message::Message(const Message& m)
 
 Message& Message::operator=(const Message& m)
 {
+	if( data != NULL )
+	{
+		scrub();
+		delete [] data;
+	}
 	_size = m._size;
 	data = new char[m._size];
 	for( int i = 0; i < _size; i++ )
@@ -60,6 +65,7 @@ Message& Message::operator=(const Message& m)
 
 Message::~Message()
 {
+	scrub();
 	delete [] data;
 }
 
@@ -69,9 +75,17 @@ string Message::getAsciiArmor() const
 	return string(data);
 }
 
+// TODO: Implement scrubbing
+void Message::scrub()
+{
+	
+}
+
 //
 // These are all stub functions that will later call our crypto functions
 // from other source files and return success / error.
+//
+// Note: Before changing 'data' they should always scrub the current contents.
 //
 
 bool Message::cypher(const char* key)

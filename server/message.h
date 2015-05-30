@@ -36,6 +36,8 @@ class Message
 		bool decrypt(const char* privkey);
 
 	private:
+		void scrub(); // Scrub data so it can be safely deleted
+
 		char* data;
 		int _size;
 		cryptoType status;
