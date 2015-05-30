@@ -49,4 +49,15 @@ All cryptography is provided by [LibNettle](https://www.lysator.liu.se/~nisse/ne
 Requirements
 ------------
 
-Aside from standard C and C++ libraries, Word of Mouth requires LibNettle for cryptography. In addition, the server is written in C++11, so you will need at least GCC 4.7 or a recent version of LLVM/Clang to build it.
+The Word of Mouth server is written in C++11 and will require those standard libraries and at least GCC 4.7 or a recent version of LLVM/Clang to build.
+
+The only external library Word of Mouth depends on is [LibNettle](https://www.lysator.liu.se/~nisse/nettle), which in turn depends on [GMP](https://gmplib.org) for public key cryptography.
+
+### A note on LibNettle
+
+We had some trouble building LibNettle with public key support on OSX. After installing GMP we finally got LibNettle building correctly with:
+
+    export CFLAGS="-m64 -I/usr/local/include"
+    export LDFLAGS="-L/usr/local/lib"
+    ./configure --prefix=/usr/local --disable-assembler
+
