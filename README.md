@@ -40,15 +40,13 @@ At no time does any message have under two layers of encryption: The relay-level
 Crypto
 ------
 
-All public / private keypairs are made using GPG, while cyphers are made using GnuTLS' AES. 
+All public / private keypairs are made using RSA, while cyphers are made using AES. Message integrity is verified with SHA512.
 
-Cyphers are only used during one side of an initial key exchange, and to decrypt the configuration file for the program upon startup, so during normal communication all messages are protected by two layers of PGP keys.
+Cyphers are only used during one side of an initial key exchange, and to decrypt the configuration file for the program upon startup, so during normal communication all messages are protected by two layers of RSA keys.
+
+All cryptography is provided by [LibNettle](https://www.lysator.liu.se/~nisse/nettle/nettle.html), the library used by GnuTLS and GNUPG.
 
 Requirements
 ------------
 
-Aside from standard C and C++ libraries, the following will be needed to build:
-
-* pthread
-
-* gnutls
+Aside from standard C and C++ libraries, Word of Mouth requires LibNettle for cryptography. In addition, the server is written in C++11, so you will need at least GCC 4.7 or a recent version of LLVM/Clang to build it.
