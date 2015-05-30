@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <pthread.h> // Needed for multithreading
+#include <mutex>
 
 #include "log.h"
 
@@ -8,12 +8,12 @@ using namespace std;
 
 static ofstream logfile;
 static bool loggingInitialized = false;;
-static pthread_mutex_t logLock; // Don't print two messages to the screen at once
+static mutex logLock; // Don't print two messages to the screen at once
 
 bool startLogging(string logpath)
 {
 	bool succeeded = false;
-	pthread_mutex_lock(&logLock);
+	logLock.lock();
 	logfile.open(logpath.c_str());
 	if( logfile.is_open() )
 	{
@@ -22,49 +22,28 @@ bool startLogging(string logpath)
 	}
 	else
 		cerr << "Error opening log file!" << endl;
-	pthread_mutex_unlock(&logLock);
+	logLock.unlock();
 	return succeeded;
 }
 
-void logErr(string s)
+void log(logLevel l, string s)
 {
-	pthread_mutex_lock(&logLock);
-	if( loggingInitialized )
-		logfile << "ERROR: " << s << endl;
-	else
-		cerr << "ERROR: " << s << endl;
-	pthread_mutex_unlock(&logLock);
-}
-
-void logWarn(string s)
-{
-	pthread_mutex_lock(&logLock);
-	if( loggingInitialized )
-		logfile << "WARNING: " << s << endl;
-	else
-		cerr << "WARNING: " << s << endl;
-	pthread_mutex_unlock(&logLock);
-}
-
-void logDebug(string s)
-{
-	if( DEBUG_ENABLED )
+	ostream& log = (loggingInitialized) ? logfile : cerr;
+	logLock.lock();
+	switch(l)
 	{
-		pthread_mutex_lock(&logLock);
-		if( loggingInitialized )
-			logfile << "Debug: " << s << endl;
-		else
-			cout << "Debug: " << s << endl;
-		pthread_mutex_unlock(&logLock);
+		case LOG_DEBUG:
+			log << "Debug: " << s << endl;
+			break;
+		case LOG_INFO:
+			log << "Info: " << s << endl;
+			break;
+		case LOG_WARN:
+			log << "WARNING: " << s << endl;
+			break;
+		case LOG_ERROR:
+			log << "ERROR: " << s << endl;
+			break;
 	}
-}
-
-void logInfo(string s)
-{
-	pthread_mutex_lock(&logLock);
-	if( loggingInitialized )
-		logfile << "Info: " << s << endl;
-	else
-		cout << "Info: " << s << endl;
-	pthread_mutex_unlock(&logLock);
+	logLock.unlock();
 }

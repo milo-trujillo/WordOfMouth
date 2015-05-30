@@ -17,7 +17,7 @@
 // Returns whether daemonization succeeded
 bool daemonize()
 {
-	logInfo("Daemonizing...");
+	log(LOG_INFO, "Daemonizing...");
 	int fd0, fd1, fd2;
 	pid_t pid;
 	struct rlimit rl;
@@ -29,14 +29,14 @@ bool daemonize()
 	// Get max number of file descriptors
 	if( getrlimit(RLIMIT_NOFILE, &rl) < 0 )
 	{
-		logErr("Cannot get file limit");
+		log(LOG_ERROR, "Cannot get file limit");
 		return false;
 	}
 	
 	// Become session leader to lose the TTY
 	if( (pid = fork()) < 0 )
 	{
-		logErr("Unable to fork");
+		log(LOG_ERROR, "Unable to fork");
 		return false;
 	}
 	else if( pid != 0 ) // Parent
@@ -50,12 +50,12 @@ bool daemonize()
 	
 	if( sigaction(SIGHUP, &sa, NULL) < 0 )
 	{
-		logErr("Unable to ignore SIGHUP");
+		log(LOG_ERROR, "Unable to ignore SIGHUP");
 		return false;
 	}
 	if( (pid = fork()) < 0 )
 	{
-		logErr("Unable to fork");
+		log(LOG_ERROR, "Unable to fork");
 		return false;
 	}
 	else if( pid != 0 ) // Parent
@@ -65,7 +65,7 @@ bool daemonize()
 	// or flash drive or something the user wants to unmount
 	if( chdir("/") < 0 )
 	{
-		logErr("Unable to move to root directory");
+		log(LOG_ERROR, "Unable to move to root directory");
 		return false;
 	}
 
@@ -83,7 +83,7 @@ bool daemonize()
 
 	if( fd0 != 0 || fd1 != 1 || fd2 != 2 )
 	{
-		logErr("Unexpected file descriptors after closing standard I/O");
+		log(LOG_ERROR, "Unexpected file handles after closing standard I/O");
 		exit(1);
 	}
 	return true;

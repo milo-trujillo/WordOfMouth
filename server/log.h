@@ -12,12 +12,9 @@
 */
 
 const bool DEBUG_ENABLED = true;
+typedef enum {LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR} logLevel;
 
 bool startLogging(std::string logpath);
-
-void logErr(std::string s);
-void logWarn(std::string s);
-void logDebug(std::string s);
-void logInfo(std::string s);
+void log(logLevel, std::string msg);
 
 #endif

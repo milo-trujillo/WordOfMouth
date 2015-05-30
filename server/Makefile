@@ -1,12 +1,17 @@
 PROGNAME = wordofmouth
 CXX = clang++
-# Apple is moving from OpenSSL to their own Crypto, so any use of OpenSSL
-# throws 'deprecated' warnings on their systems, hence -Wno-deprecated
-CFLAGS += -ggdb -Wall -Wno-deprecated -I/usr/local/include
-LDFLAGS += -L/usr/local/lib
-LIBS = -lpthread -lcrypto -lgcrypt -lgpg-error
 
-OBJS = main.o daemonize.o relay.o messages.o cypher.o keygen.o hash.o NextNodeInfo.o log.o scrub.o
+# If clang not installed, fall back to gcc
+ifeq (, $(shell which clang++))
+CC=g++
+endif
+
+# Note the requirement of C++11. Your compiler may have a different flag for it.
+CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include 
+LDFLAGS += -L/usr/local/lib
+LIBS = -lpthread -lcrypto
+
+OBJS = main.o daemonize.o log.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
