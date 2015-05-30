@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<nextRelay>
+	<ip>127.0.0.1</ip>
+	<port>6000</port>
+	<pubkey>RSA PUBLIC KEY HERE</pubkey>
+</nextRelay>
+<localRelay>
+	<relayPort>5000</relayPort>
+	<commandPort>1234</commandPort>
+	<pubkey>RSA PUBLIC KEY HERE</pubkey>
+	<privkey>RSA PRIVATE KEY HERE</privkey>
+	<logfile>/path/to/logfile/here</logfile>
+</localRelay>
+<user>
+	<alias>USER ALIAS HERE</alias>
+	<pubkey>RSA PUBLIC KEY HERE</pubkey>
+	<privkey>RSA PRIVATE KEY HERE</privkey>
+</user>
