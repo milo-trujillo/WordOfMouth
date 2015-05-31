@@ -1,7 +1,7 @@
 WordOfMouth
 ===========
 
-Worth of Mouth is an anonymous, distributed, encrypted communication system for use by secret societies and other organizations.
+Word of Mouth is an anonymous, distributed, encrypted communication system for use by secret societies and other organizations.
 
 Overview
 --------
