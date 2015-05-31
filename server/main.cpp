@@ -3,9 +3,13 @@
 	little work itself.
 */
 
+#include <thread>
+
 #include "log.h"
 #include "daemonize.h"
 #include "message.h"
+
+using namespace std;
 
 int main(int argc, char** argv)
 {
