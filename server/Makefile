@@ -3,13 +3,13 @@ CXX = clang++
 
 # If clang not installed, fall back to gcc
 ifeq (, $(shell which clang++))
-CC=g++
+CXX = g++
 endif
 
 # Note the requirement of C++11. Your compiler may have a different flag for it.
 CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include 
 LDFLAGS += -L/usr/local/lib
-LIBS = -lpthread -lcrypto
+LIBS = -lnettle
 
 OBJS = main.o daemonize.o log.o message.o cypher.o keypair.o hash.o encode.o
 
