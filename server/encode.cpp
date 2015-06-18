@@ -12,7 +12,7 @@ bool asciiEncode(const char* src, const int srclen, char** dst)
 	int encoded_len = base64_encode_update(&state, (uint8_t*) enc, srclen, (const uint8_t*) src);
 	if( encoded_len < dstlen )
 		encoded_len += base64_encode_final(&state, ((uint8_t*) enc) + encoded_len);
-	enc[encoded_len++] = '\n';
+	enc[encoded_len++] = 0; // Don't forget the terminator!
 
 	*dst = enc;
 	return true;
