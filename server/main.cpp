@@ -23,5 +23,7 @@ int main(int argc, char** argv)
 		return 1;
 	Message m("Plaintext demo message");
 	log(LOG_INFO, "Startup successful.");
+	log(LOG_DEBUG, "Attempting a dump of message contents...");
+	log(LOG_DEBUG, m.getAsciiArmor());
 	return 0;
 }

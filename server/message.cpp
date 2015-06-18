@@ -1,5 +1,7 @@
 #include <string.h> // For strlen
 
+#include "log.h"
+#include "encode.h"
 #include "message.h"
 
 using namespace std;
@@ -50,7 +52,7 @@ Message::Message(const Message& m)
 
 Message& Message::operator=(const Message& m)
 {
-	if( data != NULL )
+	if( data != nullptr )
 	{
 		scrub();
 		delete [] data;
@@ -69,10 +71,21 @@ Message::~Message()
 	delete [] data;
 }
 
-// For now we just throw the char* into a string, later we'll Base64 encode it.
+// We attempt to base64 encode a message 
 string Message::getAsciiArmor() const
 {
-	return string(data);
+	char* arm = nullptr;
+	if( asciiEncode(data, _size, &arm) )
+	{
+		string encoded(arm);
+		delete [] arm;
+		return encoded;
+	}
+	else
+	{
+		log(LOG_ERROR, "Failed to ascii encode message!");
+		return string("ERROR");
+	}
 }
 
 // TODO: Implement scrubbing
