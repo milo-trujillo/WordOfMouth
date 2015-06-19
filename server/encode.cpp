@@ -1,4 +1,5 @@
 #include <nettle/base64.h>
+#include <string.h>
 
 // At present nothing can go wrong with ascii encoding, but we'll future 
 // proof it with a bool return
@@ -8,6 +9,7 @@ bool asciiEncode(const char* src, const int srclen, char** dst)
 	struct base64_encode_ctx state;
 	base64_encode_init(&state);
 	char* enc = new char[dstlen];
+	*dst = nullptr;
 
 	int encoded_len = base64_encode_update(&state, (uint8_t*) enc, srclen, (const uint8_t*) src);
 	if( encoded_len < dstlen )
@@ -20,7 +22,34 @@ bool asciiEncode(const char* src, const int srclen, char** dst)
 
 bool asciiDecode(const char* src, int* dstlen, char** dst)
 {
-	return false;
+	int srclen = strlen(src);
+	*dstlen = BASE64_DECODE_LENGTH(srclen);
+	struct base64_decode_ctx state;
+	base64_decode_init(&state);
+
+	char* d = new char[*dstlen];
+	*dst = nullptr;
+
+	size_t decoded_bytes;
+	bool ok = base64_decode_update(&state, (unsigned int*) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	if( !ok )
+	{
+		delete [] d;
+		return false;
+	}
+
+	if( decoded_bytes < *dstlen )
+	{
+		ok = base64_decode_final(&state);
+		if( !ok )
+		{
+			delete [] d;
+			return false;
+		}
+	}
+
+	*dst = d;
+	return true;
 }
 
 bool isAscii(const char* data, const int len)
