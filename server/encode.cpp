@@ -32,7 +32,7 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 	*dst = nullptr;
 
 	size_t decoded_bytes;
-	bool ok = base64_decode_update(&state, (unsigned int*) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	bool ok = base64_decode_update(&state, (size_t *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	if( !ok )
 	{
 		delete [] d;
@@ -75,7 +75,7 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 	*dst = nullptr;
 
 	size_t decoded_bytes;
-	bool ok = base16_decode_update(&state, (unsigned int*) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	bool ok = base16_decode_update(&state, (size_t *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	if( !ok )
 	{
 		delete [] d;
