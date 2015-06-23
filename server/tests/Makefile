@@ -1,8 +1,8 @@
-CXX = clang++
+CXX?= clang++
 
 # If clang not installed, fall back to gcc
 ifeq (, $(shell which clang++))
-CXX = g++
+CXX?= g++
 endif
 
 # Note the requirement of C++11. Your compiler may have a different flag for it.
