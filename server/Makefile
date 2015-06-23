@@ -19,5 +19,10 @@ all: $(OBJS)
 $(OBJS): %.o: %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
+test:
+	cd tests && $(MAKE)
+	cd tests && $(MAKE) test
+
 clean:
+	cd tests && $(MAKE) clean
 	rm -f *.o $(PROGNAME)
