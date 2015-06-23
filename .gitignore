@@ -2,3 +2,5 @@ wordofmouth
 enco.txt
 *.o
 .*.swp
+*.test
+*.dSYM
