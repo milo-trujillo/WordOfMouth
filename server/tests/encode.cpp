@@ -16,7 +16,9 @@ int main()
 	bool success = asciiEncode(msg, strlen(msg), &encoded);
 	if( !success )
 	{
-		cout << "[-] Error encoding raw string!" << endl;
+		#ifdef VERBOSE
+		cout << "\tError encoding raw string!" << endl;
+		#endif
 		error = true;
 	}
 	char* decoded;
@@ -24,19 +26,35 @@ int main()
 	success = asciiDecode(encoded, &len, &decoded);
 	if( !success )
 	{
-		cout << "[-] Error decoding raw string!" << endl;
+		#ifdef VERBOSE
+		cout << "\tError decoding raw string!" << endl;
+		#endif
 		error = true;
 	}
-	if( strcmp(msg, decoded) != 0 || strcmp(msg, encoded) == 0 )
-	{
-		cout << "[-] Error in string comparison!" << endl;
-		error = true;
-	}
+
 	#ifdef VERBOSE
 	cout << "\tMessage: " << msg << endl;
 	cout << "\tBase64: " << encoded << endl;
-	cout << "\tDecoded: " << decoded << endl;
+	if( success )
+		cout << "\tDecoded: " << decoded << endl;
 	#endif
+
+	if( strcmp(msg, decoded) != 0 )
+	{
+		#ifdef VERBOSE
+		cout << "\tDecoded message does not match original!" << endl;
+		cout << "\tLength of original: " << strlen(msg) << endl;
+		cout << "\tLength of decoded: " << strlen(decoded) << endl;
+		#endif
+		error = true;
+	}
+	if( strcmp(msg, encoded) == 0 )
+	{
+		#ifdef VERBOSE
+		cout << "\tEncoded and original messages should not match!" << endl;
+		#endif
+		error = true;
+	}
 	if( error )
 		cout << "[-] Problem with base64 raw strings!" << endl;
 	else
