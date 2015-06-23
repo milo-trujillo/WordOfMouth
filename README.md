@@ -61,3 +61,20 @@ We had some trouble building LibNettle with public key support on OSX. After ins
     export LDFLAGS="-L/usr/local/lib"
     ./configure --prefix=/usr/local --disable-assembler
 
+In addition, the LibNettle API has changed slightly over the years. If you intend to build with nettle 2 (which is still the default on FreeBSD) instead of 3 you may need to add a header file, nettle/version.h, declaring your library to be old. Here is an example for Nettle 2.7:
+
+    #ifdef NETTLE_VERSION_H_INCLUDED
+    #define NETTLE_VERSION_H_INCLUDED
+
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+
+    #define NETTLE_VERSION_MAJOR 2
+    #define NETTLE_VERSION_MINOR 7
+
+    #ifdef __cplusplus
+    }
+    #endif
+    #endif
+
