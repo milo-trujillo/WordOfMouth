@@ -17,10 +17,13 @@ all:
 
 test:
 	@echo "==== Beginning tests ===="
+	@echo "(Rebuild with '-D VERBOSE' in your CFLAGS for more information)"
 	@./encode.test
 	@./encode-messages.test
 	@./hash.test
 	@echo "==== Done with tests ===="
 
 clean:
-	rm -f *.test
+	@echo "Cleaning tests..."
+	@rm -f *.test
+	@rm -rf *.dSYM # Apple's compiler leaves some obnoxious test folders
