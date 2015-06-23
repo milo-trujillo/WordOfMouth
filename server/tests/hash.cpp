@@ -9,6 +9,9 @@ int main()
 	bool errors = false;
 
 	const char* str = "Testing123...";
+	const char* correct_digest = "493b5c09b3d6d3581590f139740"
+		"d2c8344a0f77940238e692248bd3e2c22730e57ae98f341462e6"
+		"f8f4e8bc12a4d1e693f1580220e9da2aaa89106202b349bd5";
 	char* dgst;
 	bool success = hash(str, strlen(str), &dgst);
 	if( !success )
@@ -26,47 +29,27 @@ int main()
 	#ifdef VERBOSE
 	printf("\tHashing: %s\n", str);
 	printf("\tGot digest: %s\n", ascii);
+	printf("\tCorrect digest is: %s\n", correct_digest);
 	#endif
 
-	// Now let's ask the local system to verify our results
-	FILE* fp;
-	char cmd[200];
-	sprintf(cmd, "echo -n \"%s\" | shasum -a 512", str);
-	fp = popen(cmd, "r");
-	if( fp == NULL )
+	if( strcmp(ascii, correct_digest) != 0 )
 	{
-		printf("\tError running local shasum program!\n");
+		#ifdef VERBOSE
+		printf("\tHashes do not match!\n");
+		#endif
 		errors = true;
 	}
 	else
 	{
-		char data[500];
-		fgets(data, sizeof(data) - 1, fp);
 		#ifdef VERBOSE
-		printf("\tLocal system got digest: %s\n", data);
+		printf("\tHashes match!\n");
 		#endif
-		int i;
-		for( i = 0; data[i] != ' '; i++ )
-		{
-			if( ascii[i] != data[i] )
-			{
-				errors = true;
-				printf("\tERROR: Hashes do not match!\n");
-				break;
-			}
-		}
-		if( i != strlen(ascii) )
-		{
-			errors = true;
-			printf("\tERROR: Hash lengths do not match!\n");
-		}
 	}
-	pclose(fp);
 
 	if( errors )
-		printf("[-] Error with SHA hashing.\n");
+		printf("[-] Error with SHA512 hashing.\n");
 	else
-		printf("[+] Hashing algorithm matches system implementation.\n");
+		printf("[+] Hashing algorithm is accurate.\n");
 
 	// Cleanup from hashing and ascii encoding
 	delete [] dgst;
