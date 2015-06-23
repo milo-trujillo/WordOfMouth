@@ -17,6 +17,10 @@
 bool asciiEncode(const char* src, const int srclen, char** dst);
 bool asciiDecode(const char* src, int* dstlen, char** dst);
 
+// These guys do hex-ascii encoding / decoding of binary data in src.
+bool hexEncode(const char* src, const int srclen, char** dst);
+bool hexDecode(const char* src, int* dstlen, char** dst);
+
 // This detects whether the current message encoding is suitable for direct
 // display on a terminal.
 bool isAscii(const char* data, const int len);

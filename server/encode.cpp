@@ -1,4 +1,5 @@
 #include <nettle/base64.h>
+#include <nettle/base16.h>
 #include <string.h>
 
 // At present nothing can go wrong with ascii encoding, but we'll future 
@@ -51,6 +52,50 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 	*dst = d;
 	return true;
 }
+
+bool hexEncode(const char* src, const int srclen, char** dst)
+{
+	int dstlen = BASE16_ENCODE_LENGTH(srclen) + 1;
+	char* enc = new char[dstlen];
+
+	base16_encode_update((uint8_t*) enc, srclen, (const uint8_t*) src);
+
+	*dst = enc;
+	return true;
+}
+
+bool hexDecode(const char* src, int* dstlen, char** dst)
+{
+	int srclen = strlen(src);
+	*dstlen = BASE16_DECODE_LENGTH(srclen);
+	struct base16_decode_ctx state;
+	base16_decode_init(&state);
+
+	char* d = new char[*dstlen];
+	*dst = nullptr;
+
+	size_t decoded_bytes;
+	bool ok = base16_decode_update(&state, (unsigned int*) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	if( !ok )
+	{
+		delete [] d;
+		return false;
+	}
+
+	if( decoded_bytes < *dstlen )
+	{
+		ok = base16_decode_final(&state);
+		if( !ok )
+		{
+			delete [] d;
+			return false;
+		}
+	}
+
+	*dst = d;
+	return true;
+}
+
 
 bool isAscii(const char* data, const int len)
 {
