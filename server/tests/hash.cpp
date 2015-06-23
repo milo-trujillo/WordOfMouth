@@ -52,6 +52,7 @@ int main()
 			{
 				errors = true;
 				printf("\tERROR: Hashes do not match!\n");
+				break;
 			}
 		}
 		if( i != strlen(ascii) )
