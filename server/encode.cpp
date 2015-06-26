@@ -1,6 +1,5 @@
 #include <nettle/base64.h>
 #include <nettle/base16.h>
-#include <nettle/version.h>
 #include <string.h>
 
 // At present nothing can go wrong with ascii encoding, but we'll future 
@@ -36,10 +35,10 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 
 	// Older versions of libnettle had *slightly* different arguments
 	// and those versions are unfortunately still used on FreeBSD.
-	#if NETTLE_VERSION_MAJOR > 2
-	bool ok = base64_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
-	#else
+	#ifdef OLD_NETTLE
 	bool ok = base64_decode_update(&state, (unsigned *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	#else
+	bool ok = base64_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	#endif
 	if( !ok )
 	{
@@ -85,10 +84,10 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 	size_t decoded_bytes;
 
 	// Same disclaimer as above
-	#if NETTLE_VERSION_MAJOR > 2
-	bool ok = base16_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
-	#else
+	#ifdef OLD_NETTLE
 	bool ok = base16_decode_update(&state, (unsigned *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	#else
+	bool ok = base16_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	#endif
 	if( !ok )
 	{

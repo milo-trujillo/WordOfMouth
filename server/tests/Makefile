@@ -10,6 +10,11 @@ CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include #-D VERBOSE
 LDFLAGS += -L/usr/local/lib
 LIBS = -lnettle
 
+# Test to determine libNettle version - 3 has a header file not present in 2
+ifdef $( $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -E ../.test_nettle_version.h )
+CFLAGS += -DOLD_NETTLE
+endif
+
 all:
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o encode.test encode.cpp ../encode.cpp
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o encode-messages.test encode-messages.cpp ../encode.cpp ../message.cpp ../log.cpp
