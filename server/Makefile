@@ -7,12 +7,13 @@ CXX?= g++
 endif
 
 # Note the requirement of C++11. Your compiler may have a different flag for it.
-CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include 
+CFLAGS += -ggdb -std=c++11 -Wall -I/usr/local/include #-Rpass=inline
 LDFLAGS += -L/usr/local/lib
 LIBS = -lnettle
 
 # Test to determine libNettle version - 3 has a header file not present in 2
-ifdef $( $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -E .test_nettle_version.h )
+ifeq (, $(shell $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -w -E .test_nettle_version.h 2>/dev/null))
+# Cool, nettle 3+ is available
 else
 CFLAGS += -DOLD_NETTLE
 endif

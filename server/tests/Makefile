@@ -11,7 +11,8 @@ LDFLAGS += -L/usr/local/lib
 LIBS = -lnettle
 
 # Test to determine libNettle version - 3 has a header file not present in 2
-ifdef $( $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -E ../.test_nettle_version.h )
+ifeq (, $(shell $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -w -E ../.test_nettle_version.h 2>/dev/null))
+# Cool, nettle 3+ is available
 else
 CFLAGS += -DOLD_NETTLE
 endif
