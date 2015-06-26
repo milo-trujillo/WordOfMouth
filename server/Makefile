@@ -13,6 +13,7 @@ LIBS = -lnettle
 
 # Test to determine libNettle version - 3 has a header file not present in 2
 ifdef $( $(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -E .test_nettle_version.h )
+else
 CFLAGS += -DOLD_NETTLE
 endif
 
