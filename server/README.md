@@ -12,6 +12,10 @@ Networking is probably the highest level of logic, as it has to parse config inf
 
 All other modules (logging, config files, and daemonization) are confined to their own bubbles with little knowledge of the rest of the code base.
 
+## Installation
+
+You should be able to build with a simple `make && make test` or `gmake && gmake test`. If that is proving insufficient then see the *INSTALL* file for troubleshooting suggestions.
+
 ## Code style
 
 Variables, functions, and methods are all in camelCase. Class names are in UpperCamelCase.
