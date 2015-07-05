@@ -1,7 +1,7 @@
 CXX?= clang++
 
 # If clang not installed, fall back to gcc
-ifeq (, $(shell which clang++))
+ifeq (, $(shell which clang++ 2>/dev/null))
 CXX?= g++
 endif
 

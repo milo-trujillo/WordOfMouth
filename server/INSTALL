@@ -12,6 +12,8 @@ If that works for you, woohoo! However, if it does not, here are some suggestion
 
 First, make sure all prerequisite libraries are installed. These are specified in either the top-level README or the README for the server.
 
+Also make sure you are using a compiler that supports C++11. Word of Mouth is known to build with recent versions of llvm/clang and gcc.
+
 Our Makefiles do some redirection of standard error. If your shell does not support "2>/dev/null" (I'm looking at *you*, C-Shell) try the installation from inside zsh or bash.
 
 Our Makefiles have to do some autodetection to figure out if you have version 2 or 3 of libnettle installed. In particular it assumes that if it finds either /usr/include/nettle/version.h, or /usr/local/include/nettle/version.h then you have version 3+ of the library, and otherwise have version 2. The libraries are *not* compatible, so if it autodetects the wrong library you cannot compile. If autodetection isn't working just remove those lines from the makefiles and add -DOLD_NETTLE to the CFLAGS if you have version 2 of the library.
