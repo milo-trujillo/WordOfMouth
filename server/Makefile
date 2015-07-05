@@ -12,7 +12,7 @@ LDFLAGS += -L/usr/local/lib
 LIBS = -lnettle
 
 # Test to determine libNettle version - 3 has a header file not present in 2
-ifeq (, $(shell find -f /usr/local/include /usr/include -path "*/nettle/*" -a -name "version.h" 2>/dev/null))
+ifeq (, $(shell find -f /usr/local/include /usr/include -path "*/nettle/*" -a -name "version.h" -a -depth 2 2>/dev/null))
 CFLAGS += -DOLD_NETTLE
 endif
 
