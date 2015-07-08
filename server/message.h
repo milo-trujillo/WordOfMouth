@@ -14,6 +14,8 @@ typedef enum {PLAINTEXT, CYPHERED, KEYED} cryptoType;
 class Message
 {
 	public:
+		// If you do not specify the length of input then we assume it is a
+		// string, calculate the size ourselves, and add a null terminator.
 		Message(std::string plaintext);
 		Message(const char* plaintext);
 		Message(const char *, const int size, cryptoType state);
