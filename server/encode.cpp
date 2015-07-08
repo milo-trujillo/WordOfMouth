@@ -24,11 +24,11 @@ bool asciiEncode(const char* src, const int srclen, char** dst)
 bool asciiDecode(const char* src, int* dstlen, char** dst)
 {
 	int srclen = strlen(src);
-	*dstlen = BASE64_DECODE_LENGTH(srclen);
+	int maxlen = BASE64_DECODE_LENGTH(srclen);
 	struct base64_decode_ctx state;
 	base64_decode_init(&state);
 
-	char* d = new char[*dstlen];
+	char* d = new char[maxlen];
 	*dst = nullptr;
 
 	size_t decoded_bytes;
@@ -57,6 +57,7 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 	}
 
 	*dst = d;
+	*dstlen = decoded_bytes;
 	return true;
 }
 
@@ -74,11 +75,11 @@ bool hexEncode(const char* src, const int srclen, char** dst)
 bool hexDecode(const char* src, int* dstlen, char** dst)
 {
 	int srclen = strlen(src);
-	*dstlen = BASE16_DECODE_LENGTH(srclen);
+	int maxlen = BASE16_DECODE_LENGTH(srclen);
 	struct base16_decode_ctx state;
 	base16_decode_init(&state);
 
-	char* d = new char[*dstlen];
+	char* d = new char[maxlen];
 	*dst = nullptr;
 
 	size_t decoded_bytes;
@@ -106,6 +107,7 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 	}
 
 	*dst = d;
+	*dstlen = decoded_bytes;
 	return true;
 }
 

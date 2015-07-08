@@ -52,6 +52,27 @@ void test(int test)
 		#endif
 		error = true;
 	}
+	else
+	{
+		if( len != strlen(decoded) )
+		{
+			#ifdef VERBOSE
+			cout << "\tReported length does not match decoded length!" << endl;
+			cout << "\t\tReported length: " << len << " Decoded length: " 
+				<< strlen(decoded) << endl;
+			#endif
+			error = true;
+		}
+		else if( len != strlen(msg) )
+		{
+			#ifdef VERBOSE
+			cout << "\tReported length does not match original message length!" << endl;
+			cout << "\t\tReported length: " << len << " Original length: " 
+				<< strlen(decoded) << endl;
+			#endif
+			error = true; 
+		}
+	}
 
 	#ifdef VERBOSE
 	cout << "\tMessage: " << msg << endl;
