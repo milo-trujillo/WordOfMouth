@@ -10,7 +10,7 @@ int getHashLength()
 // At the moment nothing can go wrong, and this always returns true. However,
 // if we some day decide to be clever and check for out of memory then the
 // infrastucture for error reporting will already be here.
-bool hash(const char* src, const int len, char** dst)
+bool hash(const char* src, const size_t len, char** dst)
 {
 	sha512_ctx state;
 	char* digest = new char[SHA512_DIGEST_SIZE];

@@ -16,7 +16,7 @@ int main()
 	cout << "\tEncoding message with text: " << msg << endl;
 	cout << "\tGot encoded data: " << aa << endl;
 	#endif
-	int len;
+	size_t len;
 	char* decoded;
 	bool success = asciiDecode(aa.c_str(), &len, &decoded);
 	if( !success || (strcmp(msg.c_str(), decoded) != 0) )

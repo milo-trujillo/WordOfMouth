@@ -18,13 +18,13 @@ class Message
 		// string, calculate the size ourselves, and add a null terminator.
 		Message(std::string plaintext);
 		Message(const char* plaintext);
-		Message(const char *, const int size, cryptoType state);
+		Message(const char *, const size_t size, cryptoType state);
 		Message(const Message& m);
 		Message& operator=(const Message& m);
 		~Message();
 
 		const char& operator[](size_t i) const { return data[i]; }
-		int size() const { return _size; }
+		size_t size() const { return _size; }
 		cryptoType getStatus() const { return status; }
 		std::string getAsciiArmor() const;
 
@@ -41,7 +41,7 @@ class Message
 		void scrub(); // Scrub data so it can be safely deleted
 
 		char* data;
-		int _size;
+		size_t _size;
 		cryptoType status;
 };
 

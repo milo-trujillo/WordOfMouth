@@ -14,7 +14,7 @@ using namespace std;
 
 Message::Message(string plaintext)
 {
-	int len = plaintext.length() + 1; // Add one to get the null terminator
+	size_t len = plaintext.length() + 1; // Add one to get the null terminator
 	data = new char[len];
 	for( int i = 0; i < len; i++ )
 		data[i] = plaintext[i];
@@ -24,7 +24,7 @@ Message::Message(string plaintext)
 
 Message::Message(const char* plaintext)
 {
-	int len = strlen(plaintext) + 1; // Add one to get the null terminator
+	size_t len = strlen(plaintext) + 1; // Add one to get the null terminator
 	data = new char[len];
 	for( int i = 0; i < len; i++ )
 		data[i] = plaintext[i];
@@ -34,7 +34,7 @@ Message::Message(const char* plaintext)
 
 // If size is given *explicitly* then we assume we're copying binary data and
 // do *not* add a null terminator
-Message::Message(const char* src, const int s, cryptoType state)
+Message::Message(const char* src, const size_t s, cryptoType state)
 {
 	data = new char[s];
 	for( int i = 0; i < s; i++ )

@@ -16,6 +16,6 @@
 
 int getHashLength();
 
-bool hash(const char* src, const int len, char** dst);
+bool hash(const char* src, const size_t len, char** dst);
 
 #endif

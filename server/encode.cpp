@@ -4,7 +4,7 @@
 
 // At present nothing can go wrong with ascii encoding, but we'll future 
 // proof it with a bool return
-bool asciiEncode(const char* src, const int srclen, char** dst)
+bool asciiEncode(const char* src, const size_t srclen, char** dst)
 {
 	int dstlen = BASE64_ENCODE_LENGTH(srclen) + BASE64_ENCODE_FINAL_LENGTH + 1;
 	struct base64_encode_ctx state;
@@ -21,7 +21,7 @@ bool asciiEncode(const char* src, const int srclen, char** dst)
 	return true;
 }
 
-bool asciiDecode(const char* src, int* dstlen, char** dst)
+bool asciiDecode(const char* src, size_t* dstlen, char** dst)
 {
 	int srclen = strlen(src);
 	int maxlen = BASE64_DECODE_LENGTH(srclen);
@@ -46,7 +46,7 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < (size_t) *dstlen )
+	if( decoded_bytes < *dstlen )
 	{
 		ok = base64_decode_final(&state);
 		if( !ok )
@@ -61,7 +61,7 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 	return true;
 }
 
-bool hexEncode(const char* src, const int srclen, char** dst)
+bool hexEncode(const char* src, const size_t srclen, char** dst)
 {
 	int dstlen = BASE16_ENCODE_LENGTH(srclen) + 1;
 	char* enc = new char[dstlen];
@@ -72,7 +72,7 @@ bool hexEncode(const char* src, const int srclen, char** dst)
 	return true;
 }
 
-bool hexDecode(const char* src, int* dstlen, char** dst)
+bool hexDecode(const char* src, size_t* dstlen, char** dst)
 {
 	int srclen = strlen(src);
 	int maxlen = BASE16_DECODE_LENGTH(srclen);
@@ -96,7 +96,7 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < (size_t) *dstlen )
+	if( decoded_bytes < *dstlen )
 	{
 		ok = base16_decode_final(&state);
 		if( !ok )
@@ -112,7 +112,7 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 }
 
 
-bool isAscii(const char* data, const int len)
+bool isAscii(const char* data, const size_t len)
 {
 	for( int i = 0; i < len - 1; i++ ) // Check for printable character range
 	{

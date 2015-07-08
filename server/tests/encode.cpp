@@ -37,7 +37,7 @@ void test(int test)
 		error = true;
 	}
 	char* decoded;
-	int len;
+	size_t len;
 	if( test == TEST_BASE64 )
 		success = asciiDecode(encoded, &len, &decoded);
 	if( test == TEST_HEX )
@@ -54,7 +54,7 @@ void test(int test)
 	}
 	else
 	{
-		if( len != (int) strlen(decoded) )
+		if( len != strlen(decoded) )
 		{
 			#ifdef VERBOSE
 			cout << "\tReported length does not match decoded length!" << endl;
@@ -63,7 +63,7 @@ void test(int test)
 			#endif
 			error = true;
 		}
-		else if( len != (int) strlen(msg) )
+		else if( len != strlen(msg) )
 		{
 			#ifdef VERBOSE
 			cout << "\tReported length does not match original message length!" << endl;
