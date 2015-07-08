@@ -46,7 +46,7 @@ bool asciiDecode(const char* src, int* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < *dstlen )
+	if( decoded_bytes < (size_t) *dstlen )
 	{
 		ok = base64_decode_final(&state);
 		if( !ok )
@@ -95,7 +95,7 @@ bool hexDecode(const char* src, int* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < *dstlen )
+	if( decoded_bytes < (size_t) *dstlen )
 	{
 		ok = base16_decode_final(&state);
 		if( !ok )

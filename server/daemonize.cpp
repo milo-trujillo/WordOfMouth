@@ -72,7 +72,7 @@ bool daemonize()
 	// Close all open file descriptors
 	if( rl.rlim_max == RLIM_INFINITY )
 		rl.rlim_max = 1024;
-	for( int i = 0; i < rl.rlim_max; i++ )
+	for( unsigned int i = 0; i < rl.rlim_max; i++ )
 		close(i);
 
 	// Attach file descriptors 0, 1, and 2 to /dev/null
