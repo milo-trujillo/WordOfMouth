@@ -3,38 +3,62 @@
 
 #include "../encode.h"
 
+#define TEST_BASE64 0
+#define TEST_HEX 1
+
 using namespace std;
 
-int main()
+void test(int test)
 {
 	#ifdef VERBOSE
-	cout << "\tTesting base64 encoding..." << endl;
+	if( test == TEST_BASE64 )
+		cout << "\tTesting base64 encoding..." << endl;
+	if( test == TEST_HEX )
+		cout << "\tTesting hex encoding..." << endl;
 	#endif
+
 	const char* msg = "Testing123...";
 	char* encoded;
 	bool error = false;
-	bool success = asciiEncode(msg, strlen(msg), &encoded);
+	bool success;
+
+	if( test == TEST_BASE64 )
+		success = asciiEncode(msg, strlen(msg), &encoded);
+	if( test == TEST_HEX )
+		success = hexEncode(msg, strlen(msg), &encoded);
 	if( !success )
 	{
 		#ifdef VERBOSE
-		cout << "\tError encoding raw string!" << endl;
+		if( test == TEST_BASE64 )
+			cout << "\tError base64 encoding raw string!" << endl;
+		if( test == TEST_HEX )
+			cout << "\tError hex encoding raw string!" << endl;
 		#endif
 		error = true;
 	}
 	char* decoded;
 	int len;
-	success = asciiDecode(encoded, &len, &decoded);
+	if( test == TEST_BASE64 )
+		success = asciiDecode(encoded, &len, &decoded);
+	if( test == TEST_HEX )
+		success = hexDecode(encoded, &len, &decoded);
 	if( !success )
 	{
 		#ifdef VERBOSE
-		cout << "\tError decoding raw string!" << endl;
+		if( test == TEST_BASE64 )
+			cout << "\tError base64 decoding raw string!" << endl;
+		if( test == TEST_HEX )
+			cout << "\tError hex decoding raw string!" << endl;
 		#endif
 		error = true;
 	}
 
 	#ifdef VERBOSE
 	cout << "\tMessage: " << msg << endl;
-	cout << "\tBase64: " << encoded << endl;
+	if( test == TEST_BASE64 )
+		cout << "\tBase64: " << encoded << endl;
+	if( test == TEST_HEX )
+		cout << "\tHex: " << encoded << endl;
 	if( success )
 		cout << "\tDecoded: " << decoded << endl;
 	#endif
@@ -56,9 +80,24 @@ int main()
 		error = true;
 	}
 	if( error )
-		cout << "[-] Problem with base64 raw strings!" << endl;
+	{
+		if( test == TEST_BASE64 )
+			cout << "[-] Problem with base64 raw strings!" << endl;
+		if( test == TEST_HEX )
+			cout << "[-] Problem with hex raw strings!" << endl;
+	}
 	else
-		cout << "[+] Base64 encoding for raw strings successful." << endl;
-	
+	{
+		if( test == TEST_BASE64 )
+			cout << "[+] Base64 encoding for raw strings successful." << endl;
+		if( test == TEST_HEX )
+			cout << "[+] Hex encoding for raw strings successful." << endl;
+	}
+}
+
+int main()
+{
+	test(TEST_BASE64);
+	test(TEST_HEX);
 	return 0;
 }
