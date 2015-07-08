@@ -7,9 +7,9 @@
 using namespace std;
 
 /*
-	Note: We make it a habit to use for-loops to copy data rather than strcpy
-	because we are often storing binary data and don't want anything odd to
-	happen if we hit a null byte.
+	Note: We make it a habit to use for-loops or memcpy to copy data rather
+	than strcpy because we are often storing binary data and don't want 
+	anything odd to happen if we hit a null byte.
 */
 
 Message::Message(string plaintext)
@@ -74,11 +74,11 @@ Message::~Message()
 // We attempt to base64 encode a message 
 string Message::getAsciiArmor() const
 {
-	char* arm = nullptr;
-	if( asciiEncode(data, _size, &arm) )
+	char* armor = nullptr;
+	if( asciiEncode(data, _size, &armor) )
 	{
-		string encoded(arm);
-		delete [] arm;
+		string encoded(armor);
+		delete [] armor;
 		return encoded;
 	}
 	else
