@@ -21,6 +21,18 @@ int main()
 	bool success = asciiDecode(aa.c_str(), &len, &decoded);
 	if( !success || (strcmp(msg.c_str(), decoded) != 0) )
 	{
+		#ifdef VERBOSE
+		if( !success )
+		{
+			cout << "\tAscii decode returned internal error." << endl;
+		}
+		if( strcmp(msg.c_str(), decoded) != 0 )
+		{
+			cout << "\tDecoded string does not match original.\n" << endl;
+			cout << "\tOriginal: " << msg << endl;
+			cout << "\tDecoded:  " << decoded << endl;
+		}
+		#endif
 		cout << "[-] Error ascii decoding messages." << endl;
 		return 0;
 	}
