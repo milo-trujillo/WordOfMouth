@@ -29,7 +29,7 @@ int main()
 		else if( strcmp(msg.c_str(), decoded) != 0 )
 		{
 			cout << "\tDecoded string does not match original." << endl;
-			cout << "\tOriginal: " << msg << << " (Length: " << msg.length 
+			cout << "\tOriginal: " << msg << " (Length: " << msg.length()
 				<< ")" << endl;
 			cout << "\tDecoded:  " << decoded << " (Length: " << len 
 				<< ")" << endl;
