@@ -1,8 +1,8 @@
-CXX?= clang++
-
-# If clang not installed, fall back to gcc
+# Use user-specified compiler, or default to clang if possible, else gcc
 ifeq (, $(shell which clang++ 2>/dev/null))
 CXX?= g++
+else
+CXX?= clang++
 endif
 
 # Note the requirement of C++11. Your compiler may have a different flag for it.
