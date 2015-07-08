@@ -16,7 +16,7 @@ Message::Message(string plaintext)
 {
 	size_t len = plaintext.length() + 1; // Add one to get the null terminator
 	data = new char[len];
-	for( int i = 0; i < len; i++ )
+	for( size_t i = 0; i < len; i++ )
 		data[i] = plaintext[i];
 	_size = len;
 	status = PLAINTEXT;
@@ -26,7 +26,7 @@ Message::Message(const char* plaintext)
 {
 	size_t len = strlen(plaintext) + 1; // Add one to get the null terminator
 	data = new char[len];
-	for( int i = 0; i < len; i++ )
+	for( size_t i = 0; i < len; i++ )
 		data[i] = plaintext[i];
 	_size = len;
 	status = PLAINTEXT;
@@ -37,7 +37,7 @@ Message::Message(const char* plaintext)
 Message::Message(const char* src, const size_t s, cryptoType state)
 {
 	data = new char[s];
-	for( int i = 0; i < s; i++ )
+	for( size_t i = 0; i < s; i++ )
 		data[i] = src[i];
 	_size = s;
 	status = state;
@@ -47,7 +47,7 @@ Message::Message(const Message& m)
 {
 	_size = m._size;
 	data = new char[m._size];
-	for( int i = 0; i < _size; i++ )
+	for( size_t i = 0; i < _size; i++ )
 		data[i] = m.data[i];
 	status = m.status;
 }
@@ -61,7 +61,7 @@ Message& Message::operator=(const Message& m)
 	}
 	_size = m._size;
 	data = new char[m._size];
-	for( int i = 0; i < _size; i++ )
+	for( size_t i = 0; i < _size; i++ )
 		data[i] = m.data[i];
 	status = m.status;
 	return *this;

@@ -1,4 +1,5 @@
 #include <nettle/sha2.h>
+#include <stdlib.h> // For size_t
 
 // This is just shorthand so users don't need to know the hash type or
 // implementation we're using.

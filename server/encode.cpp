@@ -16,6 +16,8 @@ bool asciiEncode(const char* src, const size_t srclen, char** dst)
 	if( encoded_len < dstlen )
 		encoded_len += base64_encode_final(&state, ((uint8_t*) enc) + encoded_len);
 	enc[encoded_len++] = 0; // Don't forget the terminator!
+	// TODO: Is the above line a buffer overflow? Does dstlen guarantee us room
+	// for a null terminator?
 
 	*dst = enc;
 	return true;
@@ -46,7 +48,7 @@ bool asciiDecode(const char* src, size_t* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < *dstlen )
+	if( decoded_bytes < maxlen )
 	{
 		ok = base64_decode_final(&state);
 		if( !ok )
@@ -96,7 +98,7 @@ bool hexDecode(const char* src, size_t* dstlen, char** dst)
 		return false;
 	}
 
-	if( decoded_bytes < *dstlen )
+	if( decoded_bytes < maxlen )
 	{
 		ok = base16_decode_final(&state);
 		if( !ok )
@@ -114,7 +116,7 @@ bool hexDecode(const char* src, size_t* dstlen, char** dst)
 
 bool isAscii(const char* data, const size_t len)
 {
-	for( int i = 0; i < len - 1; i++ ) // Check for printable character range
+	for( size_t i = 0; i < len - 1; i++ ) // Check for printable character range
 	{
 		if( data[i] == '\n' || data[i] == '\t' )
 			continue;
