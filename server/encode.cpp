@@ -26,22 +26,22 @@ bool asciiEncode(const char* src, const size_t srclen, char** dst)
 bool asciiDecode(const char* src, size_t* dstlen, char** dst)
 {
 	int srclen = strlen(src);
-	int maxlen = BASE64_DECODE_LENGTH(srclen);
+	size_t maxlen = BASE64_DECODE_LENGTH(srclen);
 	struct base64_decode_ctx state;
 	base64_decode_init(&state);
 
 	char* d = new char[maxlen];
 	*dst = nullptr;
 
-	size_t decoded_bytes;
-
-	// Older versions of libnettle had *slightly* different arguments
-	// and those versions are unfortunately still used on FreeBSD.
 	#ifdef OLD_NETTLE
-	bool ok = base64_decode_update(&state, (unsigned *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	// Older nettle uses decoded_bytes for size sanity checking, then updates
+	// it to contain the number of actually decoded bytes.
+	unsigned decoded_bytes = maxlen;
 	#else
-	bool ok = base64_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	size_t decoded_bytes;
 	#endif
+
+	bool ok = base64_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	if( !ok )
 	{
 		delete [] d;
@@ -77,21 +77,22 @@ bool hexEncode(const char* src, const size_t srclen, char** dst)
 bool hexDecode(const char* src, size_t* dstlen, char** dst)
 {
 	int srclen = strlen(src);
-	int maxlen = BASE16_DECODE_LENGTH(srclen);
+	size_t maxlen = BASE16_DECODE_LENGTH(srclen);
 	struct base16_decode_ctx state;
 	base16_decode_init(&state);
 
 	char* d = new char[maxlen];
 	*dst = nullptr;
 
-	size_t decoded_bytes;
-
-	// Same disclaimer as above
 	#ifdef OLD_NETTLE
-	bool ok = base16_decode_update(&state, (unsigned *) &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	// Older nettle uses decoded_bytes for size sanity checking, then updates
+	// it to contain the number of actually decoded bytes.
+	unsigned decoded_bytes = maxlen;
 	#else
-	bool ok = base16_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	size_t decoded_bytes;
 	#endif
+
+	bool ok = base16_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
 	if( !ok )
 	{
 		delete [] d;
