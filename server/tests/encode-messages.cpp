@@ -26,11 +26,13 @@ int main()
 		{
 			cout << "\tAscii decode returned internal error." << endl;
 		}
-		if( strcmp(msg.c_str(), decoded) != 0 )
+		else if( strcmp(msg.c_str(), decoded) != 0 )
 		{
 			cout << "\tDecoded string does not match original." << endl;
-			cout << "\tOriginal: " << msg << endl;
-			cout << "\tDecoded:  " << decoded << endl;
+			cout << "\tOriginal: " << msg << << " (Length: " << msg.length 
+				<< ")" << endl;
+			cout << "\tDecoded:  " << decoded << " (Length: " << len 
+				<< ")" << endl;
 		}
 		#endif
 		cout << "[-] Error ascii decoding messages." << endl;
