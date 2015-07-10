@@ -21,8 +21,8 @@ bool hash(const char* src, const size_t len, char** dst)
 	// Note: when updating the hash, length refers to the length of input,
 	// but in digest it refers to the length of the destination buffer.
 	sha512_init(&state);
-	sha512_update(&state, len, (const uint8_t*) src);
-	sha512_digest(&state, SHA512_DIGEST_SIZE, (uint8_t*) digest);
+	sha512_update(&state, len, reinterpret_cast<const uint8_t*>(src));
+	sha512_digest(&state, SHA512_DIGEST_SIZE, reinterpret_cast<uint8_t*>(digest));
 
 	*dst = digest;
 
@@ -42,9 +42,9 @@ bool hmacGen(
 
 	// TODO: Look into purging memory, do we need to delete the ctx safely?
 	hmac_sha1_ctx state;
-	hmac_sha1_set_key(&state, klen, (const uint8_t*) key);
-	hmac_sha1_update(&state, slen, (const uint8_t*) src);
-	hmac_sha1_digest(&state, SHA1_DIGEST_SIZE, (uint8_t*) *dst);
+	hmac_sha1_set_key(&state, klen, reinterpret_cast<const uint8_t*>(key));
+	hmac_sha1_update(&state, slen, reinterpret_cast<const uint8_t*>(src));
+	hmac_sha1_digest(&state, SHA1_DIGEST_SIZE, reinterpret_cast<uint8_t*>(*dst));
 
 	return true;
 }

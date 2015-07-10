@@ -12,9 +12,11 @@ bool asciiEncode(const char* src, const size_t srclen, char** dst)
 	char* enc = new char[dstlen];
 	*dst = nullptr;
 
-	int encoded_len = base64_encode_update(&state, (uint8_t*) enc, srclen, (const uint8_t*) src);
+	int encoded_len = base64_encode_update(&state, reinterpret_cast<uint8_t*>(enc), 
+		srclen, reinterpret_cast<const uint8_t*>(src));
 	if( encoded_len < dstlen )
-		encoded_len += base64_encode_final(&state, ((uint8_t*) enc) + encoded_len);
+		encoded_len += base64_encode_final(&state, reinterpret_cast<uint8_t*>(enc) 
+			+ encoded_len);
 	enc[encoded_len++] = 0; // Don't forget the terminator!
 	// TODO: Is the above line a buffer overflow? Does dstlen guarantee us room
 	// for a null terminator?
@@ -41,7 +43,9 @@ bool asciiDecode(const char* src, size_t* dstlen, char** dst)
 	size_t decoded_bytes;
 	#endif
 
-	bool ok = base64_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	bool ok = base64_decode_update(&state, &decoded_bytes, 
+		reinterpret_cast<uint8_t*>(d), srclen, 
+		reinterpret_cast<const uint8_t*>(src));
 	if( !ok )
 	{
 		delete [] d;
@@ -68,7 +72,8 @@ bool hexEncode(const char* src, const size_t srclen, char** dst)
 	int dstlen = BASE16_ENCODE_LENGTH(srclen) + 1;
 	char* enc = new char[dstlen];
 
-	base16_encode_update((uint8_t*) enc, srclen, (const uint8_t*) src);
+	base16_encode_update(reinterpret_cast<uint8_t*>(enc), srclen, 
+		reinterpret_cast<const uint8_t*>(src));
 
 	*dst = enc;
 	return true;
@@ -92,7 +97,9 @@ bool hexDecode(const char* src, size_t* dstlen, char** dst)
 	size_t decoded_bytes;
 	#endif
 
-	bool ok = base16_decode_update(&state, &decoded_bytes, (uint8_t*)d, srclen, (const uint8_t*) src);
+	bool ok = base16_decode_update(&state, &decoded_bytes, 
+		reinterpret_cast<uint8_t*>(d), srclen, 
+		reinterpret_cast<const uint8_t*>(src));
 	if( !ok )
 	{
 		delete [] d;
