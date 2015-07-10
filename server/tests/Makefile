@@ -19,6 +19,10 @@ all:
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o encode.test encode.cpp ../encode.cpp
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o encode-messages.test encode-messages.cpp ../encode.cpp ../message.cpp ../log.cpp
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o hash.test hash.cpp ../hash.cpp ../encode.cpp
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o hmac.test hmac.cpp ../hash.cpp ../cypher.cpp
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o hmac-messages.test hmac-messages.cpp ../hash.cpp ../cypher.cpp ../message.cpp ../log.cpp ../encode.cpp
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o aes.test aes.cpp ../hash.cpp ../cypher.cpp
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o aes-messages.test aes-messages.cpp ../hash.cpp ../cypher.cpp ../message.cpp ../log.cpp ../encode.cpp
 
 test:
 	@echo "==== Beginning tests ===="
@@ -26,6 +30,10 @@ test:
 	@./encode.test
 	@./encode-messages.test
 	@./hash.test
+	@./hmac.test
+	@./hmac-messages.test
+	@./aes.test
+	@./aes-messages.test
 	@echo "==== Done with tests ===="
 
 clean:
