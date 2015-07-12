@@ -24,7 +24,7 @@ bool hash(const char* src, const size_t len, char** dst);
 	along with its length, stored in dlen.
 */
 
-bool hmacGen(
+bool genHMAC(
 	const char* src, const size_t slen, 
 	const char* key, const size_t klen,
 	char** dst, size_t* dlen);

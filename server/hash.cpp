@@ -32,7 +32,7 @@ bool hash(const char* src, const size_t len, char** dst)
 // While SHA1 has known vulnerabilities, HMACs with SHA1 do not. Since there
 // is no difference in security and SHA1 is quite a bit faster than SHA512,
 // we use SHA1 for our HMACs.
-bool hmacGen(
+bool genHMAC(
 	const char* src, const size_t slen, 
 	const char* key, const size_t klen,
 	char** dst, size_t* dlen)
