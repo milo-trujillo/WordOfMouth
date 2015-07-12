@@ -2,14 +2,26 @@
 #define CYPHER_H
 
 /*
-	Note: These functions take a pointer to an unallocated char* so that they 
-	can allocate a string for the calling function.
+	Note: Wherever you see an argument of char** the function expects a pointer
+	to an unallocated char* so that it can allocate a string of appropriate
+	size for the calling function.
 
 	They return a boolean for success or failure. Note that in the case of
-	failure we guarantee the 'dst' pointer will not be allocated.
+	failure we guarantee any char** will be unallocated.
 */
 
-bool cypher(const char* src, char** dst, const char* key);
-bool decypher(const char* src, char** dst, const char* key);
+bool cypher(
+	const char* src, const size_t& slen,
+	const char* key, const size_t& klen,
+	char** iv, size_t* ivlen,
+	char** dst, size_t* dlen);
+
+bool decypher(
+	const char* src, const size_t& slen,
+	const char* key, const size_t& klen,
+	const char* iv, const size_t& ivlen,
+	char** dst, size_t* dlen);
+
+// Looking for generating an HMAC? It's in hash.h
 
 #endif
