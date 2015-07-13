@@ -25,21 +25,32 @@ bool cypher(const char* src, const size_t& slen,
 	// values.
 	*iv = nullptr;
 	*ivlen = 0;
-	*dst = nullptr;
-	*dst = 0;
 
 	if( !genIV(iv, ivlen) )
 		return false;
 
-	struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
-	CBC_SET_IV(&state, *iv);
-
-	// Cleanup if memory has been initialized and something went wrong
-	delete [] *iv;
-	delete [] *dst;
-	iv = nullptr;
-	dst = nullptr;
-	return false;
+	try
+	{
+		*dlen = slen;
+		*dst = new char[*dlen];
+		struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
+		aes_set_encrypt_key(&state.ctx, klen, 
+			reinterpret_cast<const uint8_t*>(key));
+		CBC_SET_IV(&state, *iv);
+		CBC_ENCRYPT(&state, aes_encrypt, slen, 
+			reinterpret_cast<uint8_t*>(*dst),
+			reinterpret_cast<const uint8_t*>(src));
+		return true;
+	}
+	catch(...)
+	{
+		// Cleanup if memory has been initialized and something went wrong
+		delete [] *iv;
+		delete [] *dst;
+		iv = nullptr;
+		dst = nullptr;
+		return false;
+	}
 }
 
 bool decypher(const char* src, const size_t& slen,
@@ -47,14 +58,24 @@ bool decypher(const char* src, const size_t& slen,
 	const char* iv, const size_t& ivlen,
 	char** dst, size_t* dlen)
 {
-	*dst = nullptr;
-	*dlen = 0;
-
-	struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
-	CBC_SET_IV(&state, iv);
-
-	// If something goes wrong, nuke allocated pointers
-	delete [] dst;
-	*dst = nullptr;
-	return false;
+	try
+	{
+		*dlen = slen;
+		*dst = new char[*dlen];
+		struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
+		aes_set_decrypt_key(&state.ctx, klen,
+			reinterpret_cast<const uint8_t*>(key));
+		CBC_SET_IV(&state, iv);
+		CBC_DECRYPT(&state, aes_decrypt, slen,
+			reinterpret_cast<uint8_t*>(*dst),
+			reinterpret_cast<const uint8_t*>(src));
+		return true;
+	}
+	catch(...)
+	{
+		// If something goes wrong, nuke allocated pointers
+		delete [] dst;
+		*dst = nullptr;
+		return false;
+	}
 }
