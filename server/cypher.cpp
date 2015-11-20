@@ -26,11 +26,14 @@ bool cypher(const char* src, const size_t& slen,
 	*iv = nullptr;
 	*ivlen = 0;
 
+	// Can't cypher data safely if the RNG isn't working
 	if( !genIV(iv, ivlen) )
 		return false;
 
 	try
 	{
+		// With current cypher the encoded data will always be same length as
+		// the decoded data. For future-proofing we make them separate values.
 		*dlen = slen;
 		*dst = new char[*dlen];
 		struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
@@ -60,6 +63,8 @@ bool decypher(const char* src, const size_t& slen,
 {
 	try
 	{
+		// With current cypher the encoded data will always be same length as
+		// the decoded data. For future-proofing we make them separate values.
 		*dlen = slen;
 		*dst = new char[*dlen];
 		struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) state;
