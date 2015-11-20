@@ -17,7 +17,7 @@ ifeq (, $(shell find -f /usr/local/include /usr/include -path "*/nettle/*" -a -n
 CFLAGS += -DOLD_NETTLE
 endif
 
-OBJS = main.o daemonize.o log.o message.o cypher.o keypair.o hash.o encode.o
+OBJS = main.o daemonize.o log.o message.o cypher.o keypair.o hash.o encode.o network.o
 
 all: $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) -o $(PROGNAME) $(OBJS)
